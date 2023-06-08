@@ -1,0 +1,25 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+    {% if object %}
+        <form role="form" action="{% url 'certificacion:certificado_eliminar' object.id %}" method="post">
+    {% endif %}
+    {% csrf_token %}
+    <div class="modal-header" style="background: #122f3b; width:100%; border-radius: 8px;">
+        <div class="card-header">
+        ¿Estás seguro?<label style="color: #fff;">¡No podrás recuperar esta solicitud!</label>
+        </div>
+        <button style="color: #fff;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="card-body">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="form-group">
+                    <button class="btn btn-outline-danger" type="submit">Si</button>
+                    <button type="button" class="btn btn-outline-primary" onclick="return cerrar_modal()"> NO</button>
+                </div>
+            </div>
+    </div>
+        </form>
+    </div>
+</div>

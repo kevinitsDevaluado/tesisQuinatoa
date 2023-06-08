@@ -1,0 +1,83 @@
+<div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+    {% if object %}
+        <form role="form" action="{% url 'certificacion:certificado_actualizar' object.id %}" method="post">
+    {% endif %}
+    {% csrf_token %}
+    <div class="modal-header" style="background: #122f3b; width:100%; border-radius: 8px;">
+        <div class="card-header">
+        responder nota final de: <label style="color: #fff;">Solicitud</label>
+        </div>
+        <button style="color: #fff;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <label>Secretaria/o: {{ form.nota.value }}</label>
+                    {{ form.asunto }}
+            </div>
+        </div>
+        <div class="row"  style="display:none">
+            <div class="col-md-12">
+                <label>Seleccione los documentos que desea</label>
+                <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th style="vertical-align:middle; text-align:center;">Artículos <span class="fa fa-2x fa-lock" style="color: #16A085 "></span></th>
+                            <th style="vertical-align:middle; text-align:center;">Libros <span class="fa fa-2x fa-lock" style="color: #16A085 "></span></th>
+                            <th style="vertical-align:middle; text-align:center;">Ponencias <span class="fa fa-2x fa-lock" style="color: #16A085 "></span></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>{{ form.articulos_varios }} </td>
+                            <td>{{ form.libros_varios }}</td>
+                            <td>{{ form.ponencias_varios }} </td>
+                        </tr>
+                    </tbody>
+                    </table>
+            </div>
+        </div>
+
+        <div class="row" style="display:none">
+            <div class="col-md-12">
+                <label>Hora de actualización</label>
+                {{ form.hora_actualizacion }}
+            </div>
+        </div>
+
+        <div class="row" style="display:none">
+            <div class="col-md-12">
+                <label>Verifique su número de cédula</label>
+                {{ form.investigador }}
+            </div>
+        </div>
+                {{ form.user }}
+        <div class="row">
+            <div class="col-md-8 col-md-offset-2">
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" name="submit" value="Guardar">
+                    <button type="button" class="btn btn-outline-primary" onclick="return cerrar_modal()"> Cancelar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+        </form>
+    </div>
+</div>
+
+<script type="text/javascript">
+var idhoraactual = document.getElementById("idhoraactual");
+var obhora = new Date();
+if (horas=='1'||horas=='2'||horas=='3'||horas=='4'||horas=='5'||horas=='6'||horas=='7'||horas=='8'||horas=='9' ||horas=='0') {
+    horas='0'+horas;
+}
+var minutos = obhora.getMinutes();
+if (minutos=='1'||minutos=='2'||minutos=='3'||minutos=='4'||minutos=='5'||minutos=='6'||minutos=='7'||minutos=='8'||minutos=='9' ||minutos=='0') {
+    minutos='0'+minutos;
+}
+idhoraactual.value=horas+':'+minutos;
+</script>
+

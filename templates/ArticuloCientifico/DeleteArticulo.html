@@ -1,0 +1,50 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block subtitle %}
+    <span style="color:red">Eliminar artículo Científico</span>
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+
+{% block itemArti %}
+<li class="nav-item">
+   <a class="nav-link active" href="{% url 'articulosCientificos:ListaArticulo' %}">
+       <i class="batch-icon batch-icon-compose"></i>
+       Artículos Científicos
+   </a>
+</li>
+{% endblock %}
+{% block content %}
+{% if permisos == 'invalido' and not user.is_superuser%}
+    <script> 
+        window.location.replace('http://ecuciencia.utc.edu.ec/index'); 
+    </script>
+{% endif %}
+{% if permisos != 'invalido' or user.is_superuser%}
+<div class="col-md-12">
+    <form method="post">
+    {% csrf_token %}
+    <br><br>
+    <center>
+    <h4>¿Está seguro que desea eliminar el registro de: <b>{{object.titulo}}</b>?</h4>
+    <br><br>
+    <div class="row">
+    <div class="col-md-6">
+        <button class="btn btn-danger btn-block" type="submit" onclick="return confirm('Al aceptar eliminará de forma permanente la información, tenga en cuenta que la información esta asociada a varios usuarios, para proceder confirme la petición');">Si, eliminar</button>
+    </div>
+    <div class="col-md-6">
+        <a class="btn btn-primary btn-block" href="{% url 'articulosCientificos:ListaArticulo' %}">Cancelar</a>
+    </div>
+    </div>
+    </center>
+    </form>
+</div>
+{% endif %}
+{% endblock %}

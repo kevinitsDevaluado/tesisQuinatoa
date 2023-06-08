@@ -1,0 +1,293 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block title %}
+    Listado de Artículos cientificos
+{% endblock%}
+
+{% block subtitle %}
+    LISTADO DE <span style="color:#07afea">Artículos científicos</span>
+    {% if user.id != 1105 %}
+     <a href="{% url 'articulosCientificos:articulos' %}" class="btn btn-primary btn-md pull-right "><i class="fa fa-plus"></i> Nuevo Artículo Científico</a>
+    {% endif %}
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block itemArti %}
+<li class="nav-item">
+   <a class="nav-link active" href="{% url 'articulosCientificos:ListaArticulo' %}">
+       <i class="batch-icon batch-icon-compose"></i>
+       <span id="artIco">Artículos Científicos</span>
+   </a>
+</li>
+{% endblock %}
+
+{% block content %}
+    {% if not user.is_superuser %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        <div class="table-responsive">
+                            {% if articulo %}
+                            <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                                 <thead>
+                                    <tr>
+                                        <td style="width:10%" align="center">Estado del Artículo</td>
+                                        <td>Título del Artículo </td>
+                                        <td>Fecha de Publicación</td>
+                                        <td>ISSN</td>
+                                        <td>Url</td>
+                                        <td>Doi</td>
+                                        <td>Archivo</td>
+                                        <td style="width:20%">Acciones</td>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+
+                                    {% for i in articulo %}
+                                    <tr>
+                                       <td align="center">
+                                        {% if i.editableTrueFalse == 1 %}
+                                            <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                        {% elif i.editableTrueFalse == 0 %}
+                                           <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                        {% elif i.editableTrueFalse == 2 %}
+                                           <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                        {% else %}
+                                            <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                        {% endif %}
+                                       </td>
+                                       <td>{{i.titulo|truncatechars:50}}</td>
+                                       <td>{{i.fechaPublicacion}}</td>
+                                       <td>{{i.iSSN}}</td>
+                                       <td>
+                                       <a href="{{i.url}}" target="_blank">URL</a>
+                                       </td>
+
+                                       <td>
+                                            <a href="{{i.doi}}" target="_blank">DOI</a>
+                                       </td>
+                                        <td>
+                                            {% if not i.documento == '' %}
+                                                <a href="{{i.documento.url}}" target="_blank">Anexo</a>
+                                            {% endif %}
+                                       </td>
+                                       <td>
+                                            {% if i.editableTrueFalse == 1 %}
+                                            <a class="btn btn-primary btn-sm" href="{% url 'articulosCientificos:update_articulo'  i.id %}" ><span class="fa fa-pencil">
+                                            {% elif i.editableTrueFalse == 0 %}
+                                            <a class="btn btn-primary btn-sm" href="{% url 'articulosCientificos:update_disabled_articulo'  i.id %}" ><span class="fa fa-pencil">
+                                            {% else %}
+                                            <a class="btn btn-primary btn-sm" href="{% url 'articulosCientificos:update_articulo'  i.id %}" ><span class="fa fa-pencil">
+                                            {% endif %}
+                                            </span> Editar</a>
+                                            
+                                            <a class="btn btn-danger btn-sm" href="{% url 'articulosCientificos:delete_articulo'  i.id %}"><span class="fa fa-trash"></span> Eliminar</a>
+                                       </td>
+                                    </tr>
+                                    {% endfor %}
+
+                                 </tbody>
+                            </table>
+                            {% else %}
+                                <h4>No hay registros de artículos científicos</h4>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    
+<script>
+        //Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+        //Para listar documentos rechazados      Fecha:03/07/2019
+        function activarRe(){
+            var valor=document.getElementById("micheck");
+            if(valor.checked==true){
+                document.getElementById('tbody1').style.display='none';
+                document.getElementById('tbody2').style.display='block';
+            }else{
+                $('#tbody1').show();
+                $('#tbody2').hide();
+            }
+        }
+</script>
+<div class="card-body">
+        <input type="checkbox" id="micheck" name="vehicle" value="1" onclick=" activarRe()"> Activar Rechazadas<br>
+</div>
+    <br>
+    <div id="tbody1" class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                            <a href="{% url 'articulosCientificos:ReporteArticulo' %}" class="btn btn-excel btn-md  pull-right"><i class=""></i> 
+                                <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                            </a>
+                        <div class="table-responsive">
+                            {% if articuloAdmin %}
+                            <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                                    <thead>
+                                    <tr>
+                                        <td style="width:10%" align="center">Estado del Artículo</td>
+                                        <td>Título del Artículo </td>
+                                        <td>Fecha de Publicación</td>
+                                        <td>ISSN</td>
+                                        <td>Url</td>
+                                        <td>Doi</td>
+                                        <td>Archivo</td>
+                                        <td>Revista</td>
+                                        <td style="width:20%">Acciones</td>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+
+                                    {% for i in articuloAdmin %}
+                                        <tr>
+                                            <td align="center">
+                                            {% if i.editableTrueFalse == 1 %}
+                                                <span class="fa fa-2x fa-unlock" style="color: red"></span>
+                                            {% elif i.editableTrueFalse == 0 %}
+                                                <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                            {% elif i.editableTrueFalse == 2 %}
+                                                <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                            {% else %}
+                                                <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                            {% endif %}
+                                            </td>
+                                            <td>{{i.titulo|truncatechars:50}}</td>
+                                            <td>{{i.fechaPublicacion}}</td>
+                                            <td>{{i.iSSN}}</td>
+                                            <td>
+                                            <a href="{{i.url}}" target="_blank">URL</a>
+                                            </td>
+
+                                            <td>
+                                                <a href="{{i.doi}}" target="_blank">DOI</a>
+                                            </td>
+                                            <td>
+                                                {% if not i.documento == '' %}
+                                                    <a href="{{i.documento.url}}" target="_blank">Anexo</a>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{i.revista}}</td>
+                                            <td>
+                                                <a class="btn btn-primary btn-sm" href="{% url 'articulosCientificos:update_articulo'  i.id %}" ><span class="fa fa-pencil"></span> Editar</a>
+                                                {% if user.id != 1105 %}
+                                                <a class="btn btn-danger btn-sm" href="{% url 'articulosCientificos:delete_articulo'  i.id %}"><span class="fa fa-trash"></span> Eliminar</a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+
+                                    </tbody>
+                            </table>
+                            {% else %}
+                                <h4>No hay registros de artículos científicos</h4>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <br>
+    <!--Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+    Para listar documentos rechazados      Fecha:03/07/2019-->
+    <div class="col-md-12" id="tbody2" style="display: none">
+            <div class="card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12 pb-5">
+                                <a href="{% url 'articulosCientificos:ReporteArticulo' %}" class="btn btn-excel btn-md  pull-right"><i class=""></i> 
+                                    <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                                </a>
+                            <div class="table-responsive">
+                                {% if articuloAdmin %}
+                                <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                                        <thead>
+                                        <tr>
+                                            <td style="width:10%" align="center">Estado del Artículo</td>
+                                            <td>Título del Artículo </td>
+                                            <td>Fecha de Publicación</td>
+                                            <td>ISSN</td>
+                                            <td>Url</td>
+                                            <td>Doi</td>
+                                            <td>Archivo</td>
+                                            <td>Revista</td>
+                                            <td style="width:20%">Acciones</td>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+    
+                                        {% for i in artiiculoAdminRec %}
+                                            <tr>
+                                                <td align="center">
+                                                {% if i.editableTrueFalse == 1 %}
+                                                    <span class="fa fa-2x fa-unlock" style="color: red"></span>
+                                                {% elif i.editableTrueFalse == 0 %}
+                                                    <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                                {% elif i.editableTrueFalse == 2 %}
+                                                    <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                                {% else %}
+                                                    <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                                {% endif %}
+                                                </td>
+                                                <td>{{i.titulo|truncatechars:50}}</td>
+                                                <td>{{i.fechaPublicacion}}</td>
+                                                <td>{{i.iSSN}}</td>
+                                                <td>
+                                                <a href="{{i.url}}" target="_blank">URL</a>
+                                                </td>
+    
+                                                <td>
+                                                    <a href="{{i.doi}}" target="_blank">DOI</a>
+                                                </td>
+                                                <td>
+                                                    {% if not i.documento == '' %}
+                                                        <a href="{{i.documento.url}}" target="_blank">Anexo</a>
+                                                    {% endif %}
+                                                </td>
+                                                <td>{{i.revista}}</td>
+                                                <td>
+                                                    <a class="btn btn-primary btn-sm" href="{% url 'articulosCientificos:update_articulo'  i.id %}" ><span class="fa fa-pencil"></span> Editar</a>
+                                                    {% if user.id != 1105 %}
+                                                    <a class="btn btn-danger btn-sm" href="{% url 'articulosCientificos:delete_articulo'  i.id %}"><span class="fa fa-trash"></span> Eliminar</a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+    
+                                        </tbody>
+                                </table>
+                                {% else %}
+                                    <h4>No hay registros de artículos científicos</h4>
+                                {% endif %}
+    
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif%}
+{% endblock%}
+{% block scripts %}
+    <!-- Datatables -->
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+{% endblock %}

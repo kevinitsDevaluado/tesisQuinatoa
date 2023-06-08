@@ -1,0 +1,1992 @@
+{% extends 'base1/inicio.html'%}
+
+{% load staticfiles %}
+{% block css %}
+    <!-- Tags Input -->
+    <link rel="stylesheet" href="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/multiselect.css' %}">
+    <!--VALIDACION DE LA SUBIDA DEL ARCHIVO
+    Integrantes: Borja, Guaigua, Pionce, Roldan y Tapia Fecha: 26-07-2019-->
+    
+    <!-- LLamada de librerias para la validación-->
+    <link rel="stylesheet" href="{% static 'alerta/alertify/css/alertify.css' %}">
+    <link rel="stylesheet" href="{% static 'alerta/alertify/css/themes/default.css' %}">
+    <link rel="stylesheet" href="{% static 'alerta/fontello/css/fontello.css' %}">
+
+    <script src="{% static 'alerta/js/alertify.js' %}"></script>
+    <!-- fin de llamada-->
+    <style>
+            #lista1 ul { 
+                width: 100%;
+                z-index: 20;
+                float: up;
+                max-height: 200px;
+                overflow: auto;
+                font-size: 12px;
+                position: relative;
+                z-index:2;
+            }
+            #lista1 ul li { 
+                display:block; 
+                height:28px; 
+    
+                padding-left:20px;
+                padding-bottom: 25px;
+                text-decoration:none; 
+            }
+        
+        </style>
+
+
+<!-- CSS - OPTIONAL - END -->
+{% endblock %}
+{% block title %}
+    Actualizar información
+{% endblock%}
+
+{% block subtitle %}
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+
+{% block itemArti %}
+<li class="nav-item">
+   <a class="nav-link active" href="{% url 'articulosCientificos:ListaArticulo' %}">
+       <i class="batch-icon batch-icon-compose"></i>
+       Artículos Científicos
+   </a>
+</li>
+{% endblock %}
+{% block content %}
+    {% if permisos == 'invalido' and not user.is_superuser%}
+        <script> 
+            window.location.replace('http://ecuciencia.utc.edu.ec/index'); 
+        </script>
+    {% endif %}
+
+
+
+
+
+    {% if not user.is_superuser %}
+   
+    
+ 
+    <div class="col-md-12">
+        <!--
+            {% if Pon %}
+            <div class="card-body" style="border:solid red 3px; background-color: #FFFFFF; width: 100%">
+                    <h5 style="color: red; text-align: center;">Estimado usuario usted tiene
+                            problemas con algunas de sus revistas, vaya al apartado de las mismas para verificar sus observaciones:
+                        </h5>
+                    {% for revista in Pon %}
+                        <li style="color:red"> {{revista.Nombre}}</li>
+                    {% endfor %}
+                </div>
+         {% endif %}
+        <br>-->
+        <form method="post" id="articuloUpdateDisabled" enctype="multipart/form-data">
+        {% if form.editableTrueFalse.value == 0  %}
+            <div class="card-body" style="border:solid #07A7E3 3px; background-color: #FFFFFF">
+                <label style="text-align:justify; font-size: 14px">Estimado usuario después de un análisis de su documento científico hemos determinado que su artículo cuenta con las características necesarias para los registros de la DIRECCIÓN DE INVESTIGACIÓN. Por lo cual desde este momento usted ya no podrá realizar ningún tipo de modificación en el artículo. Por cualquier duda comuníquese con el administrador de la plataforma.
+                </label>
+            </div>
+       <br>
+       {% endif %}
+       {% if form.editableTrueFalse.value == 1  %}
+            <div class="card-body" style="border:solid #f43a59 3px; background-color: #FFFFFF">
+                   <h5 style="text-transform: capitalize; color: red; text-align: center;"><b>OBSERVACIÓN DEL ADMINISTRADOR</b>   </h5>
+                   <textarea style="height: 75px" disabled>{{ form.comentarioSecretaria.value}}</textarea>
+            </div>
+       <br>
+        {% endif %}
+        {% if form.editableTrueFalse.value == 2  %}
+            <div class="card-body" style="border:solid #07A7E3 3px; background-color: #FFFFFF">
+                   <h5 style="text-transform: capitalize; color: #07A7E3; text-align: center;"><B>USTED HA REALIZADO CAMBIOS, POR LO TANTO EL DOCUMENTO CIENTÍFICO ESTÁ SIENDO REVISADO POR EL ADMINISTRADOR, ASEGÚRESE QUE LAS OBSERVACIONES LISTADAS ESTÉN CORREGIDAS: </B></h5>
+                   <textarea style="height: 75px" disabled>{{ form.comentarioSecretaria.value}}</textarea>
+            </div>
+       <br>
+        {% endif %}
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                            {% csrf_token %}
+                            <div class="card-header" >
+                                <span style="text-transform: capitalize;">Actualizar información de:</span> {{ form.titulo.value }} {{ permisos }}
+                                 <br><label> <span style="text-transform: capitalize; color: black"> Campos obligatorios </span><span style="color:red">*</span></label>
+                            </div>
+                        <!-- Autores: Borja, Guaigua, Pionce, Roldan, Tapia-->
+                        <!-- Para que no se imprima en pantalla el nombre del autor colocamos hidden en el type, Fecha: 13-08-2019-->
+                        <input type="hidden" name="xyzUs" id="xyzUs" value="{{user.last_name}} {{user.first_name}}">
+                            
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <b>{{ form.titulo.label }} <span style="color:red">*</span></b>
+                                        {{ form.titulo }}
+                                        {{ form.titulo.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.estado.label }} <span style="color:red">*</span></b>
+                                        {{ form.estado }}
+                                        {{ form.estado.errors }} 
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.iSSN.label }} <span style="color:red">*</span></b>
+                                        {{ form.iSSN }}
+                                        {{ form.iSSN.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.url.label }} <span style="color:red">*</span></b>
+                                        {{ form.url }}
+                                        {{ form.url.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.doi.label }}</b>
+                                        {{ form.doi }}
+                                        {{ form.doi.errors }}
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.pais.label }} <span style="color:red">*</span></b>
+                                        {{ form.pais }}
+                                        {{ form.pais.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.ciudad.label }} <span style="color:red">*</span></b>
+                                        {{ form.ciudad }}
+                                        {{ form.ciudad.errors }}
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.fechaPublicacion.label }} <span style="color:red">*</span></b>
+                                        {{ form.fechaPublicacion }}
+                                        {{ form.fechaPublicacion.errors }}
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <b>{{ form.tipoArticulo.label }} <span style="color:red">*</span></b>
+                                        {{ form.tipoArticulo }}
+                                        {{ form.tipoArticulo.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="paisFiltrado"><b>País de la institución responsable de la investigación</b></label>
+                                        {% if form.editableTrueFalse.value == 0  %}
+                                        <select name="paisFiltrado" id="paisFiltrado" disabled="" class="form-control" onchange="cargarUArtAll()">
+                                            <option value="">-----------------</option>
+                                            {% for i in p %}
+                                                <option value="{{ i.id }}">{{ i.Nombre }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% else %}
+                                        <select name="paisFiltrado" id="paisFiltrado" class="form-control" onchange="cargarUArtAll()">
+                                            <option value="">-----------------</option>
+                                            {% for i in p %}
+                                                <option value="{{ i.id }}">{{ i.Nombre }}</option>
+                                            {% endfor %}
+                                        </select>
+                                        {% endif %}
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <b>{{ form.university.label }}</b>
+                                        {{ form.university }}
+                                        {{ form.university.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.lineaInves.label }}</b>
+                                        {{ form.lineaInves }}
+                                        {{ form.lineaInves.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.SubLinea.label }}</b>
+                                        {{ form.SubLinea }}
+                                        {{ form.SubLinea.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.filialUtc.label }}<span style="color:red">*</span></b>
+                                        {{ form.filialUtc }}
+                                        {{ form.filialUtc.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>Idioma <span style="color:red">*</span></b></label>
+                                       {% if form.editableTrueFalse.value == 0  %}
+                                        <div class="col-md-12">
+                                            <br>
+
+                                            <div class="form-check form-check-inline">
+                                                {% if form.idioma.value == 1 %}
+                                                <input class="form-check-input" type="radio" disabled="" name="in" id="esp" value="1"  onclick="l(this)" required checked>
+                                                {% else %}
+                                                <input class="form-check-input" type="radio" disabled="" name="in" id="esp" value="1"  onclick="l(this)" required>
+                                                {% endif %}
+                                                <label class="form-check-label" for="esp">Español</label>
+                                            </div>
+                                    
+                                            <div class="form-check form-check-inline">
+                                                {% if form.idioma.value == 2 %}
+                                                <input class="form-check-input" type="radio" disabled="" name="in" id="ing" value="2" onclick="l(this)" required checked > 
+                                                {% else %}
+                                                <input class="form-check-input" type="radio" disabled="" name="in" id="ing" value="2" onclick="l(this)" required> 
+                                                {% endif %}
+                                                <label class="form-check-label" for="ing">Inglés</label>
+                                            </div>
+                                            <input type="hidden" name="idioma" id="idioma" value="{{form.idioma.value}}">
+                                            
+                                        </div>
+                                        {% else %}
+                                         <div class="col-md-12">
+                                            <br>
+
+                                            <div class="form-check form-check-inline">
+                                                {% if form.idioma.value == 1 %}
+                                                <input class="form-check-input" type="radio" name="in" id="esp" value="1"  onclick="l(this)" required checked>
+                                                {% else %}
+                                                <input class="form-check-input" type="radio" name="in" id="esp" value="1"  onclick="l(this)" required>
+                                                {% endif %}
+                                                <label class="form-check-label" for="esp">Español</label>
+                                            </div>
+                                    
+                                            <div class="form-check form-check-inline">
+                                                {% if form.idioma.value == 2 %}
+                                                <input class="form-check-input" type="radio" name="in" id="ing" value="2" onclick="l(this)" required checked > 
+                                                {% else %}
+                                                <input class="form-check-input" type="radio" name="in" id="ing" value="2" onclick="l(this)" required> 
+                                                {% endif %}
+                                                <label class="form-check-label" for="ing">Inglés</label>
+                                            </div>
+                                            <input type="hidden" name="idioma" id="idioma" value="{{form.idioma.value}}">
+                                            
+                                        </div>
+                                        {% endif %}
+                                        <br>
+                                    </div>
+    
+                                    <script>
+                                        function l(x){
+                                            if(x.value == '1'){
+                                                console.log(x.value);
+                                                $("#idioma").val(x.value);
+                                            }
+                                            if(x.value == '2'){
+                                                $("#idioma").val(x.value);
+                                            }
+                                        }
+                                    </script>
+                                    <div class="col-md-12">
+                                        <b>{{ form.resumen.label }}</b>
+                                        {{ form.resumen }}
+                                        {{ form.resumen.errors }}
+                                    </div>
+                                </div>
+                                <!--SCRIPT DE VALIDACIÒN DE ARCHIVOS
+                                Integrantes: Borja, Guaigua, Pionce, Roldan, Tapia. Fecha: 14-08-2019-->
+                                <script language=JavaScript type="text/javascript">
+
+                                    function check_file(current_form){
+
+                                    // si esta vacio permitimos enviar el formulario
+                                    if(current_form.value.search(/\S/g) == -1){return true}
+                                    var msg = ""
+                                    // extraemos el nombre del archivo y la extension
+                                    var id_documento = current_form.value.match(/[^\/\\]+\.(?:pdf|pdf|doc|docx)$/i)
+
+                                    // la extension de archivo son validas
+                                    if(id_documento != null){
+                                    // Extraemos solo el nombre del archivo
+                                    id_documento = id_documento.toString().replace(/\.pdf$|\.pdf$|\.doc$|\.docx$/i,"")
+                                    /////////////////////////
+                                    if(id_documento.length > 50)
+                                    {
+                                        if(!alertify.errorAlert){
+                                            //<!--define a new errorAlert base on alert-->
+                                            alertify.dialog('errorAlert',function factory(){
+                                        return{
+                                        build:function(){
+                                        var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                        + '</h1> ¡ALERTA!';
+                                        this.setHeader(errorHeader);
+                                        }
+                                        };
+                                        },true,'alert');
+                                        }
+                                        //<!--launch it.-->
+                                        //<!--since this was transient, we can launch another instance at the same time.-->
+                                        alertify
+                                            .errorAlert("El nombre del archivo adjunto no debe superar los 50 caracteres. <br/><br/><br/>");
+                                        document.getElementById("id_documento").value = '';
+                                        document.getElementById("doc").innerHTML = "Sin documento";
+                                    }
+                                    var cont = 0;
+                                    var aux = 0;
+                                    var str = id_documento.toString();
+                                    var abe = "abcdefghijklmnopqrstuvwxyz1234567890_-";
+                                    var cadena = str.toLowerCase();
+                                    var longitud = cadena.length;
+                                    var comparador = abe.length;
+                                    for(var i = 0; i<longitud ; i++){
+                                        var res = cadena.substr(i, 1);
+                                        for(var j = 0; j<comparador ; j++){
+                                            var com = abe.substr(j, 1);
+                                                if(res!=com){
+                                                    cont++;
+                                                }
+                                            }
+                                        if(cont==comparador){
+                                            aux++;
+                                        }
+                                        cont=0;
+                                    }
+                                    if(aux>0){
+                                        if(!alertify.errorAlert){
+                                            //<!--define a new errorAlert base on alert-->
+                                            alertify.dialog('errorAlert',function factory(){
+                                        return{
+                                        build:function(){
+                                        var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                        + '</h1> ¡ALERTA!';
+                                        this.setHeader(errorHeader);
+                                        }
+                                        };
+                                        },true,'alert');
+                                        }
+                                        //<!--launch it.-->
+                                        //<!--since this was transient, we can launch another instance at the same time.-->
+                                        alertify
+                                            .errorAlert("El nombre del archivo adjunto no debe poseer caracteres especiales ni espacios. <br/><br/><br/>");
+                                            document.getElementById("id_documento").value = '';
+                                            document.getElementById("doc").innerHTML = "Sin documento";
+
+                                    }
+
+                                    /////////////////////////
+                                    if((/["']|\-{4,}|\.{1,}|\s/i).test(id_documento)){
+                                    document.getElementById("id_documento").value = '';
+                                    document.getElementById("doc").innerHTML = "";
+
+                                    }
+
+
+                                    }
+                                    else{
+                                    msg+="¡ALERTA! Solo son válidos los archivos con la extensión pdf, doc y docx.\t\n"
+                                    document.getElementById("id_documento").value = '';
+                                    }
+                                    //Si el mensaje no esta vacío
+                                    if(msg!=""){
+                                    msg+="Ejemplo de un archivo válido:\n\n"+
+                                    "nng-asdf.pdf ó nng-asdf.doc"
+                                    if(!alertify.errorAlert){
+                                            //<!--define a new errorAlert base on alert-->
+                                            alertify.dialog('errorAlert',function factory(){
+                                        return{
+                                        build:function(){
+                                        var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                        + '</h1> ¡ALERTA!';
+                                        this.setHeader(errorHeader);
+                                        }
+                                        };
+                                        },true,'alert');
+                                        }
+                                        //<!--launch it.-->
+                                        //<!--since this was transient, we can launch another instance at the same time.-->
+                                        alertify
+                                            .errorAlert(msg);
+
+
+                                    return id_documento.value = '';
+                                    }
+
+                                    else{
+                                    // Esta todo bien
+                                    return true
+                                    document.getElementById("doc").innerHTML = "";
+                                    }
+
+                                    }
+                                    function send_form(current_form){
+                                    for(var ctr = 0; ctr < current_form.length; ctr++){
+
+                                    if(current_form[ctr].name == "id_documento"){
+                                    if(!check_file(current_form[ctr])){
+                                    // no enviamos el formulario
+                                    document.getElementById("id_documento").value = '';
+                                    return false
+
+                                    }
+
+                                    } 
+
+                                    }
+
+                                    }
+                                    //-->
+                                </script>
+                                <!--Fin del script-->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <b>{{ form.documento.label }} <span style="color:rgb(23,232,2);">*</span></b>
+
+                                        {{ form.documento }}
+
+
+                                        {{ form.documento.errors }}
+                                        <span>
+                                        {% if form.documento.value != '' %}
+                                            <a href="http://ecuciencia.utc.edu.ec/media/{{form.documento.value}}" target="_blank">Click aquí para ver el documento actual</a>
+                                        {% else%}
+                                            <p id="doc"></p>
+                                        {% endif %}
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label> <b>Palabras clave <span style="color:red">*</span></b> (Escribe una palabra y presiona enter)</label><br>
+                                        {% if form.editableTrueFalse.value == 0  %}
+                                        <select multiple id="palabras" disabled="" name="palabras"  class="form-control">
+                                            {% for i in palabra%}
+                                                <option value="{{ i.Termino }}"> {{ i.Termino }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        {% else %}
+                                        <select multiple id="palabras" name="palabras"  class="form-control">
+                                            {% for i in palabra%}
+                                                <option value="{{ i.Termino }}"> {{ i.Termino }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        {% endif %}
+                                        <span>Máximo 30 caracteres por palabra clave.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label> <b>Campo Amplio <span style="color:red">*</span></b></label>
+                                        {{ form.amplio }}
+                                        {{ form.amplio.errors }}
+                                    </div>
+                                        <div class="col-md-6">
+                                        <label> <b>Campo Específico <span style="color:red">*</span></b></label>
+                                        {{ form.especifico }}
+                                        {{ form.especifico.errors }}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <b>{{ form.detallado.label }} <span style="color:red">*</span></b>
+                                        {{ form.detallado }}
+                                        {{ form.detallado.errors }}
+                                    </div>
+                                </div>
+                                <div class="row" >
+                                    <div class="col-md-6">
+                                    <label><b>Tipo de Base de Datos</b></label>
+                                    {% if form.editableTrueFalse.value == 0 %}
+                                        <div class="custom-control custom-radio">
+                                                {% if DB1 == 1 %}
+                                                    <input type="radio" disabled="" class="custom-control-input" id="base1" name="radio-stacked2" onclick="regional()" required checked>
+                                                {% else %}
+                                                    <input type="radio" disabled="" class="custom-control-input" id="base1" name="radio-stacked2" onclick="regional()" required>
+                                                {% endif %}
+                                            
+                                            <label class="custom-control-label" for="base1">Regional</label>
+                                        </div>
+                                        <div class="custom-control custom-radio mb-3">
+                                            {% if DB1 == 2 %}
+                                                <input type="radio" disabled="" class="custom-control-input" id="base2" name="radio-stacked2" onclick="impacto()" required checked>
+                                            {% else %}
+                                                <input type="radio" disabled="" class="custom-control-input" id="base2" name="radio-stacked2" onclick="impacto()" required>
+                                            {% endif %}
+                                            <label class="custom-control-label" for="base2">Alto Impacto</label>
+                                        </div>
+                                        {% else %}
+                                        <div class="custom-control custom-radio">
+                                                {% if DB1 == 1 %}
+                                                    <input type="radio" class="custom-control-input" id="base1" name="radio-stacked2" onclick="regional()" required checked>
+                                                {% else %}
+                                                    <input type="radio" class="custom-control-input" id="base1" name="radio-stacked2" onclick="regional()" required>
+                                                {% endif %}
+                                            
+                                            <label class="custom-control-label" for="base1">Regional</label>
+                                        </div>
+                                        <div class="custom-control custom-radio mb-3">
+                                            {% if DB1 == 2 %}
+                                                <input type="radio" class="custom-control-input" id="base2" name="radio-stacked2" onclick="impacto()" required checked>
+                                            {% else %}
+                                                <input type="radio" class="custom-control-input" id="base2" name="radio-stacked2" onclick="impacto()" required>
+                                            {% endif %}
+                                            <label class="custom-control-label" for="base2">Alto Impacto</label>
+                                        </div>
+                                       
+                                        <input style="display:none" id="Aut2" name="Aut2" value="1">
+                                    {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.user.label }}
+                                        {{ form.user }}
+                                        {{ form.user.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <b>{{ form.baseDatos.label }} 
+                                                {% if form.editableTrueFalse.value == 0  %}
+                                                
+                                                {% else %}
+                                                <span style="color:red">*</span></b><a href="#" class="" data-toggle="modal" data-target="#exampleModal">
+                                               <!-- <i class="fa fa-plus"></i> Nueva Base de Datos-->
+                                                </a><br>
+                                                <br>
+                                                {% endif %}
+                                        
+                                        </div>
+                                        {% if form.editableTrueFalse.value == 0  %}
+                                        <select id="baseDatos" name="baseDatos" disabled="" multiple="multiple" onchange="a()" required>
+                                            {% for i in base%}
+                                                {% for j in form.baseDatos.value %}
+                                                    {% if j == i.id %}
+                                                        <option value="{{ i.id }}" onlyread="" selected> {{ i.BaseDatos }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            {% for i in Datos%}
+                                                {% if DB1 == i.tipoBaseDatos_id %}
+                                                <option value="{{ i.id }}"> {{ i.BaseDatos }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        {% else %}
+                                        <select id="baseDatos" name="baseDatos" multiple="multiple" onchange="a()" required>
+                                            {% for i in base%}
+                                                {% for j in form.baseDatos.value %}
+                                                    {% if j == i.id %}
+                                                        <option value="{{ i.id }}" onlyread="" selected> {{ i.BaseDatos }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            {% for i in Datos%}
+                                                {% if DB1 == i.tipoBaseDatos_id %}
+                                                <option value="{{ i.id }}"> {{ i.BaseDatos }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-md-6">
+                                        {% if form.editableTrueFalse.value == 0  %}
+                                        
+                                            <b>{{ form.revista.label }}<span style="color:red">*</span></b><a href="#" data-toggle="modal" data-target="#exampleModal1">
+                                        </a>
+                                        
+                                        {% else %}
+                                        
+                                            <b>{{ form.revista.label }}<span style="color:red">*</span></b><a href="#" data-toggle="modal" data-target="#exampleModal1">
+                                                <i class="fa fa-plus"></i> Nueva Revista
+                                        </a>
+                                        
+                                        {% endif %}
+                                        {{ form.revista }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.volumen.label }}</b>
+                                        {{ form.volumen }}
+                                        {{ form.volumen.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.numero.label }}</b>
+                                        {{ form.numero }}
+                                        {{ form.numero.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    {% if form.errors %}
+                                        {% for error in form.errors %} 
+                                        <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                                            <strong>Error!!</strong> {{ error }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %} 
+    
+                                </div>
+                            </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-header">
+                Autores<br>
+                {% if form.editableTrueFalse.value == 0  %}
+                <button id="btRemove" class="btn disabled btn-danger btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-minus"></i> autor</button>
+                <button id="btAdd" class="btn disabled btn-primary btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-plus"></i> Autor</button>
+                <a href="#" class="btn disabled btn-primary btn-sm pull-left" data-toggle="modal" data-target="#autorNew"><i class="fa fa-user"></i> Añadir nuevo Autor</a>
+                {% else %}
+                <button id="btRemove" class="btn btn-danger btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-minus"></i> autor</button>
+                <button id="btAdd" class="btn btn-primary btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-plus"></i> Autor</button>
+                <a href="#" class="btn btn-primary btn-sm pull-left" data-toggle="modal" data-target="#autorNew"><i class="fa fa-user"></i> Añadir nuevo Autor</a>
+                {% endif %}
+            </div>
+            <div class="card-body" id="lista1">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="row">
+                                <div class="col-md-5">
+                                    <div id="dbGrado">
+                                    </div>
+                                    <script>
+                                        var a = -1, b = -1;
+                                        $("#dbGrado").append('<label>Grado de autoria</label>{%for i in Autores%}<input type=text class="form-control" name=grado' + (a += 1) + ' id=grado' + (b += 1) + ' ' + 'value="{{i.gradoAutoria }}" readonly/>{%endfor%}');
+                                    </script>
+                                </div>
+                                <div class="col-md-5">
+                                    {% if form.editableTrueFalse.value == 0  %}
+                                    <div id="dbAutores1">
+                                        {% else %}
+                                    <div id="dbAutores">
+                                        {% endif  %}
+                                        
+                                    </div>
+                                </div>
+                                <script>
+                                    var b = -1, a = -1;
+                                        $("#dbAutores").append(' <label> Autores </label> {%for i in Autores%} {% for j in users %} {% if i.user_id == j.id%} <input type="text" name=' + (a += 1) + ' id=' + (b += 1) + ' placeholder="Buscar autor..." class="form-control" onkeyup="autors(this)" autocomplete="off" onchange="f()" value="{{j.last_name}} {{j.first_name}}"/> <ul class="list-group" style="position: absolute" id=res' + (b) + '></ul> {% endif %}{%endfor%} {%endfor%}');
+                                        $("#dbAutores1").append(' <label> Autores </label> {%for i in Autores%} {% for j in users %} {% if i.user_id == j.id%} <input type="text" name=' + (a += 1) + ' id=' + (b += 1) + ' placeholder="Buscar autor..." class="form-control" autocomplete="off" onchange="f()" value="{{j.last_name}} {{j.first_name}}" readonly/> <ul class="list-group" style="position: absolute" id=res' + (b) + '></ul> {% endif %}{%endfor%} {%endfor%}');
+                                </script>
+                                <div class="col-md-2">
+
+                                    <label>Acción</label>
+                                    {% for i in Autores %}
+                                    {% if form.editableTrueFalse.value == 0  %}
+                                        <a style="padding: 10px;" class="btn btn-danger disabled btn-sm btn-block" href="{% url 'autor:eliminar' i.id id %}" onclick="return confirm('¿Estas seguro?');">Eliminar <b>{{ i.gradoAutoria }}</b></a>
+                                    <br><br>
+                                    {% else %}
+                                        <a style="padding: 10px;" class="btn btn-danger btn-sm btn-block" href="{% url 'autor:eliminar' i.id id %}" onclick="return confirm('¿Estas seguro?');">Eliminar <b>{{ i.gradoAutoria }}</b></a>
+                                    <br><br>
+                                    {% endif %}
+                                    {% endfor %}
+                                </div>
+                                
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="formGrado">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="formUSer">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                            <strong>Compruebe los autores ingresados!!</strong> Se han repetido los autores o no ha seleccionado algun autor.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="alert alert-warning col-md-12" id="AutIn" role="alert">
+                                <strong>Alerta!!</strong> Recuerde registrarse como autor.
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div hidden="true">
+                <br>
+                <b>{{ form.comentarioSecretaria.label }}</b>
+                <br>
+                {{ form.comentarioSecretaria }}
+                {{ form.comentarioSecretaria.errors }}
+                Nota: Este comentario se mostrara en la pantalla del autor
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        {% if form.editableTrueFalse.value == 0  %}
+                        <button class="btn btn-primary btn-block disabled" type="submit">Guardar información</button>
+                        {% else %}
+                         <button class="btn btn-primary btn-block" onclick="editado(this)" value="2" type="submit">Guardar información</button>
+                        <input type="hidden" name="editableTrueFalse" id="editableTrueFalse" value="{{form.editableTrueFalse.value}}">
+                        {% endif %}
+                        </div>
+                        <script>
+                                        function editado(vaa){
+                                                $("#editableTrueFalse").val(vaa.value);
+                                        }
+                        </script>
+                    <div class="col-md-6">
+
+                            <a class="btn btn-danger btn-block" href="{% url 'articulosCientificos:ListaArticulo' %}">
+                               Cancelar
+                           </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <script>
+        $("#paisFiltrado"). val("{{paisId}}")
+        /*
+        $('#lineaInves option').each(function() {
+            if (this.selected && this.value != "")
+                alert('this option is selected');
+            else
+                alert('this is not');
+        });
+        SubLinea
+        */
+        if($('#lineaInves').val() == ""){
+            $('#lineaInves').empty()
+            $('#SubLinea').empty()
+        }
+
+    </script>
+    <!--  *********************************************** Modal autor ********************************************** -->
+    <div  class="modal fade bd-example-modal-sizes" id="autorNew" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >Registrando un nuevo autor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formAut" method="POST">
+                {% csrf_token %}
+                <div class="modal-body" style="padding-right: 15px !important;">
+                    <label>Nombres <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="name" name="name" required="required" onkeyup="javascript:this.value=this.value.toUpperCase();">
+                    <label>Apellidos <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="lastname" name="lastname" required="required" onkeyup= "javascript:this.value=this.value.toUpperCase();">
+                    <label>Correo electronico <span style="color:red">*</span></label>
+                    <input class="form-control" type="email" id="email" name="email" required="required">
+                    <label>Paìs</label>
+                    <select class="form-control" name="paisAut" id="paisAut" onchange="cargarU()">
+                        <option value="">----- Seleccione un pais -----</option>
+                        {% for i in p %}
+                        <option value="{{i.id}}">{{i.Nombre}}</option>
+                        {% endfor %}
+                    </select>
+                    <label>Universidad <span style="color:red">*</span></label>
+                    <select name="uni" id="uni" class="form-control">
+                        <option value="">--------------------</option>
+                    </select>
+                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        <!-- *********************************************** Modal DB *********************************************** -->
+ <!--                                       Modal DB                                                  -->
+ <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                   <!-- <h5 class="modal-title" id="exampleModalLabel">Nueva base de datos</h5>-->
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formDB" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Tipo Base de Datos <span style="color:red">*</span></label>
+                                <select type="text" class="form-control" name="tipoBD" id="tipoBD" required>
+                                    <option>--------</option>
+                                    <option value="1">Regional</option>
+                                    <option value="2">Alto impacto</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Nombre de la Base de Datos <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="nameBD" id="nameBD" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>URL de la Base de Datos <span style="color:red">*</span></label>
+                                <input type="url" required class="form-control" name="Url de la base de datos" id="Url">
+                            </div>
+                                <input type="text" class="form-control" style="display:none" name="user" id="user" value="{{user.id}}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- *********************************************** Modal RV  *********************************************** -->
+    <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Nueva revista</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formRev" method="POST" action="/revista/new/">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <label>Nombre de la revista <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="Nombre" id="Nombre" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>ISSN <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="ISSN" id="ISSN1" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Tipo de Base de Datos</label>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" id="option1" name="radio-stack" required checked>
+                                    <label class="custom-control-label" for="option1">Regional</label>
+                                </div>
+                                <div class="custom-control custom-radio mb-3">
+                                    <input type="radio" class="custom-control-input" id="option2" name="radio-stack" required>
+                                    <label class="custom-control-label" for="option2">Alto Impacto</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Base datos en la que se encuentra indexada la revista <span style="color:red">*</span></label>
+                                <select id="baseData" name="baseData" multiple="multiple"  required>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Cuartil al que Pertenece</label>
+                                <input type="text" class="form-control" name="Cuartil_Pertenece" id="Cuartil_Pertenece">
+                            </div>
+
+                            <div class="col-md-12">
+                                <label>Factor impacto</label>
+                                <input type="text" class="form-control" name="Factor_Impacto" id="Factor_Impacto">
+                            </div>
+                            <div class="col-md-12">
+                                <label>URL de la revista <span style="color:red">*</span></label>
+                                <input type="url" required class="form-control" name="Url" id="Url1">
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" style="display:none" name="user" id="user1" value="{{user.id}}">
+                                <input type="text" class="form-control" style="display:none" name="validada" id="validada" value="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    {% else %}
+    {% if user.is_superuser %}
+    <div class="col-md-12">
+        <form method="post" id="articuloUpdate" enctype="multipart/form-data">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+
+                            {% csrf_token %}
+                            <div class="card-header" >
+                                <span style="text-transform: capitalize;">Actualizar información de:</span> {{ form.titulo.value }} {{ permisos }}
+                                 <br><label> <span style="text-transform: capitalize; color: black"> Campos obligatorios </span><span style="color:red">*</span></label>
+                            </div>
+                            <input type="text" disabled name="xyzUs" id="xyzUs" value="{{user.last_name}} {{user.first_name}}">
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <b>{{ form.titulo.label }} <span style="color:red">*</span></b>
+                                        {{ form.titulo }}
+                                        {{ form.titulo.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.estado.label }} <span style="color:red">*</span></b>
+                                        {{ form.estado }}
+                                        {{ form.estado.errors }} 
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.iSSN.label }} <span style="color:red">*</span></b>
+                                        {{ form.iSSN }}
+                                        {{ form.iSSN.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.url.label }} <span style="color:red">*</span></b>
+                                        {{ form.url }}
+                                        {{ form.url.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.doi.label }}</b>
+                                        {{ form.doi }}
+                                        {{ form.doi.errors }}
+                                    </div>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.pais.label }} <span style="color:red">*</span></b>
+                                        {{ form.pais }}
+                                        {{ form.pais.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.ciudad.label }} <span style="color:red">*</span></b>
+                                        {{ form.ciudad }}
+                                        {{ form.ciudad.errors }}
+                                    </div>
+                                </div>
+
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.fechaPublicacion.label }} <span style="color:red">*</span></b>
+                                        {{ form.fechaPublicacion }}
+                                        {{ form.fechaPublicacion.errors }}
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <b>{{ form.tipoArticulo.label }} <span style="color:red">*</span></b>
+                                        {{ form.tipoArticulo }}
+                                        {{ form.tipoArticulo.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label for="paisFiltrado"><b>País de la institución responsable de la investigación</b></label>
+                                        <select name="paisFiltrado" id="paisFiltrado" class="form-control" onchange="cargarUArtAll()">
+                                            <option value="">-----------------</option>
+                                            {% for i in p %}
+                                                <option value="{{ i.id }}">{{ i.Nombre }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <b>{{ form.university.label }}</b>
+                                        {{ form.university }}
+                                        {{ form.university.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.lineaInves.label }}</b>
+                                        {{ form.lineaInves }}
+                                        {{ form.lineaInves.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.SubLinea.label }}</b>
+                                        {{ form.SubLinea }}
+                                        {{ form.SubLinea.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.filialUtc.label }}<span style="color:red">*</span></b>
+                                        {{ form.filialUtc }}
+                                        {{ form.filialUtc.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label><b>Idioma <span style="color:red">*</span></b></label>
+                                        <div class="col-md-12">
+                                            <br>
+
+                                            <div class="form-check form-check-inline">
+                                                {% if form.idioma.value == 1 %}
+                                                <input class="form-check-input" type="radio" name="in" id="esp" value="1"  onclick="l(this)" required checked>
+                                                {% else %}
+                                                <input class="form-check-input" type="radio" name="in" id="esp" value="1"  onclick="l(this)" required>
+                                                {% endif %}
+                                                <label class="form-check-label" for="esp">Español</label>
+                                            </div>
+                                    
+                                            <div class="form-check form-check-inline">
+                                                {% if form.idioma.value == 2 %}
+                                                <input class="form-check-input" type="radio" name="in" id="ing" value="2" onclick="l(this)" required checked > 
+                                                {% else %}
+                                                <input class="form-check-input" type="radio" name="in" id="ing" value="2" onclick="l(this)" required> 
+                                                {% endif %}
+                                                <label class="form-check-label" for="ing">Inglés</label>
+                                            </div>
+                                            <input type="hidden" name="idioma" id="idioma" value="{{form.idioma.value}}">
+                                            
+                                        </div>
+                                        <br>
+                                    </div>
+    
+                                    <script>
+                                        function l(x){
+                                            if(x.value == '1'){
+                                                console.log(x.value);
+                                                $("#idioma").val(x.value);
+                                            }
+                                            if(x.value == '2'){
+                                                $("#idioma").val(x.value);
+                                            }
+                                        }
+                                    </script>
+                                    <div class="col-md-12">
+                                        <b>{{ form.resumen.label }}</b>
+                                        {{ form.resumen }}
+                                        {{ form.resumen.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <b>{{ form.documento.label }} <span style="color:red">*</span></b>
+                                        {{ form.documento }}
+                                        {{ form.documento.errors }}
+                                        <span>
+                                        {% if not form.documento.value == '' %}
+                                            <a href="http://ecuciencia.utc.edu.ec/media/{{form.documento.value}}" target="_blank">Click aquí para ver el documento actual</a>
+                                        {% else%}
+                                            Sin documento
+                                        {% endif %}
+                                        </span>
+                                    </div>
+
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label> <b>Palabras clave <span style="color:red">*</span></b> (Escribe una palabra y presiona enter)</label><br>
+                                        <select multiple id="palabras" name="palabras"  class="form-control">
+                                            {% for i in palabra%}
+                                                <option value="{{ i.Termino }}"> {{ i.Termino }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                        <span>Máximo 30 caracteres por palabra clave.</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label> <b>Campo Amplio <span style="color:red">*</span></b></label>
+                                        {{ form.amplio }}
+                                        {{ form.amplio.errors }}
+                                    </div>
+                                        <div class="col-md-6">
+                                        <label> <b>Campo Específico <span style="color:red">*</span></b></label>
+                                        {{ form.especifico }}
+                                        {{ form.especifico.errors }}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <b>{{ form.detallado.label }} <span style="color:red">*</span></b>
+                                        {{ form.detallado }}
+                                        {{ form.detallado.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                    <label><b>Tipo de Base de Datos</b></label>
+                                        <div class="custom-control custom-radio">
+                                                {% if DB1 == 1 %}
+                                                    <input type="radio" class="custom-control-input" id="base1" name="radio-stacked2" onclick="regional()" required checked>
+                                                {% else %}
+                                                    <input type="radio" class="custom-control-input" id="base1" name="radio-stacked2" onclick="regional()" required>
+                                                {% endif %}
+                                            
+                                            <label class="custom-control-label" for="base1">Regional</label>
+                                        </div>
+                                        <div class="custom-control custom-radio mb-3">
+                                            {% if DB1 == 2 %}
+                                                <input type="radio" class="custom-control-input" id="base2" name="radio-stacked2" onclick="impacto()" required checked>
+                                            {% else %}
+                                                <input type="radio" class="custom-control-input" id="base2" name="radio-stacked2" onclick="impacto()" required>
+                                            {% endif %}
+                                            <label class="custom-control-label" for="base2">Alto Impacto</label>
+                                        </div>
+                                        <input style="display:none" id="Aut2" name="Aut2" value="1">
+                                    </div>
+                                    <div class="col-md-6">
+                                        {{ form.user.label }}
+                                        {{ form.user }}
+                                        {{ form.user.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                            <b>{{ form.baseDatos.label }} <span style="color:red">*</span></b><a href="#" class="" data-toggle="modal" data-target="#exampleModal">
+                                               <!-- <i class="fa fa-plus"></i> Nueva Base de Datos-->
+                                        </a><br>
+                                            <br>
+                                        </div>
+                                        <select id="baseDatos" name="baseDatos" multiple="multiple" onchange="a()" required style="height: 100px;width: 350px;">
+                                            {% for i in base%}
+                                                {% for j in form.baseDatos.value %}
+                                                    {% if j == i.id %}
+                                                        <option value="{{ i.id }}" selected> {{ i.BaseDatos }}</option>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endfor %}
+                                            {% for i in Datos%}
+                                                {% if DB1 == i.tipoBaseDatos_id %}
+                                                <option value="{{ i.id }}"> {{ i.BaseDatos }}</option>
+                                                {% endif %}
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="col-md-12">
+                                             <b>{{ form.revista.label }} <span style="color:red">*</span></b><a href="#" data-toggle="modal" data-target="#exampleModal1">
+                                                <i class="fa fa-plus"></i> Nueva Revista
+                                        </a><br><br>
+                                        </div>
+                                        {{ form.revista }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.volumen.label }}</b>
+                                        {{ form.volumen }}
+                                        {{ form.volumen.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.numero.label }}</b>
+                                        {{ form.numero }}
+                                        {{ form.numero.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    {% if form.errors %}
+                                        {% for error in form.errors %} 
+                                        <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                                            <strong>Error!!</strong> {{ error }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %} 
+    
+                                </div>
+                            </div>
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-header">
+                Autores<br>
+                <button id="btRemove" class="btn btn-danger btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-minus"></i> autor</button>
+                <button id="btAdd" class="btn btn-primary btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-plus"></i> Autor</button>
+                <a href="#" class="btn btn-primary btn-sm pull-left" data-toggle="modal" data-target="#autorNew"><i class="fa fa-user"></i> Añadir nuevo Autor</a>
+
+            </div>
+            <div class="card-body" id="lista1">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="row">
+                                <div class="col-md-5">
+                                    <div id="dbGrado">
+                                    </div>
+                                    <script>
+                                        var a = -1, b = -1;
+                                        $("#dbGrado").append('<label>Grado de autoria</label>{%for i in Autores%}<input type=text class="form-control" name=grado' + (a += 1) + ' id=grado' + (b += 1) + ' ' + 'value="{{i.gradoAutoria }}" readonly/>{%endfor%}');
+                                    </script>
+                                </div>
+                                <div class="col-md-5">
+                                    <div id="dbAutores">
+                                        
+                                    </div>
+                                </div>
+                                <script>
+                                    var b = -1, a = -1;
+                                        $("#dbAutores").append(' <label> Autores </label> {%for i in Autores%} {% for j in users %} {% if i.user_id == j.id%} <input type="text" name=' + (a += 1) + ' id=' + (b += 1) + ' placeholder="Buscar autor..." class="form-control" onkeyup="autors(this)" autocomplete="off" onchange="f()" value="{{j.last_name}} {{j.first_name}}"/> <ul class="list-group" style="position: absolute" id=res' + (b) + '></ul> {% endif %}{%endfor%} {%endfor%}');
+                                </script>
+                                <div class="col-md-2">
+
+                                    <label>Acción</label>
+                                    {% for i in Autores %}
+                                        <a style="padding: 10px;" class="btn btn-danger btn-sm btn-block" href="{% url 'autor:eliminar' i.id id %}" onclick="return confirm('¿Estas seguro?');">Eliminar <b>{{ i.gradoAutoria }}</b></a>
+                                    <br><br>
+                                    {% endfor %}
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="formGrado">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="formUSer">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                            <strong>Compruebe los autores ingresados!!</strong> Se han repetido los autores o no ha seleccionado algun autor.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% if not user.is_superuser %}
+                        <div class="alert alert-warning col-md-12" id="AutIn" role="alert">
+                            <strong>Alerta!!</strong> Recuerde registrarse como autor.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% endif %}<!--Validación Superusuario en agregar autores
+                            Autores:Arauz,Mora,Tapia,Zambrano
+                        fecha: 17/07/2019-->
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <br>
+        <div class="card" style="border:solid #07A7E3  3px " align="center">
+           <div class="col-md-12">
+            <br>
+                                        <label><b><h5>Estado del artículo</h5></b></label>
+                                        <div class="col-md-12">
+                                            <br>
+
+                                            <div class="form-check form-check-inline">
+                                                {% if form.editableTrueFalse.value == 0 %}
+                                                <input class="form-check-input" type="radio" name="ed" id="lock" value="0"  onclick="edit(this)" required checked>
+                                                {% else %}
+                                                <input class="form-check-input" type="radio" name="ed" id="lock" value="0"  onclick="edit(this)" required>
+                                                {% endif %}
+                                                <label class="form-check-label" for="lock">Aprobado</label>
+                                            </div>
+                                    
+                                            <div class="form-check form-check-inline">
+                                                {% if form.editableTrueFalse.value == 1 %}
+                                                <input class="form-check-input" type="radio" name="ed" id="unlock" value="1" onclick="edit(this)" required checked > 
+                                                {% else %}
+                                                <input class="form-check-input" type="radio" name="ed" id="unlock" value="1" onclick="edit(this)" required> 
+                                                {% endif %}
+                                                <label class="form-check-label" for="unlock">NO Aprobado</label>
+                                            </div>
+                                            <input type="hidden" name="editableTrueFalse" id="editableTrueFalse" value="{{form.editableTrueFalse.value}}">
+                                            <div id="coment">
+                                                    <br>
+                                                    <b>{{ form.comentarioSecretaria.label }}</b>
+                                                    <br>
+                                                    {{ form.comentarioSecretaria }}
+                                                    {{ form.comentarioSecretaria.errors }}
+                                                    Nota: Este comentario se mostrara en la pantalla del autor
+                                                    </div>
+                                                </div>
+                                                <br>
+                    </div>
+                                            <script>
+                                                function edit(y){
+                                                    if(y.value == '0'){
+                                                        console.log(y.value);
+                                                        $("#editableTrueFalse").val(y.value);
+                                                        $("#coment").hide();
+                                                    }
+                                                    if(y.value == '1'){
+                                                        $("#editableTrueFalse").val(y.value);
+                                                        $("#coment").show();
+                                                    }
+                                                }
+                                            </script>
+                                            <script>
+                                                function comentario(){
+                                                    if({{form.editableTrueFalse.value}}==0){
+                                                        $("#coment").hide();}
+                                                    if({{form.editableTrueFalse.value}}==1){
+                                                        $("#coment").show();}
+                                                    if({{form.editableTrueFalse.value}}==2){
+                                                        $("#coment").show();}
+                                                    if({{form.editableTrueFalse.value}}==null){
+                                                        $("#coment").hide();}
+                                                    }
+                                            </script>
+        </div>
+    <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-primary btn-block" type="submit">Guardar información</button>
+                    </div>
+                    <div class="col-md-6">
+
+                            <a class="btn btn-danger btn-block" href="{% url 'articulosCientificos:ListaArticulo' %}">
+                               Cancelar
+                           </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+    <script>
+        $("#paisFiltrado"). val("{{paisId}}")
+        /*
+        $('#lineaInves option').each(function() {
+            if (this.selected && this.value != "")
+                alert('this option is selected');
+            else
+                alert('this is not');
+        });
+        SubLinea
+        */
+        if($('#lineaInves').val() == ""){
+            $('#lineaInves').empty()
+            $('#SubLinea').empty()
+        }
+
+    </script>
+    <!--  *********************************************** Modal autor ********************************************** -->
+    <div  class="modal fade bd-example-modal-sizes" id="autorNew" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >Registrando un nuevo autor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formAut" method="POST">
+                {% csrf_token %}
+                <div class="modal-body" style="padding-right: 15px !important;">
+                    <label>Nombres <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="name" name="name" required="required" onkeyup="javascript:this.value=this.value.toUpperCase();">
+                    <label>Apellidos <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="lastname" name="lastname" required="required" onkeyup= "javascript:this.value=this.value.toUpperCase();">
+                    <label>Correo electronico <span style="color:red">*</span></label>
+                    <input class="form-control" type="email" id="email" name="email" required="required">
+                    <label>Paìs</label>
+                    <select class="form-control" name="paisAut" id="paisAut" onchange="cargarU()">
+                        <option value="">----- Seleccione un pais -----</option>
+                        {% for i in p %}
+                        <option value="{{i.id}}">{{i.Nombre}}</option>
+                        {% endfor %}
+                    </select>
+                    <label>Universidad <span style="color:red">*</span></label>
+                    <select name="uni" id="uni" class="form-control">
+                        <option value="">--------------------</option>
+                    </select>
+                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+        <!-- *********************************************** Modal DB *********************************************** -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Nueva base de datos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formDB" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Tipo Base de Datos <span style="color:red">*</span></label>
+                                <select type="text" class="form-control" name="tipoBD" id="tipoBD" required>
+                                    <option>--------</option>
+                                    <option value="1">Regional</option>
+                                    <option value="2">Alto impacto</option>
+                                </select>
+                            </div>
+
+
+
+                            <div class="col-md-12">
+                                <label>Nombre de la base de datos <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="nameBD" id="nameBD" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Url <span style="color:red">*</span></label>
+                                <input type="url" required class="form-control" name="Url de la base de datos" id="Url">
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" style="display:none" name="user" id="user" value="{{user.id}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <!-- *********************************************** Modal RV  *********************************************** -->
+    <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Nueva revista</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formRev" method="POST" action="/revista/new/">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <label>Nombre de la revista <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="Nombre" id="Nombre" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>ISSN <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="ISSN" id="ISSN1" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Tipo de Base de Datos</label>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" id="option1" name="radio-stack" required checked>
+                                    <label class="custom-control-label" for="option1">Regional</label>
+                                </div>
+                                <div class="custom-control custom-radio mb-3">
+                                    <input type="radio" class="custom-control-input" id="option2" name="radio-stack" required>
+                                    <label class="custom-control-label" for="option2">Alto Impacto</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Base datos en la que se encuentra indexada la revista <span style="color:red">*</span></label>
+                                <select id="baseData" name="baseData" multiple="multiple"  required>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Cuartil al que pertenece <span id="spanC" style="color:red; display: none">*</span></label>
+                                <select name="Cuartil_Pertenece" id="Cuartil_Pertenece" class="form-control">
+                                        <option value="0">------------------</option>
+                                        <option value="Q1">Q1</option>
+                                        <option value="Q2">Q2</option>
+                                        <option value="Q3">Q3</option>
+                                        <option value="Q4">Q4</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                    <label>Factor impacto<span id="spanFi" style="color:red; display: none">*</span></label>
+                                    <input type="text" class="form-control" name="Factor_Impacto" id="Factor_Impacto">
+                            </div>
+                            <div class="col-md-12">
+                                <label>URL de la revista <span style="color:red">*</span></label>
+                                <input type="url" required class="form-control" name="Url" id="Url1">
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" style="display:none" name="user" id="user1" value="{{user.id}}">
+                                <input type="text" class="form-control" style="display:none" name="validada" id="validada" value="1">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block scripts %}
+<script>
+        function cargarRegional(){
+            var data;
+            $.ajax({
+                url: '/db/index/',
+                type: 'GET',
+                data: data,
+                success: function(data) {
+                    $("#baseDatos option").remove();
+                    $.each(data, function(index, item) {
+                        console.log(item.text );
+                        var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                        $("#baseDatos").append(newOption).multiselect('rebuild');
+                    });
+                    console.log('correcto');
+                },
+                error : function(){
+                    console.log('error');
+                }
+            });
+        }
+        function cargarImpacto(){
+
+            var data;
+            $.ajax({
+                url: '/db/cargarImpacto/',
+                type: 'GET',
+                data: data,
+                success: function(data) {
+                    $("#baseDatos option").remove();
+                    $.each(data, function(index, item) {
+                        console.log(item.text );
+                        var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                        $("#baseDatos").append(newOption).multiselect('rebuild');
+                    });
+                    console.log('correcto');
+                },
+                error : function(){
+                    console.log('error');
+                }
+            });
+        }
+        function cargarRegionalRev(){
+            var data;
+            $.ajax({
+                url: '/db/index/',
+                type: 'GET',
+                data: data,
+                success: function(data) {
+                    $("#baseData option").remove();
+                    $.each(data, function(index, item) {
+                        console.log(item.text );
+                        var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                        $("#baseData").append(newOption).multiselect('rebuild');
+                    });
+                    console.log('correcto');
+                },
+                error : function(){
+                    console.log('error');
+                }
+            });
+        }
+        function cargarImpactoRev(){
+    
+            var data;
+            $.ajax({
+                url: '/db/cargarImpacto/',
+                type: 'GET',
+                data: data,
+                success: function(data) {
+                    $("#baseData option").remove();
+                    $.each(data, function(index, item) {
+                        console.log(item.text );
+                        var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                        $("#baseData").append(newOption).multiselect('rebuild');
+                    });
+                    console.log('correcto');
+                },
+                error : function(){
+                    console.log('error');
+                }
+            });
+        }
+        $('#base1').click(function() {
+            cargarRegional();
+        });
+        $('#base2').click(function() {
+            cargarImpacto();
+        });
+        $('#option1').click(function() {
+            $("#Cuartil_Pertenece").find("option[value='0']").remove();
+            $('#Cuartil_Pertenece').prepend('<option value="0" selected="selected">------------------</option>'); 
+            $('#spanC').hide();
+            $('#spanFi').hide();
+            $('#Factor_Impacto').removeAttr("required")
+            cargarRegionalRev();
+        });
+        $('#option2').click(function() {
+            $("#Cuartil_Pertenece").find("option[value='0']").remove();
+            $('#spanC').show();
+            $('#spanFi').show();
+            $('#Factor_Impacto').prop("required", true);
+            $('#Cuartil_Pertenece').prop("required", true);
+            cargarImpactoRev();
+        });
+    </script>
+<script>
+ function a(){
+    var values = $('#baseDatos').val();
+    $.ajax({
+        type:'POST',
+        url:'/revista/sel/',
+        data:{
+            datos: values,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success:function(data){
+            console.log("Estoy aqui");
+            $("#revista").empty();
+            $.each(data, function(index, item) {
+                var er = " (Error no utilizar esta revista el usuario "
+                var er1 = " tiene problemas con esta revista"
+                //alert("<option value='" + item.value + "'>" + item.text + "</option>");
+                if (item.estado != 4 || item.text == '----------') {
+                    var newOption = "<option  ' value='" + item.value + "'>" + item.text + "</option>";
+                }
+                else {
+                    var newOption = "<option style='background-color: red; color:white' value='" + item.value + "'>" + item.text + er + item.usuario + er1 + ")"+ "</option>";
+
+                }
+                $("#revista").append(newOption);
+                });
+            values.length = 0;
+        },
+        error : function(){
+            values.length = 0;
+            console.log('Opss');
+        }
+    })
+}
+    function pais(){
+        var values = $('#pais').val();
+        $.ajax({
+            type:'POST',
+            url:'/pais/sel/',
+            data:{
+                datos: values,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success:function(data){
+
+                $("#ciudad option").remove();
+                $.each(data, function(index, item) {
+                    var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                    $("#ciudad").append(newOption);
+                });
+            },
+            error : function(){
+                 console.log('Opss');
+            }
+        })
+    }
+
+
+    function sub(){
+        var values = $('#lineaInves').val();
+        $.ajax({
+            type:'POST',
+            url:'/linea/sel/',
+            data:{
+                datos: values,
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success:function(data){
+                $("#SubLinea option").remove();
+                $.each(data, function(index, item) {
+                    var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                    $("#SubLinea").append(newOption);
+                });
+            },
+            error : function(){
+                 console.log('Opss');
+            }
+        })
+    }
+    cargarDB();
+    function cargarDB(){
+        var data;
+        $.ajax({
+            url: '/db/index/',
+            type: 'GET',
+            data: data,
+            success: function(data) {
+                $("#baseData option").remove();
+                $.each(data, function(index, item) {
+                    var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                    $("#baseData").append(newOption);
+                });
+                var dbMulti2 = document.getElementsByName("baseData");
+
+                $(dbMulti2).multiselect({
+                    buttonWidth: '100%',
+                    buttonClass: 'btn small btn-light',
+                    enableFiltering: true,
+                    filterPlaceholder: 'Buscar',
+                    enableCaseInsensitiveFiltering : true,
+                    maxHeight: 300,
+                    templates: {
+                        filterClearBtn: '',
+                    }
+                });
+            }
+        });
+    }
+    $(document).on('submit', '#formRev', function(e){
+        e.preventDefault();
+        $.ajax({
+            type:'POST',
+            url:'/revista/new/',
+            data:{
+                Nombre: $('#Nombre').val(),
+                ISSN: $('#ISSN1').val(),
+                baseData: $('#baseData').val(),
+                Cuartil_Pertenece: $('#Cuartil_Pertenece').val(),
+                Factor_Impacto: $('#Factor_Impacto').val(),
+                Url: $('#Url1').val(),
+                user: $('#user1').val(),
+                validada: $('#validada').val(),
+                csrfmiddlewaretoken: '{{ csrf_token }}'
+            },
+            success:function(data){
+                $('#exampleModal1').modal('hide');
+                 $.each(data, function(index, item) {
+                    var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                    $("#revista").append(newOption);
+                });
+                $('#Nombre').val('');
+                $('#ISSN1').val('');
+                $('#baseData').multiselect('rebuild');
+                $('#Cuartil_Pertenece').val('');
+                $('#Factor_Impacto').val('');
+                $('#Url1').val('');
+                toastr.info("Completo", "Se ha creado la revista");
+            },
+            error : function(){
+                $('#Nombre').val('');
+                $('#ISSN1').val('');
+                $('#baseData').multiselect('rebuild');
+                $('#Cuartil_Pertenece').val('');
+                $('#Factor_Impacto').val('');
+                $('#Url1').val('');
+                $('#exampleModal1').modal('hide');
+            }
+        });
+    });
+    $(document).on('submit', '#formDB', function(e){
+    e.preventDefault();
+    $.ajax({
+        type:'POST',
+        url:'/db/create/',
+        data:{
+            tipoBD: $('#tipoBD').val(),
+            BaseDatos: $('#nameBD').val(),
+            Url: $('#Url').val(),
+            user: $('#user').val(),
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success:function(data){
+            $.each(data, function(index, item) {
+            var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+            $("#baseDatos").append(newOption).multiselect('rebuild');
+            $("#baseData").append(newOption).multiselect('rebuild');
+            });
+            $('#Url').val('');
+            $('#nameBD').val('');
+            $('#exampleModal').modal('hide');
+            toastr.info("Completo", "Se ha creado la base de datos");
+
+        },
+        error : function(){
+             $('#Url').val('');
+             $('#nameBD').val('');
+             $('#exampleModal').modal('hide');
+             toastr.error("Error", "No se envio la nformación");
+        }
+    });
+});
+    var list = new Array();
+    var AutRep = document.getElementById('AutRep');
+    AutRep.style.display = 'none';
+    function f(){
+        console.clear();
+        $('button[type="submit"]').attr('disabled','disabled');
+        $('#dbAutores > input').each(function( index ) {
+            console.log($( this ).val());
+            list.push($( this ).val());
+        });
+        $('#formUSer > input').each(function( index ) {
+            console.log($( this ).val());
+            list.push($( this ).val());
+        });
+        if(d(list).length != list.length){
+            console.log("Elementos repetidos");
+            AutRep.style.display = 'block';
+        }else{
+            $('button[type="submit"]').removeAttr('disabled');
+            AutRep.style.display = 'none';
+        }
+        list.length = 0;
+    }
+    function d(arra1) {
+        var i, len=arra1.length, result = [], obj = {};
+        for (i=0; i<len; i++){
+        obj[arra1[i]]=0;
+        }
+        for (i in obj) {
+        result.push(i);
+        }
+        return result;
+    }
+
+    $(document).ready(function() {
+        var iCnt = {{ Autores.count }};
+        var t = 7 ;
+        $('#btAdd').click(function() {
+            console.log(iCnt, t);
+            if(iCnt == 0){
+                iCnt += 1;
+            }
+            if (iCnt != t) {
+                if(iCnt == 1){
+                   $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Segundo" />');
+                }
+                if(iCnt == 2){
+                    $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Tercero" />');
+                }
+                if(iCnt == 3){
+                    $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Cuarto" />');
+                }
+                if(iCnt == 4){
+                    $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Quinto" />');
+                }
+                if(iCnt == 5){
+                    $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Sexto" />');
+                }
+                if(iCnt == 6){
+                    $(formGrado).append('<select class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + '><option value="Séptimo">Séptimo</option><option value="Octavo">Octavo</option><option value="Noveno">Noveno</option><option value="Décimo">Décimo</option><option value="Undécimo">Undécimo</option><option value="Duodécimo">Duodécimo</option><option value="Decimotercero">Decimotercero</option><option value="Decimocuarto">Decimocuarto</option><option value="Decimoquinto">Decimoquinto</option></select>');
+                }
+                $(formUSer).append('<input required type="text" name=' + iCnt + ' id=' + iCnt + ' placeholder="Buscar autor..." autocomplete="off" class="form-control" onkeyup="autors(this)"/><ul class="list-group" style="position: absolute" id=res' + iCnt + '></ul>');
+                iCnt = iCnt + 1;
+            }
+            else {
+                $('button[id="btAdd"]').attr('disabled','disabled');
+            }
+        });
+        $('#btRemove').click(function() {
+            console.log(iCnt, {{ Autores.count }});
+            if (iCnt != {{ Autores.count }}) {
+                iCnt = iCnt - 1;
+                if(iCnt != 0 ){
+                    $('#grado' + iCnt).remove();
+                    $('#res' + iCnt).remove();
+                    $('#' + iCnt).remove();
+                }
+            }
+            if (iCnt == 0) {
+                $(formGrado).empty();
+                $(formUSer).empty();
+                $('#btAdd').removeAttr('disabled');
+                iCnt = 1;
+            }
+            if (iCnt + 1 == t) {
+                $("#btAdd").removeAttr("disabled");
+            }
+        });
+        $('#btRemoveAll').click(function() {    // Elimina todos los elementos del contenedor
+            $(formGrado).empty();
+            $(formUser).empty();
+            $('#btAdd').removeAttr('disabled');
+        });
+    });
+    </script>
+    <!-- Tags Input -->
+	<script type="text/javascript" src="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.js' %}"></script>
+    <!-- Tags Input -->
+	<script type="text/javascript" src="{% static 'assets/js/typeahead.bundle.js' %}"></script>
+    <!-- SCRIPTS - OPTIONAL START -->
+	<!-- Image Placeholder -->
+	<script type="text/javascript" src="{% static 'assets/js/misc/holder.min.js' %}"></script>
+	<!-- Form Wizard -->
+	<script type="text/javascript" src="{% static 'assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js' %}"></script>
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/form-validator/jquery.form-validator.min.js' %}"></script>
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/typeahead/typeahead.bundle.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/js/multiselect.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/general/js/scriptsna.js' %}"></script>
+    
+    <script type="text/javascript">
+        window.onload=comentario();
+    </script>
+{% endblock %}

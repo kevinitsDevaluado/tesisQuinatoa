@@ -1,0 +1,824 @@
+{% extends 'base1/inicio.html' %}
+
+{% load staticfiles %}
+
+{% block css %}
+    <link rel="stylesheet" href="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/multiselect.css' %}">
+    <!-- LLamada de librerias para la validación-->
+    <link rel="stylesheet" href="{% static 'alerta/alertify/css/alertify.css' %}">
+    <link rel="stylesheet" href="{% static 'alerta/alertify/css/themes/default.css' %}">
+    <link rel="stylesheet" href="{% static 'alerta/fontello/css/fontello.css' %}">
+
+    <script src="{% static 'alerta/js/alertify.js' %}"></script>
+    <!-- fin de llamada-->
+
+    <style>
+        #lista1 ul { 
+            width: 100%;
+            z-index: 20;
+            float: up;
+            max-height: 200px;
+            overflow: auto;
+            font-size: 12px;
+            position: relative;
+            z-index:2;
+        }
+        #lista1 ul li { 
+            display:block; 
+            height:28px; 
+
+            padding-left:20px;
+            padding-bottom: 25px;
+            text-decoration:none; 
+        }
+    
+    </style>
+
+{% endblock %}
+
+{% block title %}
+    Nuevo artículo cientifico
+{% endblock%}
+
+{% block home %}
+    <li class="nav-item">
+        <a class="nav-link" href="{% url 'inicio:logeo' %}">
+            <i class="batch-icon batch-icon-browser-alt"></i>
+            Inicio
+        </a>
+    </li>
+{% endblock %}
+
+
+{% block itemArti %}
+    <li class="nav-item">
+       <a class="nav-link active" href="{% url 'articulosCientificos:ListaArticulo' %}">
+           <i class="batch-icon batch-icon-compose"></i>
+           Artículos Científicos
+       </a>
+    </li>
+{% endblock %}
+{% block content %}
+    <div class="col-md-12">
+        <!--
+            {% if Pon %}
+            <div  class="card-body" style="border:solid red 3px; background-color: #FFFFFF; width: 100%">
+                    <h5 style="color: red; text-align: center;">Estimado usuario usted tiene
+                            problemas con algunas de sus revistas, vaya al apartado de las mismas para verificar sus observaciones:
+                        </h5>
+                {% for revista in Pon %}
+                    <li style="color:red"> {{revista.Nombre}}</li>
+                {% endfor %}
+            </div>
+            {% endif %}
+        <br>-->
+        <form method="post" id="articuloNuevo"  enctype="multipart/form-data" >
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        {% csrf_token %}
+                        <div class="card-header">
+                            Nuevo artículo científico
+                            {% if user.is_superuser == False %}
+                            <a href="#" onclick="llenado()" class="btn btn-primary btn-md pull-right ">desarrollo</a>
+                            <br><label> <span style="text-transform: capitalize; color: black"> Campos obligatorios </span><span style="color:red">*</span></label>
+                            <script>
+                                function llenado(){
+                                    console.log('1');
+                                    $('#id_titulo').val("Articulo ");
+                                    $('#id_estado').val('Publicado');
+                                    $('#id_iSSN').val('999999');
+                                    $('#id_url').val('https://stackoverflow.com/questions/6049933/django-import-error-no-module-named-core-management');
+                                    $('#id_doi').val('https://stackoverflow.com/questions/6049933/django-import-error-no-module-named-core-management');
+                                    $('#pais').val('52');
+                                    $('#ciudad').val('52');
+                                    $('#id_tipoArticulo').val('Científico');
+                                    $('#lineaInves').val('1');
+                                    $('#SubLinea').val('1');
+                                    $('#id_resumen').val('Científico');
+                                    $('#id_volumen').val('4');
+                                    $('#id_numero').val('4');
+                                }
+                            </script>
+                            {% endif %}
+                        </div>
+                        <!-- Autores: Borja, Guaigua, Pionce, Roldan, Tapia-->
+                        <!-- Para que no se imprima en pantalla el nombre del autor colocamos hidden en el type, Fecha: 13-08-2019-->
+                        <input type="hidden" name="xyzUs" id="xyzUs" value="{{user.last_name}} {{user.first_name}}">
+                        
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <b>{{ form.titulo.label }} <span style="color:red">*</span></b>
+                                    {{ form.titulo }}
+                                    {{ form.titulo.errors }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>{{ form.estado.label }} <span style="color:red">*</span></b>
+                                    {{ form.estado }}
+                                    {{ form.estado.errors }}
+                                </div>
+                                <div class="col-md-6">
+                                    <b>{{ form.iSSN.label }} <span style="color:red">*</span></b>
+                                    {{ form.iSSN }}
+                                    {{ form.iSSN.errors }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>{{ form.url.label }} <span style="color:red">*</span></b>
+                                    {{ form.url }}
+                                    {{ form.url.errors }}
+                                </div>
+                                <div class="col-md-6">
+                                    <b>{{ form.doi.label }}</b>
+                                    {{ form.doi }}
+                                    {{ form.doi.errors }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>{{ form.pais.label }} <span style="color:red">*</span></b>
+                                    {{ form.pais }}
+                                    {{ form.pais.errors }}
+                                </div>
+                                <div class="col-md-6">
+                                    <b>{{ form.ciudad.label }} <span style="color:red">*</span></b>
+                                    {{ form.ciudad }}
+                                    {{ form.ciudad.errors }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>{{ form.tipoArticulo.label }} <span style="color:red">*</span></b>
+                                    {{ form.tipoArticulo }}
+                                    {{ form.tipoArticulo.errors }}
+                                </div>
+                                <div class="col-md-6">
+                                    <b>{{ form.fechaPublicacion.label }} <span style="color:red">*</span></b>
+                                    {{ form.fechaPublicacion }}
+                                    {{ form.fechaPublicacion.errors }}
+                                </div>
+                                
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label for="paisFiltrado"><b>País de la institución responsable de la investigación</b></label>
+                                    <select name="paisFiltrado" id="paisFiltrado" class="form-control" onchange="cargarUArtAll()">
+                                        <option value="">-----------------</option>
+                                        {% for i in p %}
+                                            <option value="{{ i.id }}">{{ i.Nombre }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <b>{{ form.university.label }}</b>
+                                    {{ form.university }}
+                                    {{ form.university.errors }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>{{ form.lineaInves.label }}</b>
+                                    {{ form.lineaInves }}
+                                    <label  for="" class="text-danger" id="idLineaInv" >* Campo Obligatorio   </label>
+                                    {{ form.lineaInves.errors }}
+                                </div>
+                                <div class="col-md-6">
+                                    <b>{{ form.SubLinea.label }}</b>
+                                        {{ form.SubLinea }}
+                                        <label for="" class="text-danger" id="idSublineaInv">* Campo Obligatorio </label>
+                                        {{ form.SubLinea.errors }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>{{ form.filialUtc.label }}<span style="color:red">*</span></b>
+                                    {{ form.filialUtc }}
+                                    {{ form.filialUtc.errors }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label><b>Idioma <span style="color:red">*</span></b> </label>
+                                    <div class="col-md-12">
+                                            <br>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="in" id="esp" value="1"  onclick="l(this)" required checked>
+                                            <label class="form-check-label" for="esp">Español</label>
+                                        </div>
+                                
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="in" id="ing" value="2" onclick="l(this)" required>
+                                            <label class="form-check-label" for="ing">Inglés</label>
+                                        </div>
+                                        <input type="hidden" name="idioma" id="idioma" value="1">
+                                        
+                                    </div>
+                                    <br>
+                                </div>
+
+                                    <script>
+                                        function l(x){
+                                            if(x.value == '1'){
+                                                console.log(x.value);
+                                                $("#idioma").val(x.value);
+                                            }
+                                            if(x.value == '2'){
+                                                $("#idioma").val(x.value);
+                                            }
+
+                                        }
+                                    </script>
+                                <div class="col-md-12">
+                                    <b>{{ form.resumen.label }} <span style="color:red">*</span></b>
+                                    {{ form.resumen }}
+                                    {{ form.resumen.errors }}
+                                </div>
+                            </div>
+                                <!--SCRIPT DE VALIDACIÒN DE ARCHIVOS
+                                Integrantes: Borja, Guaigua, Pionce, Roldan, Tapia. Fecha: 14-08-2019-->
+                                <script language=JavaScript type="text/javascript">
+
+                                function check_file(current_form){
+
+                                // si esta vacio permitimos enviar el formulario
+                                if(current_form.value.search(/\S/g) == -1){return true}
+                                var msg = ""
+                                // extraemos el nombre del archivo y la extension
+                                var id_documento = current_form.value.match(/[^\/\\]+\.(?:pdf|pdf|doc|docx)$/i)
+
+                                // la extension de archivo son validas
+                                if(id_documento != null){
+                                // Extraemos solo el nombre del archivo
+                                id_documento = id_documento.toString().replace(/\.pdf$|\.pdf$|\.doc$|\.docx$/i,"")
+                                /////////////////////////
+                                if(id_documento.length > 50)
+                                {
+                                    if(!alertify.errorAlert){
+                                        //<!--define a new errorAlert base on alert-->
+                                        alertify.dialog('errorAlert',function factory(){
+                                    return{
+                                    build:function(){
+                                    var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                    + '</h1> ¡ALERTA!';
+                                    this.setHeader(errorHeader);
+                                    }
+                                    };
+                                    },true,'alert');
+                                    }
+                                    //<!--launch it.-->
+                                    //<!--since this was transient, we can launch another instance at the same time.-->
+                                    alertify
+                                        .errorAlert("El nombre del archivo adjunto no debe superar los 50 caracteres. <br/><br/><br/>");
+                                    document.getElementById("id_documento").value = '';
+                                    document.getElementById("doc").innerHTML = "Sin documento";
+                                }
+                                var cont = 0;
+                                var aux = 0;
+                                var str = id_documento.toString();
+                                var abe = "abcdefghijklmnopqrstuvwxyz1234567890_-";
+                                var cadena = str.toLowerCase();
+                                var longitud = cadena.length;
+                                var comparador = abe.length;
+                                for(var i = 0; i<longitud ; i++){
+                                    var res = cadena.substr(i, 1);
+                                    for(var j = 0; j<comparador ; j++){
+                                        var com = abe.substr(j, 1);
+                                            if(res!=com){
+                                                cont++;
+                                            }
+                                        }
+                                    if(cont==comparador){
+                                        aux++;
+                                    }
+                                    cont=0;
+                                }
+                                if(aux>0){
+                                    if(!alertify.errorAlert){
+                                        //<!--define a new errorAlert base on alert-->
+                                        alertify.dialog('errorAlert',function factory(){
+                                    return{
+                                    build:function(){
+                                    var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                    + '</h1> ¡ALERTA!';
+                                    this.setHeader(errorHeader);
+                                    }
+                                    };
+                                    },true,'alert');
+                                    }
+                                    //<!--launch it.-->
+                                    //<!--since this was transient, we can launch another instance at the same time.-->
+                                    alertify
+                                        .errorAlert("El nombre del archivo adjunto no debe poseer caracteres especiales ni espacios. <br/><br/><br/>");
+                                        document.getElementById("id_documento").value = '';
+                                        document.getElementById("doc").innerHTML = "Sin documento";
+
+                                }
+
+                                /////////////////////////
+                                if((/["']|\-{4,}|\.{1,}|\s/i).test(id_documento)){
+                                document.getElementById("id_documento").value = '';
+                                document.getElementById("doc").innerHTML = "";
+
+                                }
+
+
+                                }
+                                else{
+                                msg+="¡ALERTA! Solo son válidos los archivos con la extensión pdf, doc y docx.\t\n"
+                                document.getElementById("id_documento").value = '';
+                                }
+                                //Si el mensaje no esta vacío
+                                if(msg!=""){
+                                msg+="Ejemplo de un archivo válido:\n\n"+
+                                "nng-asdf.pdf ó nng-asdf.doc"
+                                if(!alertify.errorAlert){
+                                        //<!--define a new errorAlert base on alert-->
+                                        alertify.dialog('errorAlert',function factory(){
+                                    return{
+                                    build:function(){
+                                    var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                    + '</h1> ¡ALERTA!';
+                                    this.setHeader(errorHeader);
+                                    }
+                                    };
+                                    },true,'alert');
+                                    }
+                                    //<!--launch it.-->
+                                    //<!--since this was transient, we can launch another instance at the same time.-->
+                                    alertify
+                                        .errorAlert(msg);
+
+
+                                return id_documento.value = '';
+                                }
+
+                                else{
+                                // Esta todo bien
+                                return true
+                                document.getElementById("doc").innerHTML = "";
+                                }
+
+                                }
+                                function send_form(current_form){
+                                for(var ctr = 0; ctr < current_form.length; ctr++){
+
+                                if(current_form[ctr].name == "id_documento"){
+                                if(!check_file(current_form[ctr])){
+                                // no enviamos el formulario
+                                document.getElementById("id_documento").value = '';
+                                return false
+
+                                }
+
+                                } 
+
+                                }
+
+                                }
+                                //-->
+                            </script>
+                              
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <b>{{ form.documento.label }}</b>
+                                    {{ form.documento }}
+                                    {{ form.documento.errors }}
+                                </div>
+                                {{ form.estPub }}
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label> <b>Palabras clave <span style="color:red">*</span></b> (Escribe una palabra y presiona enter)</label><br>
+                                    <select multiple id="palabraC" name="palabraC"  class="form-control">
+                                    </select>
+                                    <span>Máximo 30 caracteres por palabra clave.</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <label> <b>Campo Amplio <span style="color:red">*</span></b></label>
+                                    {{ form.amplio }}
+                                    {{ form.amplio.errors }}
+                                </div>
+                                 <div class="col-md-6">
+                                    <label> <b>Campo Específico <span style="color:red">*</span></b></label>
+                                    {{ form.especifico }}
+                                    {{ form.especifico.errors }}
+                                </div>
+                                <div class="col-md-12">
+                                    <b>{{ form.detallado.label }} <span style="color:red">*</span></b>
+                                    {{ form.detallado }}
+                                    {{ form.detallado.errors }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <label><b>Tipo de Base de Datos</b></label>
+                                    <div class="col-md-12">
+                                            <br>
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="customControlValidation2" value=""  onclick="regional()" required checked>
+                                            <label class="form-check-label" for="customControlValidation2">Regional</label>
+                                        </div>
+                                
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="radio" name="inlineRadioOptions" id="customControlValidation3" value="" onclick="impacto()" required>
+                                            <label class="form-check-label" for="customControlValidation3">Alto Impacto</label>
+                                        </div>
+                                    </div>
+                                    
+                                </div>
+
+                                
+                                <div class="col-md-12">
+                                    <input style="display:none" id="Aut" name="Aut" value="1">
+                                </div>
+
+
+                                <div class="col-md-6">
+                                    <div class="col-md-12"><br>
+                                        <label><b>Base de Datos dónde está indexada la Revista <span style="color:red">*</span></b></label> <a href="#" class="" data-toggle="modal" data-target="#exampleModal">
+                                           <!-- <i class="fa fa-plus"></i> Nueva Base de Datos-->
+                                    </a>
+                                    </div>
+                                        <select id="baseDatos" name="baseDatos" onchange="a()" multiple="multiple" required>
+                                        </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="col-md-12"><br>
+                                         <label><b>Revista del artículo <span style="color:red">*</span></b></label> /  <a href="#" data-toggle="modal" data-target="#exampleModal1">
+                                            <i class="fa fa-plus"></i> Nueva Revista
+                                         </a>
+                                    </div>
+                                    {{ form.revista }}
+                                    {% if form.revista.errors %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        <strong>Campo vacio!</strong>{{ form.revista.errors }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>{{ form.volumen.label }}</b>
+                                    {{ form.volumen }}
+                                    {{ form.volumen.errors }}
+                                </div>
+                                <div class="col-md-6">
+                                    <b>{{ form.numero.label }}</b>
+                                    {{ form.numero }}
+                                    {{ form.numero.errors }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                {% if form.errors %}
+                                    {% for error in form.errors %} 
+                                    <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                                        <strong>Error!!</strong> {{ error }}
+                                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                            <span aria-hidden="true">&times;</span>
+                                        </button>
+                                    </div>
+                                    {% endfor %}
+                                {% endif %} 
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-header">
+                Autores<br>
+                <label for="btRemove" style="color: red">(Autores externos de la Universidad)</label><br>
+                <button id="btRemove" class="btn btn-danger btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-minus"></i> Autor</button> 
+                <button id="btAdd" class="btn btn-primary btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-plus"></i> Autor</button>
+                <a href="#" class="btn btn-primary btn-sm pull-left" data-toggle="modal" data-target="#autorNew"><i class="fa fa-user"></i> Añadir Nuevo Autor</a>
+                </div>
+            <div class="card-body">
+                <div class="row">
+                    <div id="lista1" class="col-md-12">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Grado de autoria</label>
+                                <input type="text" id="grado0" name="grado0" value="Primero" class="form-control" required readonly> 
+                            </div>
+                            <div class="col-md-6" id="repetidos">
+                                <label>Autores</label><br>
+                                <input type="text" name="0" id="0" placeholder="Buscar autor..." class="form-control" onkeyup="autors(this)" autocomplete="off" onchange="f()" required/>
+                                <ul class="list-group" style="position: absolute;"  id="res0"></ul>     
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="formGrado">
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="formUSer">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                                <strong>Compruebe los autores ingresados!!</strong> Se han repetido los autores o no ha seleccionado algun autor.
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="alert alert-warning col-md-12" id="AutIn" role="alert">
+                                <strong>Alerta!!</strong> Recuerde registrarse como autor.
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-primary btn-block" type="submit">Guardar información</button>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-danger btn-block" href="{% url 'articulosCientificos:ListaArticulo' %}">
+                           Cancelar
+                       </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+
+    <!--  *********************************************** Modal autor ********************************************** -->
+    <div  class="modal fade bd-example-modal-sizes" id="autorNew" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registrando un nuevo autor</h5><br>
+                    
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formAut" method="POST">
+                {% csrf_token %}
+                <div class="modal-body" style="padding-right: 15px !important;">
+                        <label for=""> <span style="color:red">Antes de llenar o guardar el formulario, verifique que el autor no se encuentre en la sección de autores, digite un Nombre o Apellido para desplegar la lista de autores. *</span></label>
+                    <label>Nombres <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="name" name="name" required="required" onkeyup="javascript:this.value=this.value.toUpperCase();">
+                    <label>Apellidos <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="lastname" name="lastname" required="required" onkeyup= "javascript:this.value=this.value.toUpperCase();">
+                    <label>Correo electrónico <span style="color:red">*</span></label>
+                    <input class="form-control" type="email" id="email" name="email" required="required">
+                    <label>País (Filtrado de Universidades)</label>
+                    <select class="form-control" name="paisAut" id="paisAut" onchange="cargarU()">
+                        <option value="">----- Seleccione un pais -----</option>
+                        {% for i in p %}
+                        <option value="{{i.id}}">{{i.Nombre}}</option>
+                        {% endfor %}
+                    </select>
+                    <label>Universidad <span style="color:red">*</span></label>
+                    <select name="uni" id="uni" class="form-control">
+                        <option value="">--------------------</option>
+                    </select>
+                    
+                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!--                                       Modal DB                                                  -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                     <!--<h5 class="modal-title" id="exampleModalLabel">Nueba base de datos</h5>-->
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formDB" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Tipo Base de Datos <span style="color:red">*</span></label>
+                                <select type="text" class="form-control" name="tipoBD" id="tipoBD" required>
+                                    <option>--------</option>
+                                    <option value="1">Regional</option>
+                                    <option value="2">Alto impacto</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Nombre de la Base de Datos <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="nameBD" id="nameBD" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>URL de la Base de Datos <span style="color:red">*</span></label>
+                                <input type="url" required class="form-control" name="Url de la base de datos" id="Url">
+                            </div>
+                                <input type="text" class="form-control" style="display:none" name="user" id="user" value="{{user.id}}">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    <!--                                                    Modal RV                                              -->
+    <div class="modal fade" id="exampleModal1" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Nueva revista</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formRev" method="POST" action="/revista/new/">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+
+                            <div class="col-md-12">
+                                <label>Nombre de la revista <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="Nombre" id="Nombre" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>ISSN <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="ISSN" id="ISSN1" required>
+                            </div>
+                            <div class="col-md-12">
+                            <label>Tipo de Base de Datos</label>
+                                <div class="custom-control custom-radio">
+                                    <input type="radio" class="custom-control-input" id="option1" name="radio-stack" required>
+                                    <label class="custom-control-label" for="option1">Regional</label>
+                                </div>
+                                <div class="custom-control custom-radio mb-3">
+                                    <input type="radio" class="custom-control-input" id="option2" name="radio-stack" required>
+                                    <label class="custom-control-label" for="option2">Alto Impacto</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Base datos en la cual se encuentra indexada <span style="color:red">*</span></label>
+                                <select id="baseData" name="baseData" multiple="multiple"  required>
+                                </select>
+                            </div>
+                            <br>
+                            <div class="col-md-12">
+                                <label>Cuartil al que pertenece <span id="spanC" style="color:red; display: none">*</span></label>
+                                <select name="Cuartil_Pertenece" id="Cuartil_Pertenece" class="form-control">
+                                        <option value="0">------------------</option>
+                                        <option value="Q1">Q1</option>
+                                        <option value="Q2">Q2</option>
+                                        <option value="Q3">Q3</option>
+                                        <option value="Q4">Q4</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Factor impacto<span id="spanFi" style="color:red; display: none">*</span></label>
+                                <input type="text" class="form-control" name="Factor_Impacto" id="Factor_Impacto">
+                            </div>
+                            <div class="col-md-12">
+                                <label>URL de la revista <span style="color:red">*</span></label>
+                                <input type="url" required class="form-control" name="Url" id="Url1">
+                            </div>
+                            <div class="col-md-12">
+                                <input type="text" class="form-control" style="display:none" name="user" id="user1" value="{{user.id}}">
+                                <input type="text" class="form-control" style="display:none" name="validada" id="validada" value="1">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+    
+{% endblock %}
+{% block scripts %}
+    <script>
+        $(document).ready(function() {
+            cargarRegional();
+            $( "#articuloNuevo" ).submit(function( event ) {
+            if ( $( "#revista" ).val() == "") {
+                $( "#revista" ).focus();
+                event.preventDefault();
+            }else{
+                return;
+            }
+            event.preventDefault();
+            });
+        });
+
+    </script>
+
+    
+ <!--alert lineas de investigacion-->
+ <!--realizado por : fernanda barragan, david guaman-->
+
+    <script>
+        $(document).ready(function() {
+            $('#idSublineaInv').hide();
+            $('#idLineaInv').hide();
+            $( "#articuloNuevo" ).submit(function( event ) {
+            if ( $( "#revista" ).val() == "") {
+                $( "#revista" ).focus();
+                event.preventDefault();
+            }else{
+                return;
+            }
+            event.preventDefault();
+            });
+
+        $('#university').change(function(e) {
+
+            var vall = $('select[name=university]').val();
+            if(vall == 1){
+               
+                $('#idSublineaInv').show();
+                $('#idLineaInv').show();
+                $('#idSublineaInv').attr("required", "true");
+                $("#idLineaInv").attr("required", "true");
+
+                var form = $( "idSublineaInv" );
+                form.validate();
+                $( "button" ).click(function() {
+                alert( "Valid: " + form.valid() );
+                });
+                
+            }
+            else{
+             $('#idSublineaInv').hide();
+             $('#idLineaInv').hide();
+
+             $('#idSublineaInv').attr("required", "false");
+             $("#idLineaInv").attr("required", "false");
+            }
+        });
+        });
+
+
+</script>
+   <!--fin del cmbio-->
+
+    <!-- Tags Inputlibreria para limpiar jqueryclean-->
+	<script type="text/javascript" src="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.js' %}"></script>
+    <!-- SCRIPTS - OPTIONAL START -->
+	<script type="text/javascript" src="{% static 'assets/js/misc/holder.min.js' %}"></script>
+	<!-- Form Wizard -->
+	<script type="text/javascript" src="{% static 'assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js' %}"></script>
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/form-validator/jquery.form-validator.min.js' %}"></script>
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/typeahead/typeahead.bundle.min.js' %}"></script>
+    <!-- Tags Input -->
+    <script type="text/javascript" src="{% static 'assets/general/js/scriptsa.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/js/multiselect.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/general/js/scriptsna.js' %}"></script>
+
+    
+
+{% endblock %}

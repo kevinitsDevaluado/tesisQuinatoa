@@ -1,0 +1,220 @@
+{% extends 'Home/index.html' %}
+{% load staticfiles %}
+
+{% block contenido %}
+<link rel="stylesheet" href="{% static 'graficas/similaridad/json/css/ventana.css' %}">
+<link rel="stylesheet" href="{% static 'graficas/similaridad/json/css/estilos.css' %}">
+<style type="text/css">
+  .circles{
+    position: fixed;
+  }
+</style>
+<script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>
+<script src="https://d3js.org/d3.v4.min.js"></script>
+<script src="https://d3js.org/d3-queue.v3.min.js"></script>
+<script type="text/javascript">
+  function ver(id){
+    document.getElementById("ver-inf").click();
+    {% for perfil in inves %}
+        var id_in='{{perfil.id}}';
+        var nomape='{{perfil.user.first_name}}'+' '+'{{perfil.user.last_name}}';
+        var email='{{perfil.user.email}}';
+        var nacionalidad='{{perfil.nacionalidad}}';
+        var telefono='{{perfil.telefono}}';
+        var universidad='{{perfil.informacionLaboral.university }}';
+        var carrera='{{perfil.informacionLaboral.carrera}}';
+        if(id_in==id){
+              {% if perfil.photo %}
+              document.getElementById('foto').src = "/media/{{perfil.photo}}";
+              {% else %}
+              document.getElementById('foto').src = "{% static 'graficas/similaridad/json/img/usuario.png' %}";
+              {% endif %}
+              $('#NomApe').html("Nombres/Apellidos : "+nomape);
+              $('#mail').html("Email : "+email);
+              $('#nacionalidad').html("Nacionalidad : "+nacionalidad);
+              $('#telefono').html("Teléfono : "+telefono);
+              $('#universidad').html("Universidad : "+universidad);
+              $('#carrera').html("Carrera : "+carrera);
+          }  
+    {% endfor %}
+    /////////////////////////////////////////////////////////
+  }  
+  function open(){
+          $(".ventana").slideDown("slow");
+        }
+  function close(){
+          $(".ventana").slideUp("fast");
+        }    
+</script>
+<script type="text/javascript">
+  function grafi(){
+    $("#lineaInves > option[value=1]").prop("selected",true);
+    $("#lineaInves").change();
+    setTimeout('document.getElementById("submit-form").click();',1000);
+  }
+</script>
+<script type="text/javascript">
+  function submit(){
+    document.getElementById("submit-form").click();
+  }
+</script>
+<body onload="javascrpit:grafi()" style="background: #7b8a97">
+<div class="container" style="background-color: white;width: 100%;">
+  <!--Buscar-->
+  <div class="row" style="float: right;margin-right: 35px;padding-top: 10px;">
+    <div class="input-group">
+      <input id="searchBox" type="text" class="form-control" placeholder="Buscar" style="float: left;margin-left: 46px;">
+      <div style="width: 46px;height: 46px;background-color: #01568f;color: white;text-align: center;float: left;position: absolute;padding-top: 6px;"><i class="glyphicon glyphicon-user"></i></div>
+    </div>
+    <div id="response"></div>
+  </div>
+  <!--end-->
+  <div class="row" style="float: left;margin-left: 20px;margin-top: 20px;">
+      <div class="form-group">
+          <input style="background-color: #01568f;" class="boton-style" type="button" onclick="javascript:submit()" value="GRAFICAR">
+          <input style="background-color: #01568f;" class="boton-style" id="population" type="button" value="SIMILITUD">
+      </div>
+  </div> 
+  <div class="row" style="float: left;margin-left: 50px;margin-top: 25px;">
+    <div class="form-group">
+    <h4 id="autores"></h4>
+    </div>
+  </div>   
+</div>
+<br><br>
+<div style="height: 850px;width: 100%;background-color: rgb(240, 240, 240);">
+<div class="data-inf">  
+<div id="dato1"></div>
+</div>
+<div class="container" style="background-color: white;margin-top: -40px;width: 100%;">
+<nav class="sidebar" id="gt1">
+  <h2 style="color: #01568f;">FILTROS</h2>
+  <form action="{% url 'grafica:view_similitud' %}" method="POST" id="similitud1" style="text-align: center;margin: 20px;">
+    {% csrf_token %}
+    <div class="row" >
+    <label>Lineas Investigación</label>
+    <div class="form-group">
+       <div class="col-sm-12">
+          <select id="lineaInves" name="lineaInves" class="form-control">
+             <option value="0">-------------------Lineas----------------------</option>
+             {% if bd %}
+             {% for lin in bd %}
+             <option value="{{lin.id}}">{{lin.Nombre}}</option>
+             {% endfor %}
+             {% endif %}
+          </select>
+       </div>
+    </div>
+    </div>
+    <div class="row">
+    <label>Carrera</label>
+    <div class="form-group">
+       <div class="col-sm-12">
+          <select id="Carrera" name="Carrera" class="form-control">
+            <option>-------------------Carrera----------------------</option>
+          </select>
+       </div>
+    </div>
+    </div>
+    <div class="row">
+    <label>Sub Lineas Investigación</label>
+    <div class="form-group">
+       <div class="col-sm-12">
+          <select id="SubLinea" name="SubLinea" class="form-control">
+            <option>-------------------Sub Lineas----------------------</option>
+          </select>
+       </div>
+    </div>
+    </div>
+    <input type="submit" style="display: none;" id="submit-form">
+  </form>
+</nav>
+<img src="/static/graficas/similaridad/json/img/1.png" style="height: 45px;width: 45px;" alt="Filtros" class="menu-bar"> 
+<div class="row">
+    <div class="col-sm-12" id="bubble-chart"></div>
+</div>
+</div>
+</div>
+</body>
+<script src="{% static 'graficas/similaridad/json/js/abrir.js' %}"></script>
+<!--*********************** Modal Información *******************************-->
+<a href="javascript:open()" id="inf"></a>
+  <div class="ventana">
+    <div class="form">
+          <div class="cerrar"><a  href="javascript:close()" style="margin-right: 10px;">X</a></div>
+            <center>
+          <div style="width: 100%;height: 50px;text-align: center;">  
+            <h3 id="dat"></h3>  
+          </div>
+            </center>
+          <div style="width: 650px;height: 250px;margin-left: 20px;">  
+              <div class="card">
+                <div class="card-header">
+                  <ul class="nav nav-pills card-header-pills" id="myTab-2" role="tablist">
+                    <li class="nav-item active">
+                      <a class="nav-link" href="#tab-2-1" data-toggle="tab" role="tab" aria-controls="tab-2-1" aria-selected="true" id="ver-inf">Información</a>
+                    </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="#tab-2-2" data-toggle="tab" role="tab" aria-controls="tab-2-2" aria-selected="false">Estadísticas</a>
+                    </li>
+                  </ul>
+                </div>
+                <div class="card-body">
+                  <div class="tab-content" id="myTabContent-2">
+                    <div class="tab-pane fade active in" id="tab-2-1" role="tabpanel" aria-labelledby="tab-2-1">
+                      <!--Información-->
+                      <div style="width: 40%;height: 230px;float: left;">
+                            <img id="foto" src="{% static 'json/usuario.png' %}" style="width: 70%;height: 80%;margin-top: 10%;border-radius: 100px;">
+                      </div>
+                      <div style="width: 60%;height: 230px;float: right;text-align: center;">
+                           <div style="text-align: left;">
+                           <p id="NomApe"></p>
+                           <p id="mail"></p>
+                           <p id="nacionalidad"></p>
+                           <p id="telefono"></p>
+                           <p id="universidad"></p>
+                           <p id="carrera"></p>
+                           <p id="titulos"></p>
+                           </div>
+                      </div>
+                      <!--Fin-->
+                    </div>
+                    <div class="tab-pane fade" id="tab-2-2" role="tabpanel" aria-labelledby="tab-2-2">
+                     <p>Estadísticas</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            
+          </div>
+    </div>
+  </div>
+<!--********************** FIN ***********************-->           
+<br>
+<!-- <a href="{% url 'grafica:firstview2' %}" style="background-color: #58ACFA;border-radius: 16px;color: white;">CO AUTOR</a>-->
+<script type="text/javascript" src="{% static 'graficas/similaridad/json/js/script.js' %}"></script>
+<script type="text/javascript" src="{% static 'graficas/similaridad/json/js/select.js' %}"></script>
+<script language="JavaScript">
+var cent=0;  
+setInterval('size()',1000);
+function size(){
+if ($("#bubble-chart").width()<=360){
+      document.getElementById("gt1").style.width='300px';
+      document.getElementById("gt1").style.height='400px';
+      if (cent<=0){
+         document.getElementById("submit-form").click();
+         cent=1;
+      }
+}else{
+   if ($("#bubble-chart").width()<1280){
+      document.getElementById("gt1").style.width='300px';
+   }
+   else{
+      document.getElementById("gt1").style.width='500px';
+      cent=0;
+   }
+}
+}   
+</script>
+{% endblock %}
+

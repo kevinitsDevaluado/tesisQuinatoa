@@ -1,0 +1,176 @@
+/**** Chat Popup Layout******/
+body {
+    background: #e5e5e5;
+}
+
+.msg_box {
+    position: fixed;
+    bottom: -5px;
+    width: 250px;
+    background: white;
+    border-radius: 5px 5px 0px 0px;
+}
+
+.msg_head {
+    background: #01568f;
+    color: white;
+    padding: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    font-size: 12px;
+    border-radius: 5px 5px 0px 0px;
+}
+
+.foto {
+    width: 25px;
+    height: 25px;
+    border-radius: 100%;
+}
+
+.espacio {
+    width: 3px;
+}
+
+.msg_body {
+    background: white;
+    height: 200px;
+    font-size: 12px;
+    padding: 15px;
+    overflow: auto;
+    overflow-x: hidden;
+}
+
+.msg_input {
+    width: 80%;
+    height: 30px;
+    border: 1px solid white;
+    border-top: 1px solid #DDDDDD;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    background: #f7f7f7;
+}
+
+.BtnSendMensage {
+    background: #01568f;
+}
+
+.close {
+    float: right;
+    cursor: pointer;
+}
+
+.minimize {
+    float: right;
+    cursor: pointer;
+    padding-right: 5px;
+}
+
+.msg-left {
+    position: relative;
+    background: #e2e2e2;
+    padding: 5px;
+    min-height: 10px;
+    margin-bottom: 5px;
+    margin-right: 10px;
+    border-radius: 5px;
+    word-break: break-all;
+}
+
+.msg-right {
+    background: #d4e7fa;
+    padding: 5px;
+    min-height: 15px;
+    margin-bottom: 5px;
+    position: relative;
+    margin-left: 10px;
+    border-radius: 5px;
+    word-break: break-all;
+}
+
+/**** Slider Layout Popup *********/
+#chat-sidebar {
+    width: 250px;
+    position: fixed;
+    height: 100%;
+    right: 0px;
+    top: 0px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border: 1px solid #b2b2b2;
+}
+
+#slider-username {
+    float: left;
+    line-height: 30px;
+    margin-left: 5px;
+}
+
+.UserConected:before {
+    content: "";
+    width: 8px;
+    height: 8px;
+    background: #01568f;
+    position: absolute;
+    border-radius: 5px;
+}
+
+#sidebar-user-box {
+    padding: 1px;
+    margin-bottom: 4px;
+    font-size: 15px;
+    font-family: Calibri;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+#sidebar-user-box:hover {
+    background-color: #f7f7f7;
+}
+
+.card-users:hover {
+    background-color: #f7f7f7;
+}
+
+.mensajeA {
+    padding: 15px;
+    position: relative;
+    background: #f7f7f7;
+    margin-left: 20px;
+    margin-top: 10px;
+    border-radius: 10px;
+    color: #01568f;
+}
+
+.mensajeA:before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    left: -30px;
+    top: 10px;
+    border: 15px solid;
+    border-color: transparent #f7f7f7 transparent transparent;
+}
+
+.mensajeB {
+    padding: 15px;
+    position: relative;
+    background: #01568f;
+    margin-right: 20px;
+    margin-left: 65px;
+    margin-top: 10px;
+    border-radius: 10px;
+    color: white;
+}
+
+.mensajeB:before {
+    content: "";
+    position: absolute;
+    width: 0px;
+    height: 0px;
+    right: -30px;
+    top: 10px;
+    border: 15px solid;
+    border-color: transparent transparent transparent #01568f;
+}

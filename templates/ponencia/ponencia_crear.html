@@ -1,0 +1,929 @@
+	{% extends 'base1/inicio.html' %}
+{% load staticfiles %}
+{% block css %}
+    <!-- Tags Input -->
+    <link rel="stylesheet" href="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/multiselect.css' %}">
+    <!-- LLamada de librerias para la validación-->
+    <link rel="stylesheet" href="{% static 'alerta/alertify/css/alertify.css' %}">
+    <link rel="stylesheet" href="{% static 'alerta/alertify/css/themes/default.css' %}">
+    <link rel="stylesheet" href="{% static 'alerta/fontello/css/fontello.css' %}">
+
+    <script src="{% static 'alerta/js/alertify.js' %}"></script>
+    <!-- fin de llamada-->
+    <style>
+            #lista1 ul { 
+                width: 100%;
+                z-index: 20;
+                float: up;
+                max-height: 200px;
+                overflow: auto;
+                font-size: 12px;
+                position: relative;
+                z-index:2;
+            }
+            #lista1 ul li { 
+                display:block; 
+                height:28px; 
+    
+                padding-left:20px;
+                padding-bottom: 25px;
+                text-decoration:none; 
+            }
+        
+        </style>
+    <!-- CSS - OPTIONAL - END -->
+<!--Autores: validar campo ISBN no letras no copiar letras y 
+que cumpla con los 10 o 13 digitosBryan Sandoval fecha: 23/07/2019-->
+<script>
+    function soloNum(e) {
+        key = e.keyCode || e.which;
+        tecla = String.fromCharCode(key).toLowerCase();
+        numeros = "1234567890-";
+        especiales = [8, 37, 39, 46];
+
+        tecla_especial = false
+        for(var i in especiales) {
+            if(key == especiales[i]) {
+                tecla_especial = true;
+                break;
+            }
+        }
+
+        if(numeros.indexOf(tecla) == -1 && !tecla_especial){
+            return false;
+            }
+
+    }
+
+    function limpia() {
+        var miDiv = document.getElementById("miDiv");
+        var val = document.getElementById("miInput").value;
+        var x = document.getElementById("tipo").value;
+        var tam = val.length;
+        var miVar =0;
+        if(x == 1 || x==2){
+            for(i = 0; i < tam; i++) {
+                if(!isNaN(val[i]))
+                        miVar= miVar+1;
+            }
+
+            if(miVar ==10 || miVar==13 ){
+                    miDiv.innerHTML = "";
+                    return true;
+            }
+            else{
+                miDiv.innerHTML = "";
+                html = " *EL ISBN debe ser de 10 o de 13 dígitos";
+                miDiv.innerHTML = html;
+                return false;
+                }
+        }
+        else if(x==3){
+                for(i = 0; i < tam; i++) {
+                    if(!isNaN(val[i]))
+                            miVar= miVar+1;
+                }
+
+            if(miVar ==10 || miVar==13 || miVar==0){
+                    miDiv.innerHTML = "";
+                    return true;
+            }
+            else{
+                miDiv.innerHTML = "";
+                html = " *EL ISBN debe ser de 10 o de 13 dígitos";
+                miDiv.innerHTML = html;
+                return false;
+                }
+        }
+    }
+
+    function limpiarNumero(obj) {
+        obj.value = obj.value.replace(/(?!-)[^0-9.]/g, "");
+    }
+
+    function malEnvio() {
+        var ErrIsbn = document.getElementById('ErrIsbn');
+        ErrIsbn.style.display = 'none';
+        var val = document.getElementById("miInput").value;
+        var x = document.getElementById("tipo").value;
+
+        var tam = val.length;
+        var miVar =0;
+        console.clear();
+
+        if(x == 1 || x==2){
+            for(i = 0; i < tam; i++) {
+                if(!isNaN(val[i]))
+                        miVar= miVar+1;
+            }
+
+            if(miVar ==10 || miVar==13 ){
+                miDiv.innerHTML = "";
+                ErrIsbn.style.display = 'none';
+                return true;
+            }
+            else{
+                miDiv.innerHTML = "";
+                html = " *EL ISBN debe ser de 10 o de 13 dígitos";
+                miDiv.innerHTML = html;
+                console.log("Elementos Incorrectos");
+                ErrIsbn.style.display = 'block';
+                return false;
+            }
+        }
+        else if(x==3){
+                for(i = 0; i < tam; i++) {
+                if(!isNaN(val[i]))
+                        miVar= miVar+1;
+            }
+
+            if(miVar ==10 || miVar==13 || miVar==0 ){
+                miDiv.innerHTML = "";
+                ErrIsbn.style.display = 'none';
+                return true;
+            }
+            else{
+                miDiv.innerHTML = "";
+                html = " *EL ISBN debe ser de 10 o de 13 dígitos";
+                miDiv.innerHTML = html;
+                console.log("Elementos Incorrectos");
+                ErrIsbn.style.display = 'block';
+                return false;
+            }
+        }
+
+    }
+    
+</script>
+
+
+
+
+{% endblock %}
+{% block title %}
+    Nueva ponencia
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block ponencia %}
+    <li class="nav-item active">
+        <a class="nav-link active" href="{% url 'Ponencia:ponencia_listar' %}">
+            <i class="batch-icon batch-icon-star"></i>
+            Ponencias
+        </a>
+    </li>
+{% endblock %}		
+{% block content %}
+    <div class="col-md-12">
+        <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                            <!-- Autores: Borja, Guaigua, Pionce, Roldan, Tapia-->
+                            <!-- Para que no se imprima en pantalla el nombre del autor colocamos hidden en el type, Fecha: 13-08-2019-->
+                            <input type="hidden" disabled name="xyzUs" id="xyzUs" value="{{user.last_name}} {{user.first_name}}">
+                            
+                            <div class="card-header">
+                                Registrando una nueva ponencia
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <b>{{ form.nombrePonencia.label }} <span style="color: red">*</span></b>
+                                        {{ form.nombrePonencia }}
+                                        {{ form.nombrePonencia.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.lugarPonencia.label }} <span style="color: red">*</span></b>
+                                        {{ form.lugarPonencia }}
+                                        {{ form.lugarPonencia.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                            <b>{{ form.fechaPonencia.label }} <span style="color: red">*</span></b>
+                                        {{ form.fechaPonencia }}
+                                        {{ form.fechaPonencia.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                        <div class="col-md-6">
+                                            <b>{{ form.pais.label }} <span style="color:red">*</span></b>
+                                            {{ form.pais }}
+                                            {{ form.pais.errors }}
+                                        </div>
+                                        <div class="col-md-6">
+                                            <b>{{ form.ciudad.label }} <span style="color:red">*</span></b>
+                                            {{ form.ciudad }}
+                                            {{ form.ciudad.errors }}
+                                        </div>
+                                    </div>
+                                <div class="row">
+                                    <div class="col-md-12" >
+                                        <label><b>Tipo de fuente <span style="color: red">*</span></b></label>
+                                        <div class="col-md-12" style="border: 1px; border-color:#CCCCCC;border-style: solid;">
+                                            <br>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="tipoP4" value="4"  onclick="ponenciaTipo(this)" required>
+                                                <label class="form-check-label" for="tipoP4">Ponencia sin publicación</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="tipoP1" value="1"  onclick="ponenciaTipo(this)" required>
+                                                <label class="form-check-label" for="tipoP1">Libro de resumenes</label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="tipoP2" value="2" onclick="ponenciaTipo(this)" required>
+                                                <label class="form-check-label" for="tipoP2">Libro de memorias (ISBN) </label>
+                                            </div>
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="tipoP3" value="3" onclick="ponenciaTipo(this)" required>
+                                                <label class="form-check-label" for="tipoP3">Ponencia publicada (ISBN, publicado en una revista indexada a una base de datos y revisada por pares externo)</label>
+                                            </div>
+                                            <br>
+                                        </div>
+                                        <input type="hidden" name="tipo" id="tipo">
+                                        <br>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6" id="i3" style="display: none;">
+
+                                        <b>{{ form.articuloCientifico.label }} <span style="color: red">*</span></b>
+                                        {{ form.articuloCientifico }}
+                                        {{ form.articuloCientifico.errors }}
+                                        
+                                    </div>
+                                    <!--validar ISBN Autor Bryan sandoval 23/07/2019 -->
+                                    <div class="col-md-6" id="i1" style="display: none;">
+                                            <b>{{ form.isbn.label }} <span id= "obl"  style="display: none; color: red; ">*</span></b>
+                                             <var style="color: red" id="miDiv"> </var>
+                                            <input type="text" id="miInput" name="isbn"  maxlength="17" class="form-control"
+                                                   onkeypress="return soloNum(event)"
+                                                   onkeyup="limpiarNumero(this)"
+                                                   onchange="limpiarNumero(this)"
+                                                   onblur="limpia()">
+                                            {{ form.isbn.errors }}
+                                    </div>
+
+                                    <div class="col-md-6" id="i2" style="display: none;">
+                                            <b>{{ form.urlPonencia.label }} </b>
+                                            {{ form.urlPonencia }}
+                                            {{ form.urlPonencia.errors }}
+                                        </div>
+                                    
+                                </div>
+								<div class="row">
+                                    <div class="col-md-12" id="i4">
+                                        <b>{{ form.tituloPonencia.label }} <span style="color: red">*</span></b>
+                                        {{ form.tituloPonencia }}
+                                        {{ form.tituloPonencia.errors }}
+                                    </div>
+                                    
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-12" id="i5">
+                                        <label> <b>Palabras clave <span style="color: red">*</span></b> (Escribe una palabra y presiona enter)</label><br>
+                                        <select multiple data-role="tagsinput" id="palabras" name="palabras"  class="form-control">
+                                        </select>
+                                    </div>
+
+									
+                                </div><br>
+                                
+								<div class="row">
+								    <div class="col-md-6">
+                                        
+
+                                        <b>{{ form.financiamiento.label }} <span style="color: red">*</span></b>
+                                        {{ form.financiamiento }}
+                                        {{ form.financiamiento.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                            <div id="informe">
+    
+                                            </div>
+                                        </div>
+                                    <div class="col-md-6">
+                                        <div id="pais">
+
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div id="fin">
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.filialUtc.label }}<span style="color:red">*</span></b>
+                                        {{ form.filialUtc }}
+                                        {{ form.filialUtc.errors }}
+                                    </div>
+                                </div>
+                                <!--SCRIPT DE VALIDACIÒN DE ARCHIVOS
+                                Integrantes: Borja, Guaigua, Pionce, Roldan, Tapia. Fecha: 14-08-2019-->
+                                <script language=JavaScript type="text/javascript">
+
+                                    function check_file(current_form){
+
+                                    // si esta vacio permitimos enviar el formulario
+                                    if(current_form.value.search(/\S/g) == -1){return true}
+                                    var msg = ""
+                                    // extraemos el nombre del archivo y la extension
+                                    var id_certificado = current_form.value.match(/[^\/\\]+\.(?:pdf|pdf|doc|docx)$/i)
+
+                                    // la extension de archivo son validas
+                                    if(id_certificado != null){
+                                    // Extraemos solo el nombre del archivo
+                                    id_certificado = id_certificado.toString().replace(/\.pdf$|\.pdf$|\.doc$|\.docx$/i,"")
+                                    /////////////////////////
+                                    if(id_certificado.length > 50)
+                                    {
+                                        if(!alertify.errorAlert){
+                                            //<!--define a new errorAlert base on alert-->
+                                            alertify.dialog('errorAlert',function factory(){
+                                        return{
+                                        build:function(){
+                                        var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                        + '</h1> ¡ALERTA!';
+                                        this.setHeader(errorHeader);
+                                        }
+                                        };
+                                        },true,'alert');
+                                        }
+                                        //<!--launch it.-->
+                                        //<!--since this was transient, we can launch another instance at the same time.-->
+                                        alertify
+                                            .errorAlert("El nombre del archivo adjunto no debe superar los 50 caracteres. <br/><br/><br/>");
+                                        document.getElementById("id_certificado").value = '';
+                                        document.getElementById("doc").innerHTML = "Sin documento";
+                                    }
+                                    var cont = 0;
+                                    var aux = 0;
+                                    var str = id_certificado.toString();
+                                    var abe = "abcdefghijklmnopqrstuvwxyz1234567890_-";
+                                    var cadena = str.toLowerCase();
+                                    var longitud = cadena.length;
+                                    var comparador = abe.length;
+                                    for(var i = 0; i<longitud ; i++){
+                                        var res = cadena.substr(i, 1);
+                                        for(var j = 0; j<comparador ; j++){
+                                            var com = abe.substr(j, 1);
+                                                if(res!=com){
+                                                    cont++;
+                                                }
+                                            }
+                                        if(cont==comparador){
+                                            aux++;
+                                        }
+                                        cont=0;
+                                    }
+                                    if(aux>0){
+                                        if(!alertify.errorAlert){
+                                            //<!--define a new errorAlert base on alert-->
+                                            alertify.dialog('errorAlert',function factory(){
+                                        return{
+                                        build:function(){
+                                        var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                        + '</h1> ¡ALERTA!';
+                                        this.setHeader(errorHeader);
+                                        }
+                                        };
+                                        },true,'alert');
+                                        }
+                                        //<!--launch it.-->
+                                        //<!--since this was transient, we can launch another instance at the same time.-->
+                                        alertify
+                                            .errorAlert("El nombre del archivo adjunto no debe poseer caracteres especiales ni espacios. <br/><br/><br/>");
+                                            document.getElementById("id_certificado").value = '';
+                                            document.getElementById("doc").innerHTML = "Sin documento";
+
+                                    }
+
+                                    /////////////////////////
+                                    if((/["']|\-{4,}|\.{1,}|\s/i).test(id_certificado)){
+                                    document.getElementById("id_certificado").value = '';
+                                    document.getElementById("doc").innerHTML = "";
+
+                                    }
+
+
+                                    }
+                                    else{
+                                    msg+="¡ALERTA! Solo son válidos los archivos con la extensión pdf, doc y docx.\t\n"
+                                    document.getElementById("id_certificado").value = '';
+                                    }
+                                    //Si el mensaje no esta vacío
+                                    if(msg!=""){
+                                    msg+="Ejemplo de un archivo válido:\n\n"+
+                                    "nng-asdf.pdf ó nng-asdf.doc"
+                                    if(!alertify.errorAlert){
+                                            //<!--define a new errorAlert base on alert-->
+                                            alertify.dialog('errorAlert',function factory(){
+                                        return{
+                                        build:function(){
+                                        var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                        + '</h1> ¡ALERTA!';
+                                        this.setHeader(errorHeader);
+                                        }
+                                        };
+                                        },true,'alert');
+                                        }
+                                        //<!--launch it.-->
+                                        //<!--since this was transient, we can launch another instance at the same time.-->
+                                        alertify
+                                            .errorAlert(msg);
+
+
+                                    return id_certificado.value = '';
+                                    }
+
+                                    else{
+                                    // Esta todo bien
+                                    return true
+                                    document.getElementById("doc").innerHTML = "";
+                                    }
+
+                                    }
+                                    function send_form(current_form){
+                                    for(var ctr = 0; ctr < current_form.length; ctr++){
+
+                                    if(current_form[ctr].name == "id_certificado"){
+                                    if(!check_file(current_form[ctr])){
+                                    // no enviamos el formulario
+                                    document.getElementById("id_certificado").value = '';
+                                    return false
+
+                                    }
+
+                                    } 
+
+                                    }
+
+                                    }
+                                    //-->
+                                </script>
+                                <!--Fin del script-->
+                                <div class="row">
+
+                                    <div class="col-md-6">
+                                            <b>{{ form.certificado.label }}</b>
+                                        {{ form.certificado }}
+                                        {{ form.certificado.errors }}
+                                    </div>
+                                        
+                                </div>
+								<div class="row">
+									<div class="col-md-12">
+                                            <b>{{ form.resumen.label }} <span style="color: red">*</span></b>
+                                        {{ form.resumen }}
+                                        {{ form.resumen.errors }}
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        {{ form.user.label }}
+                                        {{ form.user }}
+                                        {{ form.user.errors }}
+                                    </div>
+                                    {% if form.errors %}
+                                        {% for error in form.errors %} 
+                                            <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                                                <strong>Error!!</strong> {{ error }}
+                                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                        {% endfor %}
+                                {% endif %} 
+                                </div>
+                                
+
+							</div>
+					</div>
+				</div>
+			</div>
+		</div>
+        <br>
+        <div class="card" id="autoresAll">
+            <div class="card-header">
+                Autores<br>
+                <button id="btRemove" class="btn btn-danger btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-minus"></i> Autor</button>
+                <button id="btAdd" class="btn btn-primary btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-plus"></i> Autor</button>
+                <a href="#" class="btn btn-primary btn-sm pull-left" data-toggle="modal" data-target="#autorNew"><i class="fa fa-user"></i> Añadir nuevo Autor</a>
+
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12" id="lista1">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <label>Grado de autoria</label>
+                                <input type="text" id="grado0" name="grado0" value="Primero" class="form-control" readonly>
+                            </div>
+                            <div class="col-md-6" id="repetidos">
+                                <label>Autor</label><br>
+                                <input type="text" required name="0" id="0" placeholder="Buscar autor..." class="form-control" onkeyup="autors(this)" autocomplete="off" onchange="f()"/>
+                                <ul class="list-group" id="res0"></ul>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div id="formGrado">
+
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="formUSer">
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                                <strong>Compruebe los autores ingresados!!</strong> Se han repetido los autores o no ha seleccionado algun autor.
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="alert alert-warning col-md-12" id="AutIn" role="alert">
+                                    <strong>Alerta!!</strong> Recuerde registrarse como autor.
+                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <!--validar ISBN Autor Bryan sandoval 23/07/2019 -->
+                        <button class="btn btn-primary btn-block" type="submit" onclick="return malEnvio();">Guardar información </button>
+                        <div class="row">
+                            <div class="alert alert-danger col-md-12" id="ErrIsbn" role="alert" style="display: none;">
+                                    <strong>Compruebe los campos ingresados!!</strong> Se ha registrado un error en el ISBN.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-danger btn-block" href="{% url 'Ponencia:ponencia_listar' %}">
+                           Cancelar
+                       </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </form>
+	</div>
+
+    <!--  *********************************************** Modal autor ********************************************** -->
+    <div  class="modal fade bd-example-modal-sizes" id="autorNew" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >Registrando un nuevo autor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formAut" method="POST">
+                {% csrf_token %}
+                <div class="modal-body" style="padding-right: 15px !important;">
+                    <label>Nombres <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="name" name="name" required="required" onkeyup="javascript:this.value=this.value.toUpperCase();">
+                    <label>Apellidos <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="lastname" name="lastname" required="required" onkeyup= "javascript:this.value=this.value.toUpperCase();">
+                    <label>Correo electronico <span style="color:red">*</span></label>
+                    <input class="form-control" type="email" id="email" name="email" required="required">
+                    <label>Paìs</label>
+                    <select class="form-control" name="paisAut" id="paisAut" onchange="cargarU()">
+                        <option value="">----- Seleccione un pais -----</option>
+                        {% for i in p %}
+                        <option value="{{i.id}}">{{i.Nombre}}</option>
+                        {% endfor %}
+                    </select>
+                    <label>Universidad <span style="color:red">*</span></label>
+                    <select name="uni" id="uni" class="form-control">
+                        <option value="">--------------------</option>
+                    </select>
+                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+	<script>
+        document.getElementById("user").value = {{user.id}};
+    </script>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#id_articuloCientifico').empty();
+        $('#id_articuloCientifico').append("<option value=''>-------------");
+        {% for i in arti %}
+            $('#id_articuloCientifico').append("<option value='{{i.id}}'>{{i.titulo}}</option>");
+        {% endfor %}
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $('#articuloCientifico').multiselect({
+            //nonSelectedText: '- - -Select Project- - -',
+            buttonWidth: '100%',
+            buttonClass: 'btn small btn-light',
+        });
+        $('#revista').multiselect({
+            //nonSelectedText: '',
+            buttonWidth: '100%',
+            buttonClass: 'btn small btn-light',
+
+        });
+        var iCnt = 0;
+        $('#linea').on('change', function() {
+            var selected = $(this).val();
+            $("#subLinea option").each(function(item){
+                console.log(selected) ;
+                var element =  $(this) ;
+                console.log(element.data("tag")) ;
+                if (element.data("tag") != selected){
+                    element.hide() ;
+                }else{
+                    element.show();
+                }
+            }) ;
+            $("#subLinea").val($("#subLinea option:visible:first").val());
+
+        });
+
+        $('#palabras').tagsinput({
+            tagClass: 'label label-primary'
+        });
+
+        $('#financiamiento').change(function() {
+            var a = document.getElementById("financiamiento").value;
+            if (a == "Sí") {
+                $(informe).append('{{ form.informe.label }} {{ form.informe }} {{ form.informe.errors }}');
+                $(pais).append("<label>País</label><select id='paisPon' name='paisPon' class='form-control' onchange='paisPonencia()'> <option value=''>------------</option>{% for i in p %}<option value='{{i.id}}'>{{i.Nombre}}</option>{% endfor %}< /select>");
+                $(fin).append("{{form.financia.label}}<select name='financia' id='financia' class='form-control'><option>----------</option>{%for i in uni%}<option value='{{i.id}}'>{{i.Nombre}}</option>{%endfor%}<select>");
+            }
+            else if (a == "No" || a == ""){
+                $(informe).empty();
+                $(pais).empty();
+                $(fin).empty();
+            }
+        });
+    });
+    </script>
+    
+    <script type="text/javascript">
+
+        
+        function paisPonencia(){
+            var values = $('#paisPon').val();
+            $.ajax({
+                type:'POST',
+                url:'/pais/selU/',
+                data:{
+                    datos: values,
+                    csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                },
+                success:function(data){
+                    console.log("Estoy aqui");
+                    $("#financia option").remove();
+                    $.each(data, function(index, item) {
+                        var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                        $("#financia").append(newOption);
+                    });
+                },
+                error : function(){
+                     console.log('Opss');
+                }
+            })
+        }
+    </script>>
+
+    <script>
+        var list = new Array();
+        var AutRep = document.getElementById('AutRep');
+        AutRep.style.display = 'none';
+        function f(){
+            console.clear();
+            $('button[type="submit"]').attr('disabled','disabled');
+            $('#repetidos > select').each(function( index ) {
+                console.log($( this ).val());
+                list.push($( this ).val());
+            });
+            $('#formUSer > select').each(function( index ) {
+                console.log($( this ).val());
+                list.push($( this ).val());
+            });
+            if(d(list).length != list.length){
+                console.log("Elementos repetidos");
+                AutRep.style.display = 'block';
+            }else{
+                $('button[type="submit"]').removeAttr('disabled');
+                AutRep.style.display = 'none';
+            }
+            list.length = 0;
+        }
+        function d(arra1) {
+            var i, len=arra1.length, result = [], obj = {};
+            for (i=0; i<len; i++){
+            obj[arra1[i]]=0;
+            }
+            for (i in obj) {
+            result.push(i);
+            }
+            return result;
+        }
+    </script>
+    <script>
+        var iCnt = 0;
+        function variable(x){
+            iCnt = x;
+        }
+        
+        $(document).ready(function() {
+            $('#tipoP1').prop('checked', false);
+            $('#tipoP2').prop('checked', false);
+            $('#tipoP3').prop('checked', false); 
+            $('#btAdd').click(function() {
+
+                if (iCnt < 6) {
+                    iCnt = iCnt + 1;
+                    if(iCnt == 1){
+                       $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Segundo" />');
+                    }
+                    if(iCnt == 2){
+                        $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Tercero" />');
+                    }
+                    if(iCnt == 3){
+                        $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Cuarto" />');
+                    }
+                    if(iCnt == 4){
+                        $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Quinto" />');
+                    }
+                    if(iCnt == 5){
+                        $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Sexto" />');
+                    }
+                    if(iCnt == 6){
+                        $(formGrado).append('<select class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + '><option value="Séptimo">Séptimo</option><option value="Octavo">Octavo</option><option value="Noveno">Noveno</option><option value="Décimo">Décimo</option><option value="Undécimo">Undécimo</option><option value="Duodécimo">Duodécimo</option><option value="Decimotercero">Decimotercero</option><option value="Decimocuarto">Decimocuarto</option><option value="Decimoquinto">Decimoquinto</option></select>');
+                    }
+                    $(formUSer).append('<input type="text" name=' + iCnt + ' id=' + iCnt + ' placeholder="Buscar autor..." autocomplete="off" class="form-control" onkeyup="autors(this)"/><ul class="list-group" id=res' + iCnt + '></ul>');
+            
+                }
+                else {
+                    $('button[id="btAdd"]').attr('disabled','disabled');
+                    $(formGrado).append('<label>Limite Alcanzado</label>');
+
+                }
+            });
+            $('#btRemove').click(function() {
+                if (iCnt != 0) {
+                    $('#grado' + iCnt).remove();
+                    $('#res' + iCnt).remove();
+                    $('#' + iCnt).remove();
+                    iCnt = iCnt - 1;
+                }
+                if (iCnt == 0) {
+                    $(formGrado).empty();
+                    $(formUSer).empty();
+                    $('#btAdd').removeAttr("disabled");
+                }
+                if (iCnt == 4) {
+                    $("#btAdd").removeAttr("disabled");
+                }
+            });
+            $('#btRemoveAll').click(function() {    // Elimina todos los elementos del contenedor
+                $(formGrado).empty();
+                $(formUser).empty();
+                $("#btAdd").removeAttr("disabled");
+            });
+        });
+        
+        function ponenciaTipo(x){
+            if(x.value == '1'){
+                console.log(x.value);
+                $("#i1").show();
+                $("#i2").show();
+                $("#i3").hide();
+                $("#i4").show();
+                $("#i5").show();
+                $("#id_tituloPonencia").attr("required", true);
+                $("#id_isbn").removeAttr('required');
+                $("#id_articuloCientifico").removeAttr('required');
+                $("#id_isbn").val('');
+                $("#id_articuloCientifico").val('');
+                $("#id_urlPonencia").val('');
+                $("#tipo").val(x.value);
+                $("#0").attr("required", true);
+                $("#formUSer").empty();
+                $("#formGrado").empty();
+                $("#autoresAll").show();
+                $("#obl").show();
+                variable(0);
+            }
+            if(x.value == '2'){
+                $("#i1").show();
+                $("#i2").show();
+                $("#i3").hide();
+                $("#i4").show();
+                $("#i5").show();
+                $("#id_isbn").attr("required", true);
+                $("#id_tituloPonencia").attr("required", true);
+                $("#id_articuloCientifico").removeAttr('required');
+                $("#id_isbn").val('');
+                $("#id_articuloCientifico").val('');
+                $("#id_urlPonencia").val('');
+                $("#tipo").val(x.value);
+                $("#0").attr("required", true);
+                $("#formUSer").empty();
+                $("#formGrado").empty();
+                $("#autoresAll").show();
+                $("#obl").show();
+                variable(0);
+            }
+            if(x.value == '3'){
+                $("#i1").show();
+                $("#i2").hide();
+                $("#i3").show();
+                $("#i4").hide();
+                $("#i5").hide();
+                $("#id_articuloCientifico").attr("required", true);
+                $("#id_isbn").attr("required", true);
+                $("#id_isbn").val('');
+                $("#id_articuloCientifico").val('');
+                $("#id_urlPonencia").val('');
+                $("#tipo").val(x.value);
+                $("#0").removeAttr('required');
+                $("#id_tituloPonencia").removeAttr('required');
+                $("#formUSer").empty();
+                $("#formGrado").empty();
+                $("#autoresAll").hide();
+                $("#obl").hide();
+                variable(0);
+            }
+            if(x.value == '4'){
+                console.log(x.value);
+                $("#i1").hide();
+                $("#i2").hide();
+                $("#i3").hide();
+                $("#i4").show();
+                $("#i5").show();
+                $("#id_tituloPonencia").attr("required", true);
+                $("#id_isbn").removeAttr('required');
+                $("#id_articuloCientifico").removeAttr('required');
+                $("#id_isbn").val('');
+                $("#id_articuloCientifico").val('');
+                $("#id_urlPonencia").val('');
+                $("#tipo").val(x.value);
+                $("#0").attr("required", true);
+                $("#formUSer").empty();
+                $("#formGrado").empty();
+                $("#autoresAll").show();
+                $("#obl").hide();
+                variable(0);
+            }
+
+        }
+    </script>
+    <!-- Tags Input -->
+	<script type="text/javascript" src="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.js' %}"></script>
+    <!-- Tags Input -->
+	<script type="text/javascript" src="{% static 'assets/js/typeahead.bundle.js' %}"></script>
+    <!-- SCRIPTS - OPTIONAL START -->
+	<!-- Image Placeholder -->
+	<script type="text/javascript" src="{% static 'assets/js/misc/holder.min.js' %}"></script>
+	<!-- Form Wizard -->
+	<script type="text/javascript" src="{% static 'assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js' %}"></script>
+
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/form-validator/jquery.form-validator.min.js' %}"></script>
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/typeahead/typeahead.bundle.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/js/multiselect.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/general/js/scriptsna.js' %}"></script>
+{% endblock %}

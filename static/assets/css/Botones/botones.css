@@ -1,0 +1,61 @@
+.radio-wrapper {
+    width: 100px;
+    height: 35px;
+    display: inline-block;
+    vertical-align: middle;
+    background: rgba(31, 30, 30, 0.137);
+    border-radius: 30px;
+    position: relative;
+    margin-left: 1%;
+  }
+  .radio-wrapper a {
+    position: absolute;
+    z-index: 10;
+    color: rgb(0, 0, 0);
+    font-size: 1.7em;
+    margin: 0;
+    margin-top: 13px;
+  }
+  .radio-wrapper .correct {
+    top: 0px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #20d532 0%, #1cc301 100%);
+  }
+  .radio-wrapper .wrong {
+    right: 0px;
+    top: 0px;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    background: #f43a59;
+  }
+  .radio-wrapper .neutral-icon {
+    left: 45%;
+    top: -15px;
+    opacity: .5;
+    color: white;
+    
+  }
+  .radio-wrapper i{
+   position: absolute;
+   color: white; 
+   top: 23%;
+   left: 25%;
+  }
+  #circulo{
+    position: absolute;
+    color: rgb(59, 59, 59); 
+    top: 22px;
+    left: -3px;
+   }
+  .Observacion{
+    text-decoration: none;
+    border-radius: 10px;
+    color: #72848c;
+  }
+  .Observacion:hover{
+    height: 100px;
+  }
+  

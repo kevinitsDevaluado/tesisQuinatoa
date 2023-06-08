@@ -1,0 +1,302 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block title %} Listado de libros {% endblock %}
+{% block subtitle  %}
+    MIS <span style="color:#07afea">LIBROS</span>
+    {% if user.id != 1105 %}
+    <a href="{% url 'Libro:libro_crear' %}" class="btn btn-primary btn-sm pull-right "><i class="fa fa-plus"></i> Nuevo libro/capitulo</a>
+    {% endif %}
+{% endblock%}
+
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block itemLibro %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'Libro:libro_lis' %}">
+        <i class="batch-icon batch-icon-book"></i>
+        Libros
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+{% if not user.is_superuser %}
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                    <div class="table-responsive">
+                        {% if book %}
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td style="width:10%" align="center">Estado del Libro</td>
+                                    <td>Título del Libro</td>
+                                    <td>Documento</td>
+                                    <td>ISBN</td>
+                                    <td>Fecha de Publicación</td>
+                                    <td style="width:16%">Url</td>
+                                    <td style="width:20%">Acciones</td>
+                                </tr>
+
+                            </thead>
+                            <tbody>
+
+                                {% for libro in book %}
+                                <tr>
+                                    <td align="center">
+                                        {% if libro.editableTrueFalse == 1 %}
+                                            <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                        {% elif libro.editableTrueFalse == 0 %}
+                                           <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                        {% elif libro.editableTrueFalse == 2 %}
+                                           <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                        {% else %}
+                                            <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                        {% endif %}
+                                       </td>
+                                    <td>{{libro.Titulo}}</td>
+                                     <td>{% if libro.Documento.url != null %}
+                                            <a href="{{libro.Documento.url}}" target="_blank">PDF</a>
+
+                                         {% else %}
+                                         <h6>no tiene documento</h6>
+                                         {% endif %}
+                                    </td>
+                                    <td>{{libro.ISBN}}</td>
+                                    <td>{{libro.fechaPublicacion}}</td>
+                                    <td><a href="{{libro.Url}}" target="_blank">URL</a></td>
+
+                                    <td>
+                                            {% if libro.editableTrueFalse == 1 %}
+                                            <a class="btn btn-primary btn-sm" href="{% url 'Libro:libro_update'  libro.id %}" ><span class="fa fa-pencil">
+                                            {% elif libro.editableTrueFalse == 0 %}
+                                            <a class="btn btn-primary btn-sm" href="{% url 'Libro:libro_update_disabled'  libro.id %}" ><span class="fa fa-pencil">
+                                            {% else %}
+                                            <a class="btn btn-primary btn-sm" href="{% url 'Libro:libro_update'  libro.id %}" ><span class="fa fa-pencil">
+                                            {% endif %}
+                                            </span> Editar</a>
+                                            
+                                           <a class="btn btn-danger btn-sm" href="{% url 'Libro:libro_eliminar'  libro.id %}"><span class="fa fa-trash"></span> Eliminar</a>
+                                            
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+
+
+
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <h4>No hay registros de libros</h4>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<script>
+        //Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+        //Para listar documentos rechazados      Fecha:03/07/2019
+        function activarRe(){
+            var valor=document.getElementById("micheck");
+            if(valor.checked==true){
+                document.getElementById('tbody1').style.display='none';
+                document.getElementById('tbody2').style.display='block';
+            }else{
+                $('#tbody1').show();
+                $('#tbody2').hide();
+                location.reload();
+            }
+        }
+</script>
+<div class="card-body">
+    <input type="checkbox" id="micheck" name="vehicle" value="1" onclick=" activarRe()"> Activar Rechazadas<br>
+</div>
+<br>
+<div id="tbody1" class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        <a href="{% url 'Libro:ReporteLibros' %}" class="btn btn-excel btn-md  pull-right"><i
+                                class=""></i>
+                            <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                        </a>
+                        <div class="table-responsive">
+                            {% if bookAdmin %}
+                            <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <td style="width:10%" align="center">Estado del Libro</td>
+                                        <td>Título del Libro</td>
+                                        <td>Documento</td>
+                                        <td>ISBN</td>
+                                        <td>Fecha de Publicación</td>
+                                        <td style="width:16%">Url</td>
+                                        <td style="width:20%">Acciones</td>
+                                    </tr>
+    
+                                </thead>
+                                <tbody>
+    
+                                    {% for libro in bookAdmin %}
+                                    <tr>
+                                        <td align="center">
+                                            {% if libro.editableTrueFalse == 1 %}
+                                                <span class="fa fa-2x fa-unlock" style="color: red"></span>
+                                            {% elif libro.editableTrueFalse == 0 %}
+                                                <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                            {% elif libro.editableTrueFalse == 2 %}
+                                                <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                            {% else %}
+                                                <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{libro.Titulo}}</td>
+                                        <td>{% if libro.Documento.url != null %}
+                                                <a href="{{libro.Documento.url}}" target="_blank">PDF</a>
+    
+                                             {% else %}
+                                             <h6>no tiene documento</h6>
+                                             {% endif %}
+                                        </td>
+                                        <td>{{libro.ISBN}}</td>
+                                        <td>{{libro.fechaPublicacion}}</td>
+                                        <td><a href="{{libro.Url}}" target="_blank">URL</a></td>
+    
+                                        <td>
+                                          <a class="btn btn-primary  btn-sm" href="{% url 'Libro:libro_update' libro.id %}" ><span class="fa fa-pencil" style='width:32px; height:14px' ></span> Editar</a>
+                                          {% if user.id != 1105 %} 
+                                          <a class="btn btn-danger btn-sm" href="{% url 'Libro:libro_eliminar'  libro.id %}"><span class="fa fa-trash" style='width:20px; height:10px' ></span> Eliminar</a>
+                                            {% endif %}
+                                        </td>
+    
+                                    </tr>
+                                    {% endfor %}
+    
+    
+    
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <h4>No hay registros de libros</h4>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+<!--Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+//Para listar documentos rechazados      Fecha:03/07/2019-->
+    <div id="tbody2" class="col-lg-12" style="display: none">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        <a href="{% url 'Libro:ReporteLibros' %}" class="btn btn-excel btn-md  pull-right"><i
+                                class=""></i>
+                            <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                        </a>
+                        <div class="table-responsive">
+                            {% if bookAdmin %}
+                            <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <td style="width:10%" align="center">Estado del Libro</td>
+                                        <td>Título del Libro</td>
+                                        <td>Documento</td>
+                                        <td>ISBN</td>
+                                        <td>Fecha de Publicación</td>
+                                        <td style="width:16%">Url</td>
+                                        <td style="width:20%">Acciones</td>
+                                    </tr>
+    
+                                </thead>
+                                <tbody>
+    
+                                    {% for libro in bookAdminRec %}
+                                    <tr>
+                                        <td align="center">
+                                            {% if libro.editableTrueFalse == 1 %}
+                                                <span class="fa fa-2x fa-unlock" style="color: red"></span>
+                                            {% elif libro.editableTrueFalse == 0 %}
+                                                <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                            {% elif libro.editableTrueFalse == 2 %}
+                                                <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                            {% else %}
+                                                <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{libro.Titulo}}</td>
+                                        <td>{% if libro.Documento.url != null %}
+                                                <a href="{{libro.Documento.url}}" target="_blank">PDF</a>
+    
+                                             {% else %}
+                                             <h6>no tiene documento</h6>
+                                             {% endif %}
+                                        </td>
+                                        <td>{{libro.ISBN}}</td>
+                                        <td>{{libro.fechaPublicacion}}</td>
+                                        <td><a href="{{libro.Url}}" target="_blank">URL</a></td>
+    
+                                        <td>
+                                          <a class="btn btn-primary  btn-sm" href="{% url 'Libro:libro_update' libro.id %}" ><span class="fa fa-pencil" style='width:32px; height:14px' ></span> Editar</a>
+                                          {% if user.id != 1105 %} 
+                                          <a class="btn btn-danger btn-sm" href="{% url 'Libro:libro_eliminar'  libro.id %}"><span class="fa fa-trash" style='width:20px; height:10px' ></span> Eliminar</a>
+                                            {% endif %}
+                                        </td>
+    
+                                    </tr>
+                                    {% endfor %}
+    
+    
+    
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <h4>No hay registros de libros</h4>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif %}
+{% endblock%}
+
+{% block scripts %}
+    <!--
+    <script>
+        function truncateText(selector, maxLength) {
+            var element = document.querySelector(selector),
+                truncated = element.innerText;
+
+            if (truncated.length > maxLength) {
+                truncated = truncated.substr(0,maxLength) + '...';
+            }
+            return truncated;
+        }
+        //You can then call the function with something like what i have below.
+        document.querySelector('p').innerText = truncateText('p', 240);
+    </script>
+
+    <!-- Datatables -->
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+{% endblock %}

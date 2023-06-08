@@ -1,0 +1,87 @@
+<div class="modal-dialog" role="document">
+    <div class="modal-content">
+    {% if object %}
+        <form role="form" action="{% url 'certificacion:certificado_actualizar' object.id %}" method="post">
+    {% csrf_token %}
+    <div class="modal-header" style="background: #122f3b; width:100%; border-radius: 8px;">
+        <div class="card-header">
+        NOTIFICACIÓN de: <label style="color: #fff;">{{ form.asunto.value }}</label>
+        </div>
+        <button style="color: #fff;" type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-12">
+                <label>ESTE CERTIFICADO CONSTA CON SIGUIENTE INFORMACIÓN</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <label>Fecha de envío de a solicitud: {{ object.fecha_envio}}</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <label>Fecha de la última actialización: {{ object.fecha_actualizacion}}</label>
+            </div>
+        </div>
+    {% endif %}
+        <div class="row" style="display:none">
+            <div class="col-md-12">
+                <label>Documentación seleccionada</label>
+                <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th style="vertical-align:middle; text-align:center;">Libros</th>
+                            <th style="vertical-align:middle; text-align:center;">Artículos</th>
+                            <th style="vertical-align:middle; text-align:center;">Ponencias</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tipodoc">
+                        <tr>
+                            <td>{{ form.libros_varios }}</td>
+                            <td>{{ form.articulos_varios }} </td>
+                            <td>{{ form.ponencias_varios }} </td>
+                        </tr>
+                    </tbody>
+                    </table>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <label>Estado de la solicitud: {{ form.estado.value }} y {{ form.validar.value }}</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <label>Nota emitida por el departamento de investigación: {{ form.nota.value }}</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12" style="display:none">
+                <label>Estado de la notificación</label>
+                    <input value="2" {{ form.notificacion}}>
+            </div>
+        </div>
+        <div class="row" style="display:none">
+            <div class="col-md-12">
+                <label>Verifique su número de cedula</label>
+                {{ form.investigador }}
+            </div>
+        </div>
+                {{ form.user }}
+        <div class="row">
+            <div class="col-md-12 col-md-offset-2">
+                <center>
+                <div class="form-group">
+                    <input type="submit" class="btn btn-primary" name="submit" value="Notificación revisada">
+                </div>
+                </center>
+            </div>
+        </div>
+    </div>
+        </form>
+    </div>
+</div>

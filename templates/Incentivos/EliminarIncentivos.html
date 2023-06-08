@@ -1,0 +1,29 @@
+<div class="modal-dialog">
+        <div class="modal-content">
+            {% if object %}
+                <form role="form" action="{% url 'incentivo:Eliminar_Incentivo' object.pk %}" method="post">
+                        <div class="modal-header">
+                            <div class="col-md-11" align="center">
+                                <h5>Eliminar incentivo</h3>
+                            </div>
+                            <button type="button" class="close" data-dismiss="modal">x</button>
+                        </div>
+                           {% csrf_token %}
+                        <center>
+                            <div class="panel panel-default">
+                                <h3>¿Desea eliminar evento: {{ object.nombre }} ? <span class="fa fa-bitbucket"></samp></h3>
+                            </div> 
+                        </center>    
+                      
+                        <div class="modal-footer">
+                                <div class="col-lg-12 text-right">
+                                        <input type="submit" class="btn btn-danger btn-sm" name="submit" value="Eliminar">
+                                        <button type="button" class="btn btn-primary btn-sm" onclick="return cerrar_modal()">
+                                                Cancelar
+                                        </button>
+                                </div>
+                        </div>
+                </form>                       
+            {% endif %}
+        </div>
+</div>

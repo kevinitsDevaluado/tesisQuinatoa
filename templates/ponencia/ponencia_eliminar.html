@@ -1,0 +1,44 @@
+{% extends 'base1/inicio.html' %}
+{% load staticfiles %}
+{% block subtitle %} 
+        ELIMINAR <span style="color:red">PONENCIA</span>
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block ponencia %}
+    <li class="nav-item active">
+        <a class="nav-link active" href="{% url 'Ponencia:ponencia_listar' %}">
+            <i class="batch-icon batch-icon-star"></i>
+            Ponencias
+        </a>
+    </li>
+{% endblock %}
+{% block content %}
+<div class="col-md-12">
+    <form method="post">
+        
+        {% csrf_token %}
+        
+            <center>
+                <br><br>
+                <h4>¿Está seguro que desea eliminar el registro de: <b>{{object.nombrePonencia}}</b>?</h4>
+                <br><br>
+                <div class="row">
+                    <div class="col-md-6">
+                        <button class="btn btn-danger btn-block" type="submit" onclick="return confirm('Al aceptar eliminará de forma permanente la información, tenga en cuenta que la información esta asociada a varios usuarios, para proceder confirme la petición');">Si, eliminar</button>
+                    </div>
+                    <div class="col-md-6">
+                        <a class="btn btn-primary btn-block" href="{% url 'pais:pais_listar' %}">Cancelar</a>
+                    </div>
+                </div>
+            </center>
+    </form>
+</div>
+{% endblock %}

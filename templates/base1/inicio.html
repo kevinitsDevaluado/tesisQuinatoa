@@ -1,0 +1,1636 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="es">
+	<head>
+	    <title>{% block title %} Perfil {% endblock %}</title>
+		{% block extrastatic %}
+
+		{% endblock %}
+		<meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+   		<meta charset="utf-8">
+		<link rel="icon" href="{% static 'assets/img/favicon2.png' %}">
+		<!-- Fonts -->
+		<link href="https://fonts.googleapis.com/css?family=Montserrat:300,400,500,700&amp;subset=latin-ext" rel="stylesheet">
+
+		{% block css %}
+
+		{% endblock %}
+
+		<!-- CSS - REQUIRED - START -->
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.12.4/css/bootstrap-select.min.css">
+		<!-- Batch Icons -->
+		<link rel="stylesheet" href="{% static 'assets/fonts/batch-icons/css/batch-icons.css' %}">
+		<!-- Bootstrap core CSS -->
+		<link rel="stylesheet" href="{% static 'assets/css/bootstrap/bootstrap.min.css' %}">
+		<!-- Material Design Bootstrap -->
+		<link rel="stylesheet" href="{% static 'assets/css/bootstrap/mdb.min.css' %}">
+		<!-- Custom Scrollbar -->
+		<link rel="stylesheet" href="{% static 'assets/plugins/custom-scrollbar/jquery.mCustomScrollbar.min.css' %}">
+		<!-- Hamburger Menu -->
+		<link rel="stylesheet" href="{% static 'assets/css/hamburgers/hamburgers.css' %}">
+		<link rel="stylesheet" href="{% static 'assets/plugins/toastr/toastr.min.css' %}">
+		<!-- Font Awesome -->
+		<link rel="stylesheet" href="{% static 'assets/fonts/font-awesome/css/font-awesome.min.css' %}">
+		<!-- Font Awesome -->
+		<link rel="stylesheet" href="{% static 'assets/fonts/font-awesome/css/font-awesome.min.css' %}">
+		<!-- JVMaps -->
+		<link rel="stylesheet" href="{% static 'assets/plugins/jvmaps/jqvmap.min.css' %}">
+		<!-- CSS - OPTIONAL - END -->
+		<!-- QuillPro Styles -->
+		<link rel="stylesheet" href="{% static 'assets/css/quillpro/quillpro.css' %}">
+		<link rel="stylesheet" href="{% static 'login/vendor/select2/select2.min.css' %}">
+		<!-- JQuery -->
+		<script type="text/javascript" src="{% static 'assets/js/jquery/jquery-3.1.1.min.js' %}"></script>
+
+		<!-- Popper.js - Bootstrap tooltips -->
+		<script type="text/javascript" src="{% static 'assets/js/bootstrap/popper.min.js' %}"></script>
+		<!-- Bootstrap core JavaScript -->
+		<script type="text/javascript" src="{% static 'assets/js/bootstrap/bootstrap.min.js' %}"></script>
+
+
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/css/bootstrap-select.min.css">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-select/1.13.1/js/bootstrap-select.min.js"></script>
+	<!-- JAVASCRIP PARA LAS NOTIFICACIONES-->
+	<script type="text/javascript" src="{% static 'assets/js/notifi.js' %}"></script>
+	<!-- JS para generar PDF -->
+	<script src="{% static 'generarpdf/jspdf/dist/jspdf.min.js' %}"></script>
+	<script src="{% static 'generarpdf/jspdf.plugin.autotable.min.js' %}"></script>
+	<style>
+		.notification-bubble {
+			height: 21px;
+			width: 21px;
+			background: #f43a59;
+			background-image: none\9;
+			position: absolute;
+			right: 25%;
+			color: #fff;
+			text-shadow: 1px 1px 0 rgba(0, 0, 0, .2);
+			text-align: center;
+			font-size: 13px;
+			line-height: 18px;
+			border-radius: 50%;
+			font-weight: bold;
+		}
+	</style>
+	<!--estilo agregado por: Quinchimbla; Azogue; Caiza; Guilcazo; Potosi; Jaya-->
+	<!--estilo para el botòn excel  fecha: 23/07/2019-->
+	<style type="text/css">
+			.verde{
+			  	filter: invert(0.55) sepia(2) hue-rotate(173deg) saturate(11%) ;
+			}
+			.movermiEstilo{
+				left: -250px;
+				margin: 28px 80px 10px;
+				position: relative;
+			}
+			.miEstilo{
+				font-family: "Montserrat";
+				color:#97A9B2;
+				font-size: 12px;
+				margin: 5px 80px 15px;
+				padding: 8.5px 0px ;
+				text-transform: lowercase;
+				text-transform: capitalize;
+			}
+	</style>
+	<style type="text/css">
+		a.capitaliza {text-transform: capitalize}
+	</style>
+	</head>
+	<body onload="javascript:ViewEstado();">
+		<div class="container-fluid">
+		<div class="row">
+			<nav id="sidebar" class="px-0 bg-dark bg-gradient sidebar">
+				<ul class="nav nav-pills flex-column">
+					<li class="logo-nav-item">
+						<a class="navbar-brand" href="{% url 'inicio:logeo' %}">
+							<img src="{% static 'images/logo4c2.png' %}" width="170" alt="Ecuciencia"><!--logo obscuro-->
+						</a>
+					</li>
+					<input style="display:none" id="usuario" type="text" value="{{user.id}}">
+					{% block home %}
+					<li class="nav-item">
+    					<a class="nav-link active" href="{% url 'inicio:logeo' %}">
+    						<i class="batch-icon batch-icon-browser-alt"></i>
+    						Inicio
+    					</a>
+					</li>
+					{% endblock %}
+
+					{% block itemArti %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'articulosCientificos:ListaArticulo' %}">
+							<i class="batch-icon batch-icon-compose"></i>
+							<span id="artIco">Artículos Científicos</span>
+						</a>
+					</li>
+					{% endblock %}
+					{% block itemLibro %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'Libro:libro_lis' %}">
+							<i class="batch-icon batch-icon-book"></i>
+							Libros
+						</a>
+					</li>
+					{% endblock %}
+					{% block ponencia %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'Ponencia:ponencia_listar' %}">
+							<i class="batch-icon batch-icon-notes"></i>
+							<span id="ponIco">Ponencias</span>
+						</a>
+					</li>
+					{% endblock %}
+					<!--
+					{% block itemProyecto %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'proyecto:proyectos_lis' %}">
+							<i class="batch-icon batch-icon-folder-alt-duplicate"></i>
+							Proyectos
+						</a>
+					</li>
+					{% endblock %}
+
+
+
+					{% block capacitaciones %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'capacitacion:capacitacion_listar' %}">
+							<i class="batch-icon batch-icon-newspaper-alt"></i>
+							Capacitaciones
+						</a>
+					</li>
+					{% endblock %}
+-->
+					{% if user.is_superuser %}
+					{% block revista %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'Revista:lista_Revista' %}">
+							<i class="batch-icon batch-icon-paragraph-alt-justify"></i>
+							<span id="revIco"> Revistas</span>
+						</a>
+					</li>
+					{% endblock %}
+
+					{% block baseDatos %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'baseDatos:Lista_bdd' %}">
+							<i class="batch-icon batch-icon-database"></i>
+							 Base de Datos
+						</a>
+					</li>
+					{% endblock %}
+
+
+
+
+
+
+					{% endif%}
+
+
+					{% if user.is_superuser %}
+
+					<!-- esto tambien-->
+				{% block palabrasClave %}
+				<li class="nav-item">
+					<a class="nav-link" href="{% url 'social:listarAdminKeywords' %}">
+						<i class="batch-icon batch-icon-key "></i>
+						Palabras clave
+					</a>
+				</li
+				{% endblock %}
+
+				{% block proyectosCarrera %}
+				<li class="nav-item">
+				<a class="nav-link" href="{% url 'social:listarAdminProyectosCarrera' %}">
+					<i class="batch-icon batch-icon-distribute-bottom-edges "></i>
+					Proyectos Carrera
+				</a>
+				</li>
+				{% endblock %}
+					{% block certificacion %}
+					<li class="nav-item">
+					   <a class="nav-link" href="{% url 'certificacionadmin:certificacionadminListar' %}">
+					        <i class="batch-icon batch-icon-newspaper-alt"></i>
+					        Certificaciones admin
+					    </a>
+					</li>
+					{% endblock %}
+					{% block evento1 %}
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="batch-icon batch-icon-tag-alt-2"></i>
+							Incentivos</a>
+						</a>
+						<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+								<li><a class="dropdown-item capitaliza" href="{% url 'incentivo:Listar_Evento' %}">Eventos</a></li>
+								<li><a class="dropdown-item capitaliza" href="{% url 'postulacion:Listar_Postulacion' %}">Postulaciones</a></li>
+								<br>
+					            <br>
+					            <br>
+						</ul>
+					</li>
+					{% endblock %}
+					{% block Evaluacion %}
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							<i class="batch-icon batch-icon-newspaper"></i>
+							Evaluación
+						</a>
+						<ul class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+							<li>
+								<a class="dropdown-item capitaliza" href="{% url 'parametrosArticulos:ListarParametro' %}" >Parámetros de Evaluación Articulos</a>
+							</li>
+							<li>
+								<a class="dropdown-item capitaliza" href="{% url 'parametrosLibro:listado_parametros_libros' %}">Parámetros de Evaluación Libros</a>
+							</li>
+							<li>
+								<a class="dropdown-item capitaliza" href="{% url 'parametrosPonencia:listado_parametros_ponencias' %}">Parámetros de Evaluación Ponencias</a>
+							</li>
+							<br>
+					        <br>
+					        <br>
+					        <br>
+					        <br>
+						</ul>
+					</li>
+					{% endblock %}
+					{% else %}
+					{% block Certificaciones1 %}
+					<li class="nav-item">
+					    <a class="nav-link" href="{% url 'certificacion:certificacion_listar' %}">
+					        <i class="batch-icon batch-icon-newspaper-alt"></i>
+					        Certificaciones
+					    </a>
+					</li>
+					{% endblock %}
+					{% block evento %}
+					<li class="nav-item">
+						<a class="nav-link" href="{% url 'evento:evento' %}">
+							<i class="batch-icon batch-icon-tag-alt-2"></i>
+							 Incentivos
+						</a>
+					</li>
+					{% endblock %}
+					{% endif %}
+				</ul>
+			</nav>
+
+
+			<div class="right-column">
+				<nav class="navbar navbar-expand-lg navbar-light bg-white">
+					<a class="navbar-brand d-block d-sm-block d-md-block d-lg-none" href="#">
+						<img src="{% static 'images/logo4.png' %}" width="100" height="32.3" alt="Ecuciencia">
+					</a>
+					<button class="hamburger hamburger--slider" type="button" data-target=".sidebar" aria-controls="sidebar" aria-expanded="false" aria-label="Toggle Sidebar">
+						<span class="hamburger-box">
+							<span class="hamburger-inner"></span>
+						</span>
+					</button>
+
+					<div class="collapse navbar-collapse" id="navbar-header-content">
+						<ul class="navbar-nav navbar-language-translation mr-auto">
+							<li class="nav-item ">
+								<a class="nav-link" href="/" id="navbar-dropdown-menu-link" aria-haspopup="true" aria-expanded="false">
+									<i class="batch-icon batch-icon-home"></i>
+									Inicio
+								</a>
+							</li>
+
+							<!--Tambien agregue-->
+
+
+						<li class="nav-item ">
+							<a class="nav-link" href="{% url 'social:index' %}" id="navbar-dropdown-menu-link" aria-haspopup="true" aria-expanded="false">
+								<i class="batch-icon batch-icon-speech-bubble-left-tip-chat"></i>
+								Red Social
+							</a>
+						</li>
+
+
+
+						</ul>
+						<!--Botòn agregado por: Quinchimbla; Azogue; Caiza; Guilcazo; Potosi; Jaya-->
+						<!--Botòn excel  fecha: 23/07/2019-->
+						{% if not user.is_superuser %}
+						<a  class="movermiEstilo" href="{% url 'inicio:Reporte'  %}"><i class=""></i>
+                               <p class="miEstilo"><img class="verde" src="{% static 'images/chiquito7.png' %}" width="19" alt="Ecuciencia"> DESCARGAR REPORTE</p>
+
+                            </a>
+                        {% endif %}
+						<ul class="navbar-nav navbar-notifications float-right">
+						</ul>
+						<ul class="navbar-nav ml-5 navbar-profile">
+							<li class="nav-item dropdown">
+								<a class="nav-link dropdown-toggle" id="navbar-dropdown-navbar-profile" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+									<div class="profile-name">
+										<b> {{user.first_name}} {{user.last_name}}</b>
+									</div>
+									<div class="profile-picture float-right">
+										{% if perfil.photo != '' %}
+										<img src="{{perfil.photo.url}}" width="44" height="44">
+										{% endif %}
+									</div>
+								</a>
+								<ul class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-dropdown-navbar-profile">
+									<li><a class="dropdown-item" href="{% url 'logout'%}">Cerrar Sesión</a></li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</nav>
+				<main class="main-content p-5" role="main">
+					<div class="row">
+						<div class="col-md-12">
+							<h3>{% block subtitle %}  {% endblock%}</h3>
+						</div>
+					</div>
+					<div class="row mb-5">
+						{% block content %}
+						<div class="col-md-12">
+							<div class="card">
+								<div class="card-user-profile">
+									<div class="profile-page-left">
+										<div class="row">
+											<div class="col-lg-12 mb-4">
+												<div class="profile-picture profile-picture-lg mb-4">
+													{% if perfil.photo != '' %}
+														<img  src="{{ perfil.photo.url }}"  width="144" height="144">
+													{% endif %}
+												</div>
+												<a class="btn btn-primary btn-block" style="background-color: #01568f;" href="{% url 'usuario:editar' perfil.id %}">
+													<i class="batch-icon batch-icon-user"></i>
+													Editar informa
+												</a>
+												{% if user.is_superuser == True or user.id == 1105  %}
+
+
+												<!--
+												<a class="btn btn-primary btn-block" style="background-color: #01568f;" href="/investigador/new">
+													<i class="batch-icon batch-icon-user"></i>
+													Testing
+												</a>
+												-->
+												<br><br>
+												<form method="POST" action="/investigador/new">
+													{% csrf_token %}
+													<select name="UserAll" id="UserAll" class="form-control">
+														<option>Seleccione un usuario</option>
+														{% for i in usAll %}
+															<option value="{{i.id}}">{{i.email}}</option>
+														{% endfor%}
+
+													</select>
+												<button type="submit" class="btn btn-danger btn-block">Ingresar</button>
+												</form>
+
+												{% endif %}
+											</div>
+											<!--
+											<div class="col-sm-12">
+												<hr />
+												<h5 class="my-0">Libros</h5>
+												<div class="h3 my-0">
+													<a href="#">0</a>
+												</div>
+											</div>
+
+											<div class="col-sm-12">
+												<hr />
+												<h5 class="my-0">Articulos</h5>
+												<div class="h3 my-0">
+													<a href="#">0</a>
+												</div>
+											</div>
+											<div class="col-sm-12">
+												<hr />
+												<h5 class="my-0">Ponencias</h5>
+												<div class="h3 my-0">
+													<a href="#">0</a>
+												</div>
+											</div>
+											-->
+										</div>
+										<hr />
+
+
+									</div>
+									<div class="profile-page-center">
+										<ul class="nav nav-tabs" id="myTab" role="tablist">
+											<li class="nav-item">
+												<a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="false">Datos personales</a>
+											</li>
+											<li class="nav-item ">
+												<a class="nav-link " id="document-tab" data-toggle="tab" href="#document" role="tab" aria-controls="document" aria-selected="true">Documento SENESCYT</a>
+											</li>
+											<li class="nav-item">
+												<a class="nav-link" id="tecnico-tab" data-toggle="tab" href="#tecnico" role="tab" aria-controls="contact" aria-selected="false">Título Tecnológico Superior</a>
+											</li>
+											<li class="nav-item">
+												<a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Título Tercer Nivel</a>
+											</li>
+											<li class="nav-item">
+												<a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Título Cuarto Nivel</a>
+											</li>
+
+											<!--   programacion agregada-->
+							<li class="nav-item">
+								<a class="nav-link" id="keywords-tab" data-toggle="tab" href="#keywords" role="tab" aria-controls="keywords" aria-selected="false">Temas de interes</a>
+							</li>
+							<li class="nav-item">
+								<a class="nav-link" id="publicaciones-tab" data-toggle="tab" href="#publicaciones" role="tab" aria-controls="publicaciones" aria-selected="false">Publicar a la Comunidad</a>
+							</li>
+
+
+										</ul>
+										<div class="tab-content" id="myTabContent">
+											<div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+												<div class="card-header">
+													Información general
+												</div>
+												<div class="card-body">
+													<dl class="row">
+														<dt class="col-sm-3">Nombre de usuario </dt>
+														<dd class="col-sm-9">{{perfil.user.username}}</dd>
+
+														<dt class="col-sm-3">Cédula</dt>
+														<dd class="col-sm-9">{{perfil.cedula}}</dd>
+
+														<dt class="col-sm-3">Género</dt>
+														<dd class="col-sm-9">{{perfil.genero}}</dd>
+
+														<dt class="col-sm-3">Nacionalidad</dt>
+														<dd class="col-sm-9">{{perfil.nacionalidad}}</dd>
+
+														<dt class="col-sm-3">Dirección</dt>
+														<dd class="col-sm-9">{{perfil.direccion}}</dd>
+
+														<dt class="col-sm-3">Fecha de nacimiento</dt>
+														<dd class="col-sm-9">{{perfil.edad}}</dd>
+
+														<dt class="col-sm-3">Actualizar contraseña</dt>
+														<dd class="col-sm-9"><a class="" href="{% url 'usuario:editarPass' perfil.id %}">
+															Actualizar contraseña
+														</a></dd>
+													</dl>
+												</div>
+												<div class="card-header">
+													Información de contacto
+												</div>
+												<div class="card-body">
+													<dl class="row">
+														<dt class="col-sm-3">Correo electrónico </dt>
+														<dd class="col-sm-9">{{perfil.user.email}}</dd>
+														<dt class="col-sm-3">Teléfono</dt>
+														<dd class="col-sm-9">{{perfil.telefono}}</dd>
+													</dl>
+												</div>
+												<div class="card-header">
+													Información laboral
+												</div>
+												<div class="card-body">
+													<dl class="row">
+														<dt class="col-sm-3">Tipo de contrato </dt>
+														<dd class="col-sm-9">{{perfil.informacionLaboral.tipoContrato}}</dd>
+														<dt class="col-sm-3">Facultad</dt>
+														<dd class="col-sm-9">{{perfil.informacionLaboral.facultad}}</dd>
+														<dt class="col-sm-3">Carrera</dt>
+														<dd class="col-sm-9">{{perfil.informacionLaboral.carrera}}</dd>
+													</dl>
+												</div>
+											</div>
+											<!--
+
+
+											-->
+											<div class="tab-pane fade" id="tecnico" role="tabpanel" aria-labelledby="tecnico-tab">
+
+												{% if Formacion.all %}
+													{% for i in Formacion.all %}
+														{% if i.tipoTitulo == 'Título técnico superior' %}
+															<dl class="row">
+																<dt class="col-sm-3">Título obtenido </dt>
+																<dd class="col-sm-7">{{i.descripcion}}</dd>
+																<dd class="col-sm-2"><a class="btn btn-primary btn-sm btn-block" href="{% url 'FormacionAcademica:update_Formacion_Academica' i.id %}" >Editar</a></dd>
+																<dt class="col-sm-3">Instituto donde se graduó</dt>
+																<dd class="col-sm-7">{{ i.nombreCentroEstudios }}</dd>
+																<dd class="col-sm-2"><a class="btn btn-danger btn-sm btn-block" href="{% url 'FormacionAcademica:delete_Formacion_Academica'  i.id %}">Eliminar</a></dd>
+																<dt class="col-sm-3">Año de graduación</dt>
+																<dd class="col-sm-9">{{i.anio}}</dd>
+																<dt class="col-sm-3">Título de la tesis con la que se graduó</dt>
+																<dd class="col-sm-9">{{i.titulo}}</dd>
+																<br><br><br>
+																<hr />
+															</dl>
+															<hr />
+														{% endif %}
+													{% endfor %}
+												{% else %}
+													<h4>No ha registrado ningun título</h4>
+												{% endif %}
+													<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal" onclick="tecnico()">
+														Ingresar nuevo título
+													</button>
+											</div>
+											<div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+												{% if Formacion.all %}
+													{% for i in Formacion.all %}
+														{% if i.tipoTitulo == 'Título de tercer nivel' %}
+															<dl class="row">
+																<dt class="col-sm-3">Título obtenido </dt>
+																<dd class="col-sm-7">{{i.descripcion}}</dd>
+																<dd class="col-sm-2"><a class="btn btn-primary btn-sm btn-block" href="{% url 'FormacionAcademica:update_Formacion_Academica' i.id %}" >Editar</a></dd>
+
+																<dt class="col-sm-3">Universidad donde se graduó</dt>
+																<dd class="col-sm-7">{{ i.nombreCentroEstudios }}</dd>
+																<dd class="col-sm-2"><a class="btn btn-danger btn-sm btn-block" href="{% url 'FormacionAcademica:delete_Formacion_Academica'  i.id %}">Eliminar</a></dd>
+
+																<dt class="col-sm-3">Año de graduación</dt>
+																<dd class="col-sm-9">{{i.anio}}</dd>
+
+																<dt class="col-sm-3">Título de la tesis con la que se graduó</dt>
+																<dd class="col-sm-9">{{i.titulo}}</dd>
+																<br><br><br>
+																<hr />
+															</dl>
+															<hr />
+														{% endif %}
+													{% endfor %}
+												{% else %}
+													<h4>No ha registrado ningun título</h4>
+												{% endif %}
+													<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal" onclick="tercer()">
+														Ingresar nuevo título
+													</button>
+											</div>
+											<div class="tab-pane fade " id="contact" role="tabpanel" aria-labelledby="contact-tab">
+												{% if Formacion %}
+													{% for i in Formacion %}
+														{% if i.tipoTitulo == 'Título de cuarto nivel' %}
+
+															<dl class="row">
+
+																<dt class="col-sm-3">Título obtenido </dt>
+																<dd class="col-sm-7">{{i.descripcion}}</dd>
+																<dd class="col-sm-2"><a class="btn btn-primary btn-sm btn-block" href="{% url 'FormacionAcademica:update_Formacion_Academica' i.id %}" >Editar</a></dd>
+
+																<dt class="col-sm-3">Universidad donde se graduó</dt>
+																<dd class="col-sm-7">{{i.nombreCentroEstudios.Nombre }}</dd>
+																<dd class="col-sm-2"><a class="btn btn-danger btn-sm btn-block" href="{% url 'FormacionAcademica:delete_Formacion_Academica'  i.id %}">Eliminar</a></dd>
+
+																<dt class="col-sm-3">Año de graduación</dt>
+																<dd class="col-sm-9">{{i.anio}}</dd>
+																<dt class="col-sm-3">Título de la tesis con la que se graduó</dt>
+																<dd class="col-sm-9">{{i.titulo}}</dd>
+
+															</dl>
+															<hr />
+														{% endif %}
+													{% endfor %}
+												{% else %}
+													<h4>No ha registrado ningun título</h4>
+												{% endif %}
+												<button type="button" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal" onclick="cuarto()">
+														Ingresar nuevo título
+													</button>
+											</div>
+											<div class="tab-pane fade" id="document" role="tabpanel" aria-labelledby="document-tab">
+												{% if perfil.documento.url != ''%}
+
+													<form method="post" enctype="multipart/form-data">
+
+															{% csrf_token %}
+															<input type="text" style="display:none;" id="val" name="val" value="1">
+															<div class="row">
+																<div class="col-md-12">
+																	<label> Cambiar archivo de la SENESCYT <a href="http://www.senescyt.gob.ec/web/guest/consultas" target="_blank"> Registro de Títulos SENESCYT.</a> </label><br><br>
+																	{{ formDoc.documento }}
+																	{{ formDoc.documento.errors }}
+																	<br><br>
+																</div>
+															</div>
+															<div class="row">
+																<div class="col-md-12">
+
+																	<button type="submit" class="btn btn-primary btn-sm">Guardar cambios</button>
+																</div>
+															</div>
+														</form>
+													<embed src="{{ perfil.documento.url }}#toolbar=0" type="application/pdf" width="100%" height="700">
+												{% else %}
+														<form method="post" enctype="multipart/form-data">
+															<input type="text" style="display:none;" id="val" name="val" value="1">
+															{% csrf_token %}
+															<div class="row">
+																<div class="col-md-12">
+																	<label> Adjuntar documento <a href="http://www.senescyt.gob.ec/web/guest/consultas" target="_blank"> Registro de Títulos SENESCYT.</a> </label><br><br>
+																	{{ formDoc.documento }}
+																	{{ formDoc.documento.errors }}
+																	<br><br>
+																</div>
+															</div>
+															<div class="row">
+																<div class="col-md-12">
+																	<button type="submit" class="btn btn-primary btn-sm">Guardar cambios</button>
+																</div>
+															</div>
+														</form>
+												{% endif %}
+											</div>
+
+
+
+											<!--   programacion agregada-->
+
+										<!--Token-->
+										{% csrf_token %}
+										<div class="tab-pane fade" id="keywords" role="tabpanel" aria-labelledby="keywords-tab">
+
+											<div class="row containerKeywords">
+
+												<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6  ">
+													<h5>Aun no tines temas de interes registrados, puedes registrarlo dirigiendote a <a href="/social/index"> este link</a></h5>
+												</div>
+												<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 ">
+													<a class="btn btn-primary  btn-sm waves-effect waves-light" id="btnEditarKeyword" altkw1="1" altkw2="1" altkw3="1" altkw4="1" altkw5="1" href="#"><span class="fa fa-pencil"
+															style="width:32px; height:14px"></span> Editar</a>
+												</div>
+
+
+
+											</div>
+										</div>
+										<div class="tab-pane fade" id="publicaciones" role="tabpanel" aria-labelledby="publicaciones-tab">
+											<div class="row">
+												<div class="col-lg-12 pb-5">
+
+
+
+													<div class="table-responsive">
+														{% if publicacion %}
+														<table id="datatable-1" class="table table-datatable table-striped table-hover" style="width: 100%">
+															<thead>
+																<h3 style="color:black;font-size:100%">
+																	<tr>
+
+																		<td>Tema</td>
+																		<td>Tipo de publicación </td>
+																		<td style="width:15%">Acciones</td>
+																	</tr>
+																</h3>
+
+															</thead>
+															<tbody class="ContainerPublicaciones">
+																{% for publicacion in publicacion %}
+																{% csrf_token %}
+																<tr>
+																	<td><span altPublicTema="{{publicacion.id}}">{{publicacion.tema}}</span></td>
+																	<td><span altPublicTipo="{{publicacion.id}}" contenteditable="">{{publicacion.tipo}}</span></td>
+
+																	<td>
+
+
+																		<div class="row">
+																			<div class="col-12">
+																				<a id="btnEditarPublicacionUser" class="btn btn-primary btn-sm pull-right waves-effect waves-light" altPublicProMacro="{{publicacion.proyectosMacro_id}}"
+																					alt="{{publicacion.id}}" altPublicProArticulo="{{publicacion.articulo_id}}" altPublicProLibro="{{publicacion.libro_id}}"
+																					altPublicProPonencia="{{publicacion.ponencia_id}}"><i class="fa fa-pencil"></i>
+																					</span>Editar
+																				</a>
+																			</div>
+																			<!--<div class="col-6">
+																				<a href="{% url 'social:deleteAdminProyectosCarrera' pk=publicacion.id  %}"> <button type="button" onclick="return ConfirmarDelete()"
+																						class="btn btn-danger btn-sm pull-right waves-effect waves-light"><i class="fa fa-trash"></i> Eliminar</button> </a>
+																			</div>-->
+
+																		</div>
+																	</td>
+																</tr>
+																{% endfor %}
+															</tbody>
+														</table>
+														{% else %}
+														<h4>Aun no tines publicaciones!</h4>
+														{% endif %}
+
+													</div>
+												</div>
+
+											</div>
+
+											<div class="modal fade bd-example-modal-lg" id="ModalPublicaciones" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+												<div class="modal-dialog modal-lg">
+													<div class="modal-content card">
+
+
+														<div class="card-header">
+															<b style="text-align: center;font-size: 20px;">Editar publicación</b>
+														</div>
+														<div class="card-body divScroll">
+															<form action="/action_page.php">
+																<div class="form-group">
+																	<label for="Tema">Tema</label>
+																	<input type="Tema" class="form-control" id="publicTema" required>
+																</div>
+																<div class="form-group">
+																	<label for="tipo">Tipo de Publicación:</label>
+																	<select name="publicTipoPublicacion" rel="" id="publicTipoPublicacion" class="form-control" required>
+																		<option value="1">Artículo Científico</option>
+																		<option value="2">Libro</option>
+																		<option value="3">Ponencia</option>
+																	</select>
+																</div>
+																<!--
+																					<div class="form-group">
+																							<label for="exampleFormControlTextarea1">Abstract (Resumen):</label>
+																							<textarea class="form-control rounded-0" id="publicAbstract" rows="10"></textarea>
+																					</div>-->
+
+																<div class="form-group">
+																	<label for="tipo">Artículo Científico:</label>
+																	<select name="publicArticulo" rel="" id="publicArticulo" class="form-control" required>
+																		<option value="0">-----Selecciona-----</option>
+																		<option value="1">...</option>
+																		<option value="2">...</option>
+																		<option value="3">..</option>
+																	</select>
+																</div>
+																<div class="form-group">
+																	<label for="tipo">Libro:</label>
+																	<select name="publicLibro" rel="" id="publicLibro" class="form-control" required>
+																		<option value="0">-----Selecciona-----</option>
+																		<option value="1">...</option>
+																		<option value="2">...</option>
+																		<option value="3">..</option>
+																	</select>
+																</div>
+																<div class="form-group">
+																	<label for="tipo">Ponencia:</label>
+																	<select name="publicPonencia" rel="" id="publicPonencia" class="form-control" required>
+																		<option value="0">-----Selecciona-----</option>
+																		<option value="1">...</option>
+																		<option value="2">...</option>
+																		<option value="3">..</option>
+																	</select>
+																</div>
+																<div class="form-group">
+																	<label for="tipo">Proyectos:</label>
+																	<select name="publicProyectoMacro" rel="" id="publicProyectoMacro" class="form-control" required>
+																		<option value="0">-----Selecciona-----</option>
+
+																	</select>
+																</div>
+
+															</form>
+
+														</div>
+														<div class="modal-footer">
+															<button type="submit " class="btn btn-primary left " id="btnPublicacion" altupdatePublicacion="">Guardar</button>
+															<button type="button" class="btn btn-secondary " data-dismiss="modal">Cancelar</button>
+														</div>
+													</div>
+												</div>
+											</div>
+
+										</div>
+
+
+
+
+
+
+
+
+										</div>
+
+
+
+
+
+
+
+										<!-- Modal -->
+										<div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+											<div class="modal-dialog" role="document">
+												<div class="modal-content">
+													<div class="modal-header">
+														<h5 class="modal-title" id="exampleModalLabel"><b>Registrar nuevo Título</b></h5>
+														<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+															<span aria-hidden="true">&times;</span>
+														</button>
+													</div>
+													<div class="modal-body">
+														<form method="post" enctype="multipart/form-data">
+															{% csrf_token %}
+															<input type="text" id="val" style="display:none;" name="val" value="2">
+															<div class="row">
+																<div class="col-md-12">
+																	<label><span style="color:RED">Registrar el nombre de su Título cómo fue registrado en la SENESCYT</span></label><br>
+																	{{ formAca.descripcion.label }}
+																	{{ formAca.descripcion }}
+																	{{ formAca.descripcion.errors }}
+																</div>
+																<div class="col-md-12">
+																	{{ formAca.anio.label }}
+																	{{ formAca.anio }}
+																	{{ formAca.descripcion.errors }}
+																</div>
+																<div class="col-md-12">
+																	{{ formAca.pais.label }}
+																	{{ formAca.pais }}
+																	{{ formAca.pais.errors }}
+																</div>
+																<div id="institucion">
+																<div class="col-md-12">
+																	<label><b>Obtuvo el título en una Universidad o Instituto</b></label>
+																	<div class="col-md-6">
+																		<div class="custom-control custom-radio">
+																			<input type="radio" class="custom-control-input" id="customControlValidation2" name="radio-stacked" onclick="regional()">
+																			<label class="custom-control-label" for="customControlValidation2">Universidad</label>
+																		</div>
+																	</div>
+																	<div class="col-md-6">
+																		<div class="custom-control custom-radio">
+																			<input type="radio" class="custom-control-input" id="customControlValidation3" name="radio-stacked" onclick="impacto()">
+																			<label class="custom-control-label" for="customControlValidation3">Instituto</label>
+																		</div>
+																	</div>
+																	<input style="display:none" id="Aut" name="Aut" value="1">
+																</div>
+																</div>
+
+																<div class="col-md-12">
+																	{{ formAca.nombreCentroEstudios.label }}
+																	{{ formAca.nombreCentroEstudios }}
+																	{{ formAca.nombreCentroEstudios.errors }}
+
+																</div>
+																<div class="col-md-12">
+																	{{ formAca.titulo.label }}
+																	{{ formAca.titulo }}
+																	{{ formAca.titulo.errors }}
+																</div>
+																<div class="col-md-12">
+																	<input type="text" id="tipoTitulo" style="display:none" name="tipoTitulo" class="form-control" >
+																</div>
+																<div class="col-md-12">
+																	<input type="text" id="user" style="display:none" name="user" class="form-control" value="{{ user.id}}">
+																</div>
+															</div>
+															<div class="modal-footer">
+																<button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+																<button type="submit" class="btn btn-primary">Guardar cambios</button>
+															</div>
+														</form>
+													</div>
+
+												</div>
+											</div>
+										</div>
+
+										<!-- Modal add keywords -->
+
+										<div class="modal fade" id="ModalKeywords" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+											<div class="modal-dialog">
+												<div class="modal-content" style="background: #e5e5e5, height: 100%">
+													<div class="modal-header">
+														<h4 class="modal-title" id="txtModalTitlePub" style="font-weight:bold "><b> Edita Tus temas de Interes</b></h4>
+													</div>
+
+													<div class="row ">
+
+														<div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+															<div class=" card card-body">
+																<div class="form-group ">
+																	<label for="tipo">Tema de interes 1:</label>
+																	<select name="op1PClave" rel="" id="op1PClave" class="form-control" required>
+																		<option value="0">-----Selecciona-----</option>
+																		{% for Keywords in keywords %}
+																		<option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+																		{% endfor %}
+																	</select>
+																</div>
+																<div class="form-group">
+																	<label for="tipo">Tema de interes 2:</label>
+																	<select name="op2PClave" rel="" id="op2PClave" class="form-control" required>
+																		<option value="0">-----Selecciona-----</option>
+																		{% for Keywords in keywords %}
+																		<option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+																		{% endfor %}
+																	</select>
+																</div>
+																<div class="form-group">
+																	<label for="tipo">Tema de interes 3:</label>
+																	<select name="op3PClave" rel="" id="op3PClave" class="form-control" required>
+																		<option value="0">-----Selecciona-----</option>
+																		{% for Keywords in keywords %}
+																		<option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+																		{% endfor %}
+																	</select>
+																</div>
+																<div class="form-group">
+																	<label for="tipo">Tema de interes 4:</label>
+																	<select name="op4PClave" rel="" id="op4PClave" class="form-control" required>
+																		<option value="0">-----Selecciona-----</option>
+																		{% for Keywords in keywords %}
+																		<option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+																		{% endfor %}
+																	</select>
+																</div>
+																<div class="form-group">
+																	<label for="tipo">Tema de interes 5:</label>
+																	<select name="op5PClave" rel="" id="op5PClave" class="form-control" required>
+																		<option value="0">-----Selecciona-----</option>
+																		{% for Keywords in keywords %}
+																		<option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+																		{% endfor %}
+																	</select>
+																</div>
+
+																<div class="card-footer keywordsFooter">
+
+																	<div class="card-body d-flex justify-content-between align-items-center">
+																		. <button id="btnAreasConocimiento" type="submit" class="btn btn-primary" style=" position: left ; ">Guardar</button>
+
+																	</div>
+																</div>
+															</div>
+														</div>
+
+
+													</div>
+
+
+												</div>
+											</div>
+								
+								
+								
+										</div>
+
+
+
+
+
+
+
+
+
+
+									</div>
+								</div>
+							</div>
+						</div>
+						<script type="text/javascript">
+
+							$(document).ready(function(){
+							    $("#pais").on("change", pais);
+							    ViewEstado();
+							    $('#table_data_1').DataTable();
+							});
+							function pais(){
+							    var values = $('#pais').val();
+							    $.ajax({
+							        type:'POST',
+							        url:'/pais/selU/',
+							        data:{
+							            datos: values,
+							            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+							        },
+							        success:function(data){
+							            console.log("Estoy aqui");
+							            $("#nombreCentroEstudios option").remove();
+							            $.each(data, function(index, item) {
+							                var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+							                $("#nombreCentroEstudios").append(newOption);
+							            });
+							        },
+							        error : function(){
+							             console.log('Opss');
+							        }
+							    })
+							}
+						</script>>
+
+
+						{% endblock%}
+					</div>
+
+					<div class="row mb-5">
+						<div class="col-md-12">
+							<footer style="position: absolute; bottom: -50; text-align: right; float: right; width: 98%;" >
+
+									<b>Grupo de Investigación ECU-CIENCIA<br><b><i class="fa fa-envelope-o"></i> ecu.ciencia@utc.edu.ec</b><br><b><i class="fa fa-phone-square"></i> 0987071107</b><!-- <a href="" target="_blank" style="font-weight:300;color:#ffffff;background:#1d1d1d;padding:0 3px;">Jonny<span style="color:#ffa733;font-weight:bold"> </span>Allauca</a>-->
+
+							</footer>
+						</div>
+					</div>
+
+				</main>
+
+			</div>
+
+		</div>
+	</div>
+
+		<script>
+			function cargarRegional(){
+    			var data;
+				$.ajax({
+					url: '/db/instituto/',
+					type: 'POST',
+					data: {
+						pais: $('#pais').val(),
+						csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+					},
+					success: function(data) {
+						$("#nombreCentroEstudios option").remove();
+						$.each(data, function(index, item) {
+							var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+							$("#nombreCentroEstudios").append(newOption);
+						});
+						console.log('correcto');
+					},
+					error : function(){
+						console.log('error');
+					}
+				});
+			}
+			function cargarImpacto(){
+				var data;
+				$.ajax({
+					url: '/db/universidad/',
+					type: 'POST',
+					data: {
+						pais: $('#pais').val(),
+						csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+					},
+					success: function(data) {
+						$("#nombreCentroEstudios option").remove();
+						$.each(data, function(index, item) {
+							console.log(item.text );
+							var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+							$("#nombreCentroEstudios").append(newOption);
+						});
+						console.log('correcto');
+					},
+					error : function(){
+						console.log('error');
+					}
+				});
+			}
+			$('#customControlValidation2').click(function() {
+				cargarRegional();
+			});
+			$('#customControlValidation3').click(function() {
+				cargarImpacto();
+			});
+			function tercer() {
+  				document.getElementById("tipoTitulo").value = "Título de tercer nivel";
+  				document.getElementById("institucion").style.display = "none";
+			}
+			function cuarto() {
+  				document.getElementById("tipoTitulo").value = "Título de cuarto nivel";
+  				document.getElementById('institucion').style.display = 'none';
+			}
+			function tecnico() {
+  				document.getElementById("tipoTitulo").value = "Título técnico superior";
+  				document.getElementById('institucion').style.display = 'block';
+			}
+
+		</script>
+
+	    <!-- SCRIPTS - REQUIRED START -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<!-- Bootstrap core JavaScript -->
+
+		<!-- MDB core JavaScript -->
+		<script type="text/javascript" src="{% static 'assets/js/bootstrap/mdb.min.js' %}"></script>
+		<!-- Velocity -->
+		<script type="text/javascript" src="{% static 'assets/plugins/velocity/velocity.min.js' %}"></script>
+		<script type="text/javascript" src="{% static 'assets/plugins/velocity/velocity.ui.min.js' %}"></script>
+		<!-- Custom Scrollbar -->
+		<script type="text/javascript" src="{% static 'assets/plugins/custom-scrollbar/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+		<!-- jQuery Visible -->
+		<script type="text/javascript" src="{% static 'assets/plugins/jquery_visible/jquery.visible.min.js' %}"></script>
+		<!-- jQuery Visible -->
+		<script type="text/javascript" src="{% static 'assets/plugins/jquery_visible/jquery.visible.min.js' %}"></script>
+		<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+		<script type="text/javascript" src="{% static 'assets/js/misc/ie10-viewport-bug-workaround.js' %}"></script>
+
+		<!-- SCRIPTS - REQUIRED END -->
+		{% block scripts %}
+
+		{% endblock %}
+
+		<!-- SCRIPTS - OPTIONAL START -->
+		<!-- ChartJS -->
+		<script type="text/javascript" src="{% static 'assets/plugins/chartjs/chart.bundle.min.js' %}"></script>
+		<!-- JVMaps -->
+		<script type="text/javascript" src="{% static 'assets/plugins/jvmaps/jquery.vmap.min.js' %}"></script>
+		<script type="text/javascript" src="{% static 'assets/plugins/jvmaps/maps/jquery.vmap.usa.js' %}"></script>
+		<!-- Image Placeholder -->
+		<script type="text/javascript" src="{% static 'assets/js/misc/holder.min.js' %}"></script>
+
+		<script type="text/javascript" src="{% static 'assets/plugins/toastr/toastr.min.js' %}"></script>
+
+		<!-- SCRIPTS - OPTIONAL END -->
+
+		<!-- QuillPro Scripts -->
+		<script type="text/javascript" src="{% static 'assets/js/scripts.js' %}"></script>
+
+		{% for message in messages %}
+			<script>
+				toastr.options = {
+					"closeButton": true,
+					"debug": false,
+					"positionClass": "toast-bottom-full-width",
+					"onclick": null,
+					"showDuration": "3000",
+					"hideDuration": "1000",
+					"timeOut": "5000",
+					"extendedTimeOut": "1000",
+					"showEasing": "swing",
+					"hideEasing": "linear",
+					"showMethod": "fadeIn",
+					"hideMethod": "fadeOut"
+				}
+				toastr.{{ message.tags|lower }}("{{ message }}", "{{ message.tags }}");
+			</script>
+		{% endfor %}
+
+		<script>
+			$(document).ready(function() {
+				var urlGeneral = "/social/";
+	
+				var id1 = 0
+				var id2 = 0
+				var id3 = 0
+				var id4 = 0
+				var id5 = 0
+	
+	
+				$("#keywords-tab").click(function() {
+					
+	
+	
+					$.ajax({
+						data: {
+							csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+						},
+						url: urlGeneral + "getKeywords",
+						type: 'POST',
+						success: function(data) {
+							//console.log("las kw son ");
+							//console.log(data);
+							var body = ""
+							var kw1 = 0
+							var kw2 = 0
+							var kw3 = 0
+							var kw4 = 0
+							var kw5 = 0
+	
+							var akw1 = 0
+							var akw2 = 0
+							var akw3 = 0
+							var akw4 = 0
+							var akw5 = 0
+	
+	
+							$('.containerKeywords').html("");
+	
+							if (data[0]["status"] == 0) {
+								body += '<h5>Aun no tines temas de interes registrados, puedes registrarlo dirigiendote a  <a href="/social/index"> este link</a></h5>';
+	
+							} else {
+								var contador = 1
+								for (var i = 0; i < data.length; i++) {
+									if (i + 1 == 1) {
+										kw1 = data[i]["id"]
+									}
+									if (i + 1 == 2) {
+										kw2 = data[i]["id"]
+									}
+									if (i + 1 == 3) {
+										kw3 = data[i]["id"]
+									}
+									if (i + 1 == 4) {
+										kw4 = data[i]["id"]
+									}
+									if (i + 1 == 5) {
+										kw5 = data[i]["id"]
+									}
+	
+								}
+	
+								body += '<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6  ">'
+								body += '<h5>Tus temas de interes registrados son:</h5>'
+								body += '</div>'
+								body += '<div class="col-12 col-sm-12 col-md-6 col-lg-6 col-xl-6 ">'
+								body += '<a class="btn btn-primary  btn-sm waves-effect waves-light" id="btnEditarKeyword" altkw1="' + kw1 + '" altkw2="' + kw2 + '" altkw3="' + kw3 + '" altkw4="' + kw4 + '" altkw5="' + kw5 +
+									'" ><span class="fa fa-pencil"'
+								body += 'style="width:32px; height:14px"></span> Editar</a>'
+								body += '</div>'
+	
+								for (var i = 0; i < data.length; i++) {
+									body += '<div class="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-4 " style=" padding-top: 20px">'
+									body += '<div class="card-body border ">'
+									body += '<b id="kwid' + data[i]["id"] + '">' + data[i]["termino"] + '</b>'
+									body += '</div>'
+									body += '</div>'
+	
+								}
+							}
+	
+							$('.containerKeywords').html(body);
+	
+						}
+					});
+	
+				});
+	
+				$(".containerKeywords").on("click", "#btnEditarKeyword", function(e) {
+					
+	
+	
+					akw1 = $(this).attr("altkw1")
+					akw2 = $(this).attr("altkw2")
+					akw3 = $(this).attr("altkw3")
+					akw4 = $(this).attr("altkw4")
+					akw5 = $(this).attr("altkw5")
+					$("#op1PClave > option[value=" + akw1 + "]").attr("selected", true);
+					$("#op2PClave > option[value=" + akw2 + "]").attr("selected", true);
+					$("#op3PClave > option[value=" + akw3 + "]").attr("selected", true);
+					$("#op4PClave > option[value=" + akw4 + "]").attr("selected", true);
+					$("#op5PClave > option[value=" + akw5 + "]").attr("selected", true);
+	
+	
+					$("#ModalKeywords").modal("show")
+	
+	
+	
+	
+	
+				});
+	
+	
+	
+	
+	
+	
+	
+	
+	
+				$("#op1PClave").change(function() {
+					var idPClave = $("#op1PClave").val()
+	
+					$("#op2PClave option[value=" + id1 + "]").removeAttr("disabled");
+					$("#op3PClave option[value=" + id1 + "]").removeAttr("disabled");
+					$("#op4PClave option[value=" + id1 + "]").removeAttr("disabled");
+					$("#op5PClave option[value=" + id1 + "]").removeAttr("disabled");
+					id1 = idPClave;
+					$("#op2PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op3PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op4PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op5PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+				});
+				$("#op2PClave").change(function() {
+					var idPClave = $("#op2PClave").val()
+					$("#op1PClave option[value=" + id2 + "]").removeAttr("disabled");
+					$("#op3PClave option[value=" + id2 + "]").removeAttr("disabled");
+					$("#op4PClave option[value=" + id2 + "]").removeAttr("disabled");
+					$("#op5PClave option[value=" + id2 + "]").removeAttr("disabled");
+					id2 = idPClave;
+					$("#op1PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op3PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op4PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op5PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+	
+				});
+				$("#op3PClave").change(function() {
+					var idPClave = $("#op3PClave").val()
+					$("#op1PClave option[value=" + id3 + "]").removeAttr("disabled");
+					$("#op2PClave option[value=" + id3 + "]").removeAttr("disabled");
+					$("#op4PClave option[value=" + id3 + "]").removeAttr("disabled");
+					$("#op5PClave option[value=" + id3 + "]").removeAttr("disabled");
+					id3 = idPClave;
+					$("#op1PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op2PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op4PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op5PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+	
+				});
+				$("#op4PClave").change(function() {
+					var idPClave = $("#op4PClave").val()
+					$("#op1PClave option[value=" + id4 + "]").removeAttr("disabled");
+					$("#op2PClave option[value=" + id4 + "]").removeAttr("disabled");
+					$("#op3PClave option[value=" + id4 + "]").removeAttr("disabled");
+					$("#op5PClave option[value=" + id4 + "]").removeAttr("disabled");
+					id4 = idPClave;
+					$("#op1PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op2PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op3PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op5PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+	
+				});
+				$("#op5PClave").change(function() {
+					var idPClave = $("#op5PClave").val()
+					$("#op1PClave option[value=" + id5 + "]").removeAttr("disabled");
+					$("#op2PClave option[value=" + id5 + "]").removeAttr("disabled");
+					$("#op3PClave option[value=" + id5 + "]").removeAttr("disabled");
+					$("#op4PClave option[value=" + id5 + "]").removeAttr("disabled");
+					id4 = idPClave;
+					$("#op1PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op2PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op3PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+					$("#op4PClave option[value=" + idPClave + "]").attr("disabled", 'disabled');
+	
+				});
+	
+				$("#btnAreasConocimiento").click(function() {
+
+					
+					var select1 = $("#op1PClave").val();
+					var select2 = $("#op2PClave").val();
+					var select3 = $("#op3PClave").val();
+					var select4 = $("#op4PClave").val();
+					var select5 = $("#op5PClave").val();
+					//alert(select5)
+					//alert(akw5)
+	
+	
+					if (select1 == 0 || select2 == 0 || select3 == 0 || select4 == 0 || select5 == 0) {
+						alert("Falta seleccionar opciones");
+	
+					} else {
+	
+	
+						$.ajax({
+							data: {
+								'kw1': select1,
+								'kw2': select2,
+								'kw3': select3,
+								'kw4': select4,
+								'kw5': select5,
+								'akw1': akw1,
+								'akw2': akw2,
+								'akw3': akw3,
+								'akw4': akw4,
+								'akw5': akw5,
+								csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+							},
+							url: urlGeneral + "updateKeywords",
+							type: 'POST',
+							success: function(data) {
+								console.log("la kw add =");
+								console.log(data);
+								if (data[0]['status'] == 1) {
+									alert("Se actualizo sus temas de interes!")
+	
+									window.location = "/index"
+	
+	
+								} else {
+									alert("Algo salio mal Por favor intente nuevamente!")
+	
+								}
+							}
+						});
+					}
+				});
+				function cargaCombos(art) {
+					//alert("entre")
+					var op = $("#publicTipoPublicacion option:selected").val();
+					if (op == 1) {
+						$("#publicArticulo").prop('disabled', false);
+						$("#publicLibro").prop('disabled', 'disabled');
+						$("#publicPonencia").prop('disabled', 'disabled');
+						$.ajax({
+							data: {
+								'datos': 6,
+								csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+							},
+							url: urlGeneral + "getArticulos",
+							type: 'POST',
+							success: function(data) {
+								$("#publicArticulo").html("");
+								$("#publicLibro").html("");
+								$("#publicPonencia").html("");
+								var body = "";
+								if (data.length > 0) {
+									for (var i = 0; i < data.length; i++) {
+										body += '<option value="' + data[i]["id"] + '">' + data[i]['titulo'] + '</option>'
+									}
+								} else {
+									body += '<option value="0">Registre un articulo Cientifico primero</option>'
+								}
+								$("#publicArticulo").html(body);
+								$("#publicLibro").html('<option value="null"></option>');
+								$("#publicPonencia").html('<option value="null"></option>');
+	
+								$("#publicArticulo  option[value=" + art + "]").attr("selected", true);
+							}
+						});
+					}
+					if (op == 2) {
+						$("#publicArticulo").prop('disabled', 'disabled');
+						$("#publicLibro").prop('disabled', false);
+						$("#publicPonencia").prop('disabled', 'disabled');
+						$.ajax({
+							data: {
+								'datos': 6,
+								csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+							},
+							url: urlGeneral + "getLibros",
+							type: 'POST',
+							success: function(data) {
+								$("#publicArticulo").html("");
+								$("#publicLibro").html("");
+								$("#publicPonencia").html("");
+								var body = "";
+	
+								if (data.length > 0) {
+									for (var i = 0; i < data.length; i++) {
+										body += '<option value="' + data[i]["id"] + '">' + data[i]['titulo'] + '</option>'
+									}
+								} else {
+									$("#publicLibro").html("");
+									body += '<option value="0">Registre un Libro primero</option>'
+								}
+								$("#publicArticulo").html('<option value="null"></option>');
+								$("#publicLibro").html(body);
+								$("#publicPonencia").html('<option value="null"></option>');
+								$("#publicLibro  option[value=" + art + "]").attr("selected", true);
+							}
+						});
+					}
+					if (op == 3) {
+						$("#publicArticulo").prop('disabled', 'disabled');
+						$("#publicLibro").prop('disabled', 'disabled');
+						$("#publicPonencia").prop('disabled', false);
+						$.ajax({
+							data: {
+								'datos': 6,
+								csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+							},
+							url: urlGeneral + "getPonencias",
+							type: 'POST',
+							success: function(data) {
+								$("#publicArticulo").html("");
+								$("#publicLibro").html("");
+								$("#publicPonencia").html("");
+								var body = "";
+	
+								if (data.length > 0) {
+									for (var i = 0; i < data.length; i++) {
+										body += '<option value="' + data[i]["id"] + '">' + data[i]['titulo'] + '</option>'
+									}
+								} else {
+									$("#publicPonencia").html("");
+									body += '<option value="0">Registre una ponencia primero</option>'
+								}
+								$("#publicArticulo").html('<option value="null"></option>');
+								$("#publicLibro").html('<option value="null"></option>');
+								$("#publicPonencia").html(body);
+	
+									$("#publicPonencia  option[value=" + art + "]").attr("selected", true);
+							}
+						});
+					}
+				};
+	
+	
+				$(".ContainerPublicaciones").on("click", "#btnEditarPublicacionUser", function(e) {
+					//alert("entre")
+					$("#ModalPublicaciones").modal("show")
+					idPub = $(this).attr("alt")
+					$("#btnPublicacion").attr("altupdatePublicacion", idPub)
+					var tema = $('[altPublicTema="' + idPub + '"]').text()
+					var tipo = $('[altPublicTipo="' + idPub + '"]').text()
+					var proMacro= $(this).attr("altPublicProMacro")
+					//var proMacro = $('[="' + idPub + '"]').text()
+					//alert(proMacro)
+					$("#publicTema").val(tema)
+					//$("#publicTipoPublicacion").val('"'+ tipo +'"').change();
+	
+					$("#publicTipoPublicacion option:contains(" + tipo + ")").attr('selected', true)
+					if (tipo == "Artículo Científico") {
+						articulo = $(this).attr("altPublicProArticulo")
+						$("#publicArticulo").prop('disabled', false);
+						$("#publicLibro").prop('disabled', 'disabled');
+						$("#publicPonencia").prop('disabled', 'disabled');
+						cargaCombos(articulo)
+					}
+					if (tipo == "Libro") {
+						$("#publicArticulo").prop('disabled', 'disabled');
+						$("#publicLibro").prop('disabled', false);
+						$("#publicPonencia").prop('disabled', 'disabled');
+						libro = $(this).attr("altPublicProLibro")
+						cargaCombos(libro)
+					}
+					if (tipo == "Ponencia") {
+						$("#publicArticulo").prop('disabled', 'disabled');
+						$("#publicLibro").prop('disabled', 'disabled');
+						$("#publicPonencia").prop('disabled', false);
+						ponencia = $(this).attr("altPublicProPonencia")
+						cargaCombos(ponencia)
+					}
+					$.ajax({
+						data: {
+							csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+						},
+						url: urlGeneral + "getProyectosMacro",
+						type: 'POST',
+						success: function(data) {
+							//console.log("los macro son ");
+							//console.log(data);
+							$("#publicProyectoMacro").html("");
+							var body = "";
+							if (data.length > 0) {
+	
+								for (var i = 0; i < data.length; i++) {
+									body += '<option value="' + data[i]["id"] + '">' + data[i]['nombre'] + '</option>'
+								}
+								$("#publicProyectoMacro").html(body);
+
+								$("#publicProyectoMacro option[value="+ proMacro +"]").attr("selected",true);
+								//$("#publicProyectoMacro option:contains(" +proMacro+ ")").attr('selected', true)
+							}
+	
+						}
+					});
+	
+				});
+	
+	
+	
+	
+	
+			$("#btnPublicacion").click(function() {
+				var tema = $("#publicTema").val();
+				var tipoPublicacion = $("#publicTipoPublicacion option:selected").text();
+				var tipoPublicacionVal = $("#publicTipoPublicacion").val();
+				//alert("tipoPublicacion"+tipoPublicacionVal);
+				var articulo = $("#publicArticulo").val();
+				//    alert("articulo"+articulo);
+				var libro = $("#publicLibro").val();
+				//alert("libro"+libro);
+				var ponencia = $("#publicPonencia").val();
+				//alert("ponencia"+ponencia);
+				var proyectoMacro = $("#publicProyectoMacro").val();
+				//alert("proyecto macro = "+proyectoMacro)
+				var idPub = $(this).attr("altupdatePublicacion");
+				if (tema == "" || tipoPublicacionVal == 0 || articulo == 0 || libro == 0 || ponencia == 0 || proyectoMacro == 0) {
+					alert("No cumple los requisitos para actualizar la publicación")
+				} else {
+					$.ajax({
+						data: {
+							'idPub': idPub,
+							'tema': tema,
+							'tipoPublicacion': tipoPublicacion,
+							'articulo': articulo,
+							'libro': libro,
+							'ponencia': ponencia,
+							'proyectoMacro': proyectoMacro,
+	
+							csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+						},
+						url: urlGeneral + "updatePublicacion",
+						type: 'POST',
+						success: function(data) {
+							if (data[0]['status'] == 1) {
+								alert("Se actualizo su publicación exitosamente!");
+								window.location =  "/index"
+								$('.bd-example-modal-lg').modal('hide');
+								addNotification(data[0]['obj'], investigador_id)
+							} else {
+								alert("Algo salio mal, Intente nuevamente o pongase en contacto con el Administrador del Sistema.");
+							}
+						}
+					});
+	
+				}
+			});
+	
+	
+	
+	
+	
+	
+			});
+	
+			function ConfirmarDelete() {
+				var respuesta = confirm(" Esta seguro que desea eliminar este Item?")
+				if (respuesta == true) {
+					return true
+				} else {
+					return false
+				}
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,29 @@
+<div class="modal-dialog">
+        <div class="modal-content">
+                {% if object %}
+                <form role="form" action="{% url 'postulacion:Modificar_Postulacion' object.pk %}" method="post" style="width: 100%;">
+                        <div class="modal-header">
+                            <div class="col-md-11" align="center">
+                                <h5>Modificar postulación</h3>
+                            </div>
+                            <button type="button" class="close" data-dismiss="modal">x</button>
+                        </div>
+                        <div class="col-md-12 col-md-offset-2">
+                            <div class="form-group">
+                            {% csrf_token %}
+                            {{ form.as_p }}
+                            </div>                        
+                                
+                        <div class="modal-footer">
+                                <div class="col-lg-12 text-center">
+                                        <input type="submit" class="btn btn-primary" name="submit" value="Actualizar">
+                                        <button type="button" class="btn btn-danger" onclick="return cerrar_modal()">
+                                                Cancelar
+                                        </button>
+                                </div>
+                        </div>
+                        </div>
+                </form>
+                {% endif %}
+        </div>
+</div>

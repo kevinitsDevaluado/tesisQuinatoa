@@ -1,0 +1,60 @@
+body{
+  font-family: Helvetica, sans-serif;
+  font-weight: 300;
+  background: white;
+  color: #AAA;
+}
+
+div.search{
+  float:right;
+  width:215px;
+}
+/*EASYAUTOCOMPLETE*/
+
+.easy-autocomplete.eac-round {
+  font-family: "Roboto", "Helvetica Neue",Helvetica,Arial,sans-serif;
+
+}
+.easy-autocomplete.eac-round input {
+  border: thin solid #666;
+  border-radius: 0;
+  color: #999;
+  background: #222;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 300;
+  margin: 0;
+  min-width: 200px;
+  padding: 5px 5px 5px 5px;
+  text-align: right;
+}
+.easy-autocomplete.eac-round ul {
+  border-color: #7f8c8d;
+  border-top: 0;
+  box-shadow: none;
+  top: 0;
+}
+.easy-autocomplete.eac-round ul li, .easy-autocomplete.eac-round ul .eac-category {
+  border-color: #7f8c8d;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 200;
+  padding: 6px 12px;
+  transition: all 0.4s ease 0s;
+  background-color: white;
+  color:#888;
+  text-align: right;
+}
+.easy-autocomplete.eac-round ul li *, .easy-autocomplete.eac-round ul .eac-category * {
+  font-weight: 300;
+
+}
+.easy-autocomplete.eac-round ul li.selected, .easy-autocomplete.eac-round ul .eac-category.selected {
+  background-color: #65d3e3;
+  font-weight: 300;
+  color: #fff;
+}
+.easy-autocomplete.eac-round ul li b, .easy-autocomplete.eac-round ul .eac-category b {
+  font-weight: 600;
+}
+

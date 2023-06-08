@@ -1,0 +1,465 @@
+{% load staticfiles %}
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+    <meta http-equiv="charset = utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <title>
+        {% block titulo%} Document {% endblock %}
+    </title>
+    <link rel="stylesheet" href="{% static 'assets/css/bootstrap/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'graficas/produccion/css/c3.min.css'%}">
+    <link href="../../static/css/bootstrap-popover-x.min.css" rel="stylesheet" type="text/css" />
+    <link href="../../static/css/chat2.css" rel="stylesheet" type="text/css" />
+    <link href="../../static/css/CarMaterial.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="{% static 'assets/img/logo4151.png' %}">
+
+
+
+
+
+
+    <style>
+        /* Colores generales */
+        /* Colores iconos y texto */
+
+        ClorIiTxt {
+            font-size: 20px;
+            color: #01568f;
+        }
+
+        /*Dispositivos grandes*/
+        .SolicsizeImg {
+            width: "30px";
+            height: 30px;
+
+
+        }
+
+        .SolicTxtSizeHead {
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .SolicTxtSizeBody {
+            font-size: 10px;
+            text-align: justify;
+        }
+
+        .SolicBtn {
+            font-size: 12px;
+        }
+
+        .divScroll {
+            overflow: scroll;
+            height: 550px;
+            width: 100%;
+
+        }
+
+        .SolicTxtSizeBodyNotf {
+            font-size: 8px;
+            color: #01568f;
+        }
+
+        .divScrollSimple {
+            overflow: scroll;
+            height: 530px;
+            width: 100%;
+        }
+
+        /* Dispositivos pequenos (medianos) */
+
+        @media screen and (max-width: 992px) {
+            .SolicsizeImg {
+                width: "30px";
+                height: 30px;
+            }
+
+            .SolicTxtSizeHead {
+                font-size: 12px;
+                font-weight: bold;
+            }
+
+            .SolicTxtSizeBody {
+                font-size: 11px;
+            }
+
+            .SolicBtn {
+                font-size: 11px;
+            }
+
+            .divScroll {
+                overflow: scroll;
+                height: 500px;
+                width: 100%;
+            }
+
+
+            .SolicTxtSizeBodyNotf {
+                font-size: 8px;
+                color: #01568f;
+            }
+
+        }
+
+        /* Dispositivos pequenos (smartphons pantalla grande) */
+
+        @media screen and (max-width: 600px) {
+            .SolicsizeImg {
+                width: "30px";
+                height: 30px;
+            }
+
+            .SolicTxtSizeHead {
+                font-size: 12px;
+                font-weight: bold;
+            }
+
+            .SolicTxtSizeBody {
+                font-size: 11px;
+                text-align: justify;
+            }
+
+            .SolicBtn {
+                font-size: 11px;
+            }
+
+            .divScroll {
+                overflow: scroll;
+                height: 400px;
+                width: 100%;
+            }
+
+            .SolicTxtSizeBodyNotf {
+                font-size: 8px;
+                color: #01568f;
+            }
+
+
+        }
+
+
+        /* Dispositivos pequenos (smartphons  pantalla pequeÃ±a) */
+        @media screen and (max-width: 480px) {
+            .SolicsizeImg {
+                width: "30px";
+                height: 30px;
+            }
+
+            .SolicTxtSizeHead {
+                font-size: 10px;
+                font-weight: bold;
+            }
+
+            .SolicTxtSizeBody {
+                font-size: 8px;
+                text-align: justify;
+            }
+
+            .SolicBtn {
+                font-size: 10px;
+            }
+
+            .divScroll {
+                overflow: scroll;
+                height: 400px;
+                width: 100%;
+            }
+
+            .SolicTxtSizeBodyNotf {
+                font-size: 8px;
+                color: #01568f;
+            }
+        }
+    </style>
+    {% block importaciones%} {% endblock %}
+
+</head>
+
+<body>
+
+    <!-- Grey with black tex -->
+    <div class="row">
+
+
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+
+            <nav class="navbar navbar-expand-md  bg-light fixed-top ">
+                <img src="{% static 'images/logo4151.png' %}" alt="Logo Ecuciencia" width="60px" class="navbar-brand">
+                <!--  PARA AGREGAR GRUPOS DESBLOQUEAR ESTO Y APARECERA UN ESPACIO PROGRAMADO LISTO PARA AGREGAR  CON DISEÑO ADAPTABLE Y TODO OJO  QUITADO EN ULTIMO MOMENTO
+                <a title="Grupos" class=" nav-link  fas fa-comments ClorIiTxt navbar-toggler" data-toggle="popover-x" data-target="#PopoverGrupos" data-placement="bottom bottom-left" style='font-size:20px;color:#01568f'>
+                </a>-->
+
+
+
+                <a title="Colaboradores" id='chatBTN' class=" nav-link  fas fa-comment ClorIiTxt navbar-toggler" data-toggle="popover-x" data-target="#PopoverChat" data-placement="bottom bottom-right" style='font-size:20px;color:#01568f'>
+
+                </a>
+                <a href="/social/index" title="Inicio" class=" nav-link  fas fa-home ClorIiTxt" style='font-size:19px;color:#01568f'> </a>
+
+                </a>
+
+
+
+                </button>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="fas fa-bars" style='font-size:24px;color:#01568f'></span>
+                </button>
+
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav ml-auto">
+                        <li>
+                            <a title="Solicitudes" class=" nav-link    fas fa-users" data-toggle="popover-x" data-target="#PopoverSolicitudes" data-placement="bottom" style='font-size:20px;color:#01568f'>
+
+                                <span class="badge badge-secondary popoverSugerenciasNotification" style='font-size:10px;color:#01568f'>1</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a title="Mensajes" class=" nav-link    fas fa-envelope" data-toggle="popover-x" data-target="#PopoverMensajes" data-target="#PopoverMensajes" data-placement="bottom bottom-right" style='font-size:20px;color:#01568f'>
+
+                                <span class="badge badge-secondary popoverNotificationSmg" style='font-size:10px;color:#01568f'>1</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a title="Notificaciones" class=" nav-link    fas fa-bell" data-toggle="popover-x" data-target="#PopoverNotificaciones" data-target="#PopoverNotificaciones" data-placement="bottom bottom-right"
+                                style='font-size:20px;color:#01568f'>
+
+                                <span class="badge badge-secondary txtNotificationNumbrer" style='font-size:10px;color:#01568f'>0</span>
+                            </a>
+                        </li>
+
+
+                        <li class="dropdown">
+                            <a title="Chat" class=" nav-link  dropdown-toggle " data-toggle="dropdown" style='font-size:14px;color:#01568f'>
+                                {% if usuario.photo == "" %}
+                                <img src="/media/foto/user.png" alt="{{usuario.id}}" altuser="{{usuario.user_id}}" {% else%} <img src="/media/{{usuario.photo}}" alt="{{usuario.id}}" altuser="{{usuario.user_id}}" {% endif %} width="20px" height="20px" style="border-radius:100%;font-weight: bold" id="usuarioGeneral">
+                                <b>{{user.get_full_name}}</b>
+                            </a>
+                            <div class="dropdown-menu">
+                                <a class="dropdown-item" href="/index/">Perfil</a>
+                                <a class="dropdown-item" href="/logout">Salir</a>
+                            </div>
+                        </li>
+
+                    </ul>
+                </div>
+            </nav>
+
+
+            <!-- area de menu modal-popovers-->
+            <div id="PopoverSolicitudes" class="popover popover-x popover-default">
+                <div class="arrow"></div>
+
+                <h3 class="popover-header popover-title">
+                    <span class="close pull-right" data-dismiss="popover-x">
+                        &times;
+                    </span>Solicitudes y Sugerencias
+                </h3>
+                <div class="popover-body popover-content">
+                    <div class="divScroll ">
+                        <div class="popoverSolicitudes">
+
+                        </div>
+                        <div class="popoverSugerencias">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="PopoverMensajes" class="popover popover-x popover-default">
+                <div class="arrow"></div>
+
+                <h3 class="popover-header popover-title">
+                    <span class="close pull-right" data-dismiss="popover-x">
+                        &times;
+                    </span>Mensajes
+                </h3>
+                <div class="popover-body popover-content">
+                    <div class="divScroll">
+                        <h6 class="SolicTxtSizeBody" style="padding-top:10px; padding-bottom:10px; "> Tus mensajes</h6>
+
+                        <div class="containerMsg">
+                            <a href="#">
+                                <div class="border-bottom" style="background: #edf2fa">
+                                    <div class="row">
+                                        <div class="col-2 col-sm-2 col-md-2 col-lg-3 col-xl-2">
+                                            <img src="https://scontent.fgye8-1.fna.fbcdn.net/v/t1.0-1/p32x32/64594499_1583041045164880_132335368388214784_n.jpg?_nc_cat=109&amp;_nc_oc=AQkIffbauuqJHxUGnK7oQ0aAk1KthptPdjdvfGaEnsi8YLjV5HNlSfNwi64_M5Jp4hE&amp;_nc_ht=scontent.fgye8-1.fna&amp;oh=2592b18d7582f0ec69f8779f2f2e2c1f&amp;oe=5E341513"
+                                                class="SolicsizeImg" alt="CakePHP" style=" border-radius: 100%;">
+                                        </div>
+                                        <div class="col-10 col-sm-10 col-md-10 col-lg-9 col-xl-10">
+                                            <div class="row">
+                                                <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 SolicTxtSizeHead" style="color:black">
+                                                    Danilo Moya
+                                                </div>
+                                                <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 SolicTxtSizeBody" style="color:black">
+                                                    Universidad TÃ©cnica de Cotopaxi
+                                                </div>
+                                                <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 SolicTxtSizeBody" style="color:black">
+                                                    Hace 5 minutos
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                            <a href="#">
+                                <div class="border-bottom">
+                                    <div class="row">
+                                        <div class="col-2 col-sm-2 col-md-2 col-lg-3 col-xl-2">
+                                            <img src="https://scontent.fgye8-1.fna.fbcdn.net/v/t1.0-1/p32x32/64594499_1583041045164880_132335368388214784_n.jpg?_nc_cat=109&amp;_nc_oc=AQkIffbauuqJHxUGnK7oQ0aAk1KthptPdjdvfGaEnsi8YLjV5HNlSfNwi64_M5Jp4hE&amp;_nc_ht=scontent.fgye8-1.fna&amp;oh=2592b18d7582f0ec69f8779f2f2e2c1f&amp;oe=5E341513"
+                                                class="SolicsizeImg" alt="CakePHP" style=" border-radius: 100%;">
+                                        </div>
+                                        <div class="col-10 col-sm-10 col-md-10 col-lg-9 col-xl-10">
+                                            <div class="row">
+                                                <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 SolicTxtSizeHead" style="color:black">
+                                                    Danilo Moya
+                                                </div>
+                                                <div class="col-8 col-sm-8 col-md-8 col-lg-8 col-xl-8 SolicTxtSizeBody" style="color:black">
+                                                    Universidad TÃ©cnica de Cotopaxi
+                                                </div>
+                                                <div class="col-4 col-sm-4 col-md-4 col-lg-4 col-xl-4 SolicTxtSizeBody" style="color:black">
+                                                    Hace 5 minutos
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+            <div id="PopoverNotificaciones" class="popover popover-x popover-default">
+                <div class="arrow"></div>
+
+                <h3 class="popover-header popover-title">
+                    <span class="close pull-right" data-dismiss="popover-x">
+                        &times;
+                    </span>Notificaciones
+                </h3>
+                <div class="popover-body popover-content">
+                    <div class="divScroll">
+                        <h6 class="SolicTxtSizeBody" style="padding-top:10px; padding-bottom:10px; "> Nuevas
+                            publicaciones</h6>
+
+                        <div class="containerNotificaciones">
+
+                        </div>
+
+
+
+
+                    </div>
+                </div>
+            </div>
+            <div id="PopoverGrupos" class="popover popover-x popover-default">
+                <div class="arrow"></div>
+
+                <h3 class="popover-header popover-title">
+                    <span class="close pull-right" data-dismiss="popover-x">
+                        &times;
+                    </span>Grupos
+                </h3>
+                <div class="popover-body popover-content" style=" width:250px ">
+                    <div class="divScroll">
+                        <!--
+                        <div class="row 101 " id="sidebar-user-box">
+                            <div class="col-2 ">
+                                <img src="https://scontent.fgye8-1.fna.fbcdn.net/v/t1.0-1/p32x32/64594499_1583041045164880_132335368388214784_n.jpg?_nc_cat=109&amp;_nc_oc=AQkIffbauuqJHxUGnK7oQ0aAk1KthptPdjdvfGaEnsi8YLjV5HNlSfNwi64_M5Jp4hE&amp;_nc_ht=scontent.fgye8-1.fna&amp;oh=2592b18d7582f0ec69f8779f2f2e2c1f&amp;oe=5E341513"
+                                    alt="Roboticos" width="25px" height="25px" style="border-radius:100%;">
+                            </div>
+                            <div class="col-7">
+                                <span id="slider-username" style=" font-size: 12px; ">
+                                    Roboticos
+                            </div>
+                            <div class="col-3">
+                                <div class="UserConected" style="padding-top: 8px">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row 102 " id="sidebar-user-box">
+                            <div class="col-2 ">
+                                <img src="https://scontent.fgye8-1.fna.fbcdn.net/v/t1.0-1/p32x32/64594499_1583041045164880_132335368388214784_n.jpg?_nc_cat=109&amp;_nc_oc=AQkIffbauuqJHxUGnK7oQ0aAk1KthptPdjdvfGaEnsi8YLjV5HNlSfNwi64_M5Jp4hE&amp;_nc_ht=scontent.fgye8-1.fna&amp;oh=2592b18d7582f0ec69f8779f2f2e2c1f&amp;oe=5E341513"
+                                    alt="Sistematicos" width="25px" height="25px" style="border-radius:100%;">
+                            </div>
+                            <div class="col-7">
+                                <span id="slider-username" style=" font-size: 12px; ">
+                                    Sistematicos
+                                </span>
+                            </div>
+                            <div class="col-3">
+                                <div class="UserConected" style="padding-top: 8px">
+                                </div>
+                            </div>
+                        </div>
+                    -->
+                    </div>
+                </div>
+            </div>
+            <div id="PopoverChat" class="popover popover-x popover-default">
+                <div class="arrow"></div>
+                <h3 class="popover-header popover-title">
+                    <span class="close pull-right" data-dismiss="popover-x">
+                        &times;
+                    </span>Colaboradores
+                </h3>
+                <div class="popover-body popover-content" style=" width:250px ">
+                    <div class="divScroll containerPopoverColaboradores">
+                        <!--
+                        <div class="row 101 " id="sidebar-user-box">
+                            <div class="col-2 ">
+                                <img src="https://scontent.fgye8-1.fna.fbcdn.net/v/t1.0-1/p32x32/64594499_1583041045164880_132335368388214784_n.jpg?_nc_cat=109&amp;_nc_oc=AQkIffbauuqJHxUGnK7oQ0aAk1KthptPdjdvfGaEnsi8YLjV5HNlSfNwi64_M5Jp4hE&amp;_nc_ht=scontent.fgye8-1.fna&amp;oh=2592b18d7582f0ec69f8779f2f2e2c1f&amp;oe=5E341513"
+                                    alt="Danilo Moya" width="25px" height="25px" style="border-radius:100%;">
+                            </div>
+                            <div class="col-7">
+                                <span id="slider-username" style=" font-size: 12px; ">
+                                    Danilo Moya
+                            </div>
+                            <div class="col-3">
+                                <div class="UserConected" style="padding-top: 8px">
+                                </div>
+                            </div>
+                        </div>
+                    -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12 ">
+        <br><br> <br>
+        {% block contenido %}
+        <h1> contenido</h1>
+        {% endblock %}
+    </div>
+    <div class="  col-11 col-sm-6 col-md-5 col-lg-4 col-xl-3 chat_b">
+
+    </div>
+    <br>
+    <br>
+    </div>
+    <script type="text/javascript" src="{% static 'assets/js/jquery/jquery-3.1.1.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/js/bootstrap/bootstrap.min.js' %}"></script>
+
+    <script src="../../static/js/bootstrap-popover-x.min.js" type="text/javascript"></script>
+
+
+    <script src='https://kit.fontawesome.com/a076d05399.js'></script>
+    <script src="../../static/js/chat2.js" type="text/javascript"></script>
+    <script src="../../static/js/SisRec.js" type="text/javascript"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.4/clipboard.min.js"></script>
+    <script src="{% static 'graficas/produccion/js/d3.min.js' %}"></script>
+    <script src="{% static 'graficas/produccion/js/c3.min.js' %}"></script>
+</body>
+
+</html>

@@ -1,0 +1,336 @@
+{% extends 'Home/index.html'%}
+{% load staticfiles %}
+
+{% block metas %}
+
+	{% if articulos %}
+		{% for articulo in articulos %}
+			<meta name="DC.Title" content="{{articulo.tituloSearch|title}}">
+			{% for a in autoArt %}
+			{% if a.articulo == articulo %}
+			<meta name="DC.Creator" content="{{a.user.first_name}} {{a.user.last_name}}">
+			{% endif %}
+			{% endfor %}
+			
+			<meta name="DC.Subject" content="ECU-CIENCIA">
+			<meta name="DC.Description" content='{{articulo.resumen | slice:"0:300"}}....'>
+			<meta name="DC.Publisher" content="Universidad Técnica de Cotopaxi">
+			<meta name="DC.Date" content='{{articulo.fechaPublicacion|date:"Y-m-d"}}'>
+			<meta name="DC.Type" content="Text">
+		
+		{% endfor %}
+	{% endif %}
+
+{% endblock %}
+
+{% block banner %}
+	{% endblock %}
+{% block contenido%}
+		<div class="container">
+		  <div class="panel panel-default">
+			<div class="panel-heading"></div>
+			<div class="panel-body">
+				{% block busqueda %}
+				<div class="col-md-12">
+					<form class="form-inline" action="/Home/buscarArticulo/" method="GET">
+
+						<div class="form-group col-md-1">
+						</div>
+						<div class="form-group col-md-8">
+							<input type="text" name="buscalo" value="{{ buscar|escape }}" placeholder="Ingrese el Artículo buscar" class="form-control mail-search" style="width : 100%;border:2px solid #01568F">
+						</div>
+						<div class="form-group col-md-2">
+							<button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+						</div>
+					</form>
+				</div>
+				<br>
+				<br>
+				<div class="col-md-12" align="center">
+					<!--<div class="col-md-3"></div>-->
+					<div class="col-md-12">
+					<ul class="nav nav-tabs nav-justified">
+						{% if buscar %}
+						<li class="active"><a href="/Home/buscarArticulo/?buscalo={{ buscar }}" style="color:#01568F">Artículo</a></li>
+						<li><a href="/Home/buscarLibro/?buscalo={{ buscar }}" style="color:#01568F">Libro</a></li>
+						<li><a href="/Home/buscarPonencia/?buscalo={{ buscar }}" style="color:#01568F">Ponencia</a></li>
+						<li><a href="/Home/buscarAutor/?buscalo={{ buscar }}" style="color:#01568F">Autor</a></li>
+						{% else %}
+						<li class="active"><a href="/Home/buscarArticulo/" style="color:#01568F">Artículo</a></li>
+						<li><a href="/Home/buscarLibro/" style="color:#01568F">Libro</a></li>
+						<li><a href="/Home/buscarPonencia/" style="color:#01568F">Ponencia</a></li>
+						<li><a href="/Home/buscarAutor/" style="color:#01568F">Autor</a></li>
+						{% endif %}
+					</ul>
+					</div>
+					<!--<div class="col-md-3"></div>-->
+				</div>
+				{% endblock %}
+
+				<br>
+				<div class="col-md-12"  align="center">
+					<ul><label>Se ha encontrado aproximadamente {{articulos.count}} Artículos.</label></ul>
+				</div>
+				<br>
+				<br>
+
+				<div class="col-md-12">
+
+                   <ul class="mail-list">
+					   {% if buscar %}
+					   {% if articulos %}
+					   {% for articulo in articulos %}
+                    <li class="ho">
+                        <h2 hidden>{{articulo.id}}</h2>
+                        <h3>{{articulo.tituloSearch|title}} </h3>
+                        <p>( {{articulo.fechaPublicacion|date:"b, Y"}} )</p>
+                        <h5><strong>Autores: </strong>
+                            {% for a in autoArt %}
+                            {% if a.articulo == articulo %}
+							<span class="fa fa-play" style="font-size: 0.5em; vertical-align: 2px; padding: 3px"></span>{{a.user.first_name}} {{a.user.last_name}}
+                            {% for p in perfil %}
+                            {% if a.user.id == p.user.id %}
+                            <!-- Modal HTML -->
+                            <div class="modal fade" id="myModal{{a.user.id}}" data-backdrop="static" data-keyboard="false">
+                                <div class="modal-dialog modal-login">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <div class="avatar">
+                                                {% if a.user.investigador.photo != '' %}
+                                                <img
+                                                     src="http://ecuciencia.utc.edu.ec/media/{{a.user.investigador.photo}}">
+                                                {% else %}
+                                                <img
+													src="http://ecuciencia.utc.edu.ec/media/foto/default-user_x5fGYax.png">
+                                                {% endif %}
+                                            </div>
+                                            <h4 class="modal-title">{{p.user.first_name}} {{p.user.last_name}}</h4>
+                                            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                                &times;
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+
+                                            <div class="form-group">
+                                                <h5>Email: {{p.user.email}}</h5>
+                                            </div>
+
+                                            <div class="form-group">
+
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            {% endfor %}
+                            {% if a.user.investigador.photo != '' %}
+                            <a href="#myModal" data-toggle="modal" data-target="#myModal{{a.user.id}} "
+                               style="color: #606676">
+                                <img class="zoom" width="15px" height="15px" style="border-radius:50%;"
+                                     src="http://ecuciencia.utc.edu.ec/media/{{a.user.investigador.photo}}"></a>
+                            {% else %}
+                            <a href="#myModal" data-toggle="modal" data-target="#myModal{{a.user.id}}"
+                               style="color: #606676"><img alt="Clic para mostrar informació del Autor" class="zoom"
+                                                           width="15px" height="15px" style="border-radius:50%;"
+                                                           src="http://ecuciencia.utc.edu.ec/media/foto/default-user_x5fGYax.png"></a>
+                            {% endif %}
+                            {% endif %}
+                            {% endfor %}
+                        </h5>
+                        <h5><strong>Resumen</strong></h5>
+                        <p align="justify" id="texto">{{articulo.resumen | slice:"0:300"}}....<a href=""
+                                                                                                 onclick="return abrir_modal('{% url 'indexHome:detalleArticulo' articulo.id %}')" style="color: #606676"><strong>[Ver
+                            más]</strong></a></p>
+                        <a class="btn btn-primary " style="background: #01568F; font-size:15px; padding: 1px 25px;"
+                           href="http://ecuciencia.utc.edu.ec/media/{{articulo.documento}}"> <span
+                                class="fa fa-download"> |</span> Descargar</a>
+                    </li>
+                    <hr style="border-top: 3px solid #01568F;" width="100%"/>
+                    {% endfor %}
+					   {% else %}
+						   <h3 align="center"><strong>No se encontró ninguna coincidencia con: {{buscar}}</strong></h3>
+					   {% endif %}
+					{% else %}
+                        <h3 align="center"><strong>Ingrese un dato a buscar</strong></h3>
+                    {% endif %}
+                   </ul>
+               </div>
+
+			</div>
+		  </div>
+		</div>
+<div id="popup" class="modal fade" role="dialog">
+
+</div>
+</div>
+<script>
+	function abrir_modal(url)
+	{
+        $('#popup').load(url, function()
+        {
+                $(this).modal('show');
+        });
+        return false;
+	}
+
+function cerrar_modal()
+	{
+        $('#popup').modal('hide');
+        return false;
+	}
+</script>
+		<!-- SCRIPTS - REQUIRED START -->
+		<!-- Placed at the end of the document so the pages load faster -->
+		<!-- Bootstrap core JavaScript -->
+		<!-- JQuery -->
+		<script type="text/javascript" src="{% static 'assets/js/jquery/jquery-3.1.1.min.js' %}"></script>
+		<!-- Popper.js - Bootstrap tooltips -->
+		<script type="text/javascript" src="{% static 'assets/js/bootstrap/popper.min.js' %}"></script>
+		<!-- Bootstrap core JavaScript -->
+		<script type="text/javascript" src="{% static 'assets/js/bootstrap/bootstrap.min.js' %}"></script>
+		<!-- MDB core JavaScript -->
+		<script type="text/javascript" src="{% static 'assets/js/bootstrap/mdb.min.js' %}"></script>
+		<!-- Velocity -->
+		<script type="text/javascript" src="{% static 'assets/plugins/velocity/velocity.min.js' %}"></script>
+		<script type="text/javascript" src="{% static 'assets/plugins/velocity/velocity.ui.min.js' %}"></script>
+		<!-- Custom Scrollbar -->
+		<script type="text/javascript" src="{% static 'assets/plugins/custom-scrollbar/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+		<!-- jQuery Visible -->
+		<script type="text/javascript" src="{% static 'assets/plugins/jquery_visible/jquery.visible.min.js' %}"></script>
+		<!-- jQuery Visible -->
+		<script type="text/javascript" src="{% static 'assets/plugins/jquery_visible/jquery.visible.min.js' %}"></script>
+		<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+		<script type="text/javascript" src="{% static 'assets/js/misc/ie10-viewport-bug-workaround.js' %}"></script>
+
+		<!-- SCRIPTS - REQUIRED END -->
+
+		<!-- SCRIPTS - OPTIONAL START -->
+		<!-- ChartJS -->
+		<script type="text/javascript" src="{% static 'assets/plugins/chartjs/chart.bundle.min.js' %}"></script>
+		<!-- JVMaps -->
+		<script type="text/javascript" src="{% static 'assets/plugins/jvmaps/jquery.vmap.min.js' %}"></script>
+		<script type="text/javascript" src="{% static 'assets/plugins/jvmaps/maps/jquery.vmap.usa.js' %}"></script>
+		<!-- Image Placeholder -->
+		<script type="text/javascript" src="{% static 'assets/js/misc/holder.min.js' %}"></script>
+
+		<script>
+		$('.openBtn').on('click',function(){
+			$('.modal-body').load('content.html',function(){
+				$('#myModal').modal({show:true});
+			});
+		});
+		</script>
+		<script>
+			$(document).ready(function(){
+				$('.zoom').hover(function() {
+					$(this).addClass('transition');
+				}, function() {
+					$(this).removeClass('transition');
+				});
+			});
+		</script>
+		<style>
+		img.zoom {
+			width: 25px;
+			height: 25px;
+			-webkit-transition: all .2s ease-in-out;
+			-moz-transition: all .2s ease-in-out;
+			-o-transition: all .2s ease-in-out;
+			-ms-transition: all .2s ease-in-out;
+		}
+		.transition {
+			-webkit-transform: scale(3.8);
+			-moz-transform: scale(3.8);
+			-o-transform: scale(3.8);
+			transform: scale(3.8);
+		}
+		</style>
+		<style>
+		.ho:hover {
+			background-color: powderblue;
+			transition: background-color .5s;
+			border-radius: 150px;
+			-webkit-border-radius: 10px;
+			-moz-border-radius: 10px;
+		}
+			button[type=submit] {
+				background: #01568F;
+			}
+		</style>
+<style type="text/css">
+	.modal-login {
+		color: #636363;
+		width: 350px;
+	}
+	.modal-login .modal-content {
+		padding: 20px;
+		border-radius: 5px;
+		border: none;
+	}
+	.modal-login .modal-header {
+		border-bottom: none;
+        position: relative;
+        justify-content: center;
+	}
+	.modal-login h4 {
+		text-align: center;
+		font-size: 18px;
+		margin: 30px 0 -15px;
+	}
+	.modal-login .form-control:focus {
+		border-color: #70c5c0;
+	}
+	.modal-login .form-control, .modal-login .btn {
+		min-height: 40px;
+		border-radius: 3px;
+	}
+	.modal-login .close {
+        position: absolute;
+		top: -5px;
+		right: -5px;
+	}
+	.modal-login .modal-footer {
+		background: #ecf0f1;
+		border-color: #dee4e7;
+		text-align: center;
+        justify-content: center;
+		margin: 0 -20px -20px;
+		border-radius: 5px;
+		font-size: 13px;
+	}
+	.modal-login .avatar {
+		position: absolute;
+		margin: 0 auto;
+		left: 0;
+		right: 0;
+		top: -100px;
+		width: 130px;
+		height: 130px;
+		border-radius: 50%;
+		z-index: 9;
+		background: #01568F;;
+		padding: 2px;
+		box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+	}
+	.modal-login .avatar img {
+		width: 100%;
+		height: 100%;
+		border-radius:130px;
+	}
+	.modal-login.modal-dialog {
+		margin-top: 180px;
+	}
+</style>
+		{% block scripts %}
+
+		{% endblock %}
+
+		<!-- SCRIPTS - OPTIONAL END -->
+
+		<!-- QuillPro Scripts -->
+		<script type="text/javascript" src="{% static 'assets/js/scripts.js' %}"></script>
+{% endblock %}

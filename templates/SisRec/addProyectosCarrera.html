@@ -1,0 +1,138 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block title %} Nuevo Proyecto {% endblock %}
+{% block subtitle %}
+<span style="color:#07afea">PROYECTO CARRERA</span>
+
+{% endblock%}
+
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block proyectosCarrera %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'social:listarAdminProyectosCarrera' %}">
+        <i class="batch-icon batch-icon-distribute-bottom-edges "></i>
+        Proyectos Carrera
+    </a>
+</li>
+
+{% endblock %}
+{% block content %}
+{% for message in messages %}
+<div class="alert {{ message.tags }} alert-dismissible" role="alert">
+    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    {{ message }}
+</div>
+{% endfor %}
+
+{% if user.is_superuser %}
+<div class="col-md-12">
+
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+
+
+                    <form id="formDB1" method="post">
+                        {% csrf_token %}
+
+                        <div class="card-body">
+                            <div class="form-group">
+                                <label for="NombreProyecto">Nombre del proyecto:</label>
+                                <input type="files" class="form-control" placeholder="Ingrese el nombre del proyecto.." id="terminoAdminKeywords" name="nombre" required >
+                            </div>
+                            <div class="form-group">
+                                <label for="Carrera">Tipo de proyecto:</label>
+                                <select name="carreraAdminProyecto" rel="" id="carreraAdminproyecto" class="form-control" required>
+                                    <option value="Formativo">Formativo</option>
+                                    <option value="Generativo">Generativo</option>
+                                    <option value="Otro">Otro</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="Carrera">Carrera:</label>
+                                <select name="carreraAdminPro" rel="" id="carreraAdminPro" class="form-control" required>
+                                    {% for carrer in carrera %}
+                                    <option value="{{carrer.id}}">{{carrer.Nombre}}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="card-body d-flex justify-content-between align-items-center">
+                                <a class="btn btn-danger btn-sm  " href="{% url 'social:listarAdminKeywords' %}"><span class=" 	fa fa-calendar-times-o" style="width:20px; height:10px"></span> Cancelar</a>
+                                <button type="submit" class="btn btn-primary btn-sm  "><span class="fa fa-save" style="width:20px; height:10px"></span>Guardar</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+{% else %}
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                    <div class="table-responsive">
+
+                        <h4>No tine los permisos suficiente para ingresar a esta opción</h4>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+{% endblock%}
+
+{% block scripts %}
+
+<script>
+    $(document).ready(function() {
+        $(".ContainerKeywordsAdmin").on("click", "#btnEditarKeywordsAdmin", function(e) {
+            var id = $(this).attr("alt")
+            var palabraClave = $('[altid="' + id + '"]').text()
+            var carreraid = $('[altcarreraid="' + id + '"]').text()
+            $("#terminoAdminKeywords").val(palabraClave)
+            $("#carreraAdminKeywords > option[value=" + carreraid + "]").attr("selected", true);
+            $("#idKeyword").val(id)
+
+            idKeyword
+
+            $("#ModalKeywordsAdmin").modal("show")
+        });
+    });
+</script>
+
+
+<script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+
+<link rel="stylesheet" href="{% static 'assets/css/Botones/botones.css' %}">
+<!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+{% endblock %}

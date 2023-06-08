@@ -1,0 +1,115 @@
+{% extends 'Home/index.html' %}
+{% load staticfiles %}
+
+{% block contenido %}
+<html>
+<head>
+
+    <link rel="stylesheet" href="{% static 'graficas/similaridad/json/jh/movie-network.css' %}"/>
+    <script>
+      var ie = ( function() {
+        var undef,
+        v = 3,
+        div = document.createElement('div'),
+        all = div.getElementsByTagName('i');
+        while (
+         div.innerHTML='<!--[if gt IE ' + (++v) + ']><i></i><![endif]-->',all[0]
+        );
+        return v > 4 ? v : undef;
+      }() );
+
+      function takeAction() {
+        if( ie && ie < 9 ) {
+          D3notok();
+        } else {
+          var head = document.getElementsByTagName('head')[0];
+          var script = document.createElement('script');
+          script.type = 'text/javascript';
+          script.src = "/static/graficas/similaridad/json/jh/d3.min.js";
+          script.addEventListener('load', D3ok, false);
+          script.onload = "D3ok();";
+    head.appendChild(script);
+       }
+     }
+    </script>
+    <script type="text/javascript">
+      function abrir(){
+        document.getElementById("contenido").style.display="none";
+      }
+    </script>
+    <script src="{% static 'graficas/similaridad/json/jh/js/jquery.slim.min.js' %}"></script>
+    <link href="{% static 'graficas/similaridad/json/jh/css/font-awesome.min.css' %}" rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" href="{% static 'graficas/similaridad/json/css/ventana.css' %}">
+    <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+        <script type="text/javascript">
+        $(document).ready(function(){
+        $.ajax({
+          url:'/grafica/redesAutores/',
+            type:'POST',
+          data:{
+            datos:'Hello',
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+          success: function(json){
+            Command: toastr["success"]("Red Social Actualizada", "Mensaje")
+                        toastr.options = {
+                          "closeButton": true,
+                          "debug": false,
+                          "newestOnTop": false,
+                          "progressBar": false,
+                          "positionClass": "toast-bottom-full-width",
+                          "preventDuplicates": false,
+                          "onclick": null,
+                          "showDuration": "300",
+                          "hideDuration": "1000",
+                          "timeOut": "5000",
+                          "extendedTimeOut": "1000",
+                          "showEasing": "swing",
+                          "hideEasing": "linear",
+                          "showMethod": "fadeIn",
+                          "hideMethod": "fadeOut"
+                    }
+          }
+        })            
+      });
+      </script>
+
+</head>
+<body onload="takeAction();" style="background: white;">
+  {% if search_autor %}
+  <input type="text" style="display: none;" id="search_autor" value="{{search_autor}}">
+  {% endif %}
+  <div id="contenido1" style="width: 100%; height: 600px;">
+  <div class="row" style="z-index: 20;position: absolute;width: 100%;padding: 5px;">
+      {% csrf_token %}
+      <div class="col-md-3">
+          <div class="input-group" style="background-color: white;width: 250px;">
+            <input id="searchBox" type="text" class="form-control" placeholder="Buscar..." style="float: left;margin-left: 46px;width: 250px;">
+            <div style="width: 46px;height: 46px;background-color: #01568F;color: white;text-align: center;float: left;position: absolute;padding-top: 6px;"><i class="glyphicon glyphicon-user"></i></div>
+          </div>
+      </div>
+  </div>
+  <div id="response" style="z-index: 20;position: absolute;width: 250px;margin-top: 55px;margin-left: 51px;"></div>
+  <div id="movieNetwork"></div>
+  <div style="float: right;display: none;z-index: 20;position: absolute;" id="contenido">
+  <a href="javascript:abrir()" style="position: absolute;z-index: 20;margin-left: 275px;size: 20px;text-decoration: none;">X</a>   
+  <div id="movieInfo">
+    <div class="form-group" id="cover" style="background-color: white;">
+      <img class="cover" style="width: 200px; height: 250px;margin: 35px;" src="/static/graficas/similaridad/json/img/usuario.png"/>
+      <img src="/static/graficas/similaridad/json/jh/img/target-32.png" class="action" title="Centrar"/>
+      <br>
+    </div>
+    <div style="clear: both;">
+      <div class=f><span class=l>Investigador</span>: <span class=d></span></div>
+      <div class=f><span class=l>Relacionados : </span></div>
+    </div>
+  </div>
+  </div>
+  </div>
+  <script src="{% static 'graficas/similaridad/json/jh/movie-network.js' %}"></script>
+  <br>
+</body>
+</html>
+{% endblock %}

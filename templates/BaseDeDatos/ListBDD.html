@@ -1,0 +1,468 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block title %} Listado de base de datos {% endblock %}
+{% block subtitle %}
+<span style="color:#07afea">Base de Datos</span>
+{% endblock%}
+
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block baseDatos %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'baseDatos:Lista_bdd' %}">
+        <i class="batch-icon batch-icon-database"></i>
+        Base de Datos
+    </a>
+</li>
+{% endblock %}
+
+{% block content %}
+{% if user.is_superuser %}
+<script>
+    //Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+    //Para listar documentos rechazados      Fecha:04/07/2019
+        function activarRe(){
+            var valor=document.getElementById("micheck");
+            if(valor.checked==true){
+                document.getElementById('tbody1').style.display='none';
+                document.getElementById('tbody2').style.display='block';
+            }else{
+                $('#tbody1').show();
+                $('#tbody2').hide();
+                location.reload();
+            }
+    
+    
+        }
+    
+        </script>
+    <div class="card-body">
+        <input type="checkbox" id="micheck" name="vehicle" value="1" onclick=" activarRe()"> Activar Rechazadas<br>
+    </div>
+<br>
+<div id="tbody1" class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                        <a href="{% url 'baseDatos:ReporteBDD' %}" class="btn btn-excel btn-md  pull-right"><i class=""></i> 
+                            <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                        </a>
+                    <div class="table-responsive">
+                        {% if bddAdmin %}
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover" style="width: 100%">
+                            <thead>
+                                <h3 style="color:black;font-size:100%">
+                                    <tr>
+                                        <td>Id</td>
+                                        <td>Estado</td>
+                                        <td>Nombre</td>
+                                        <td>Tipo de Base de Datos</td>
+                                        <td>Url</td>
+
+                                        <td style="width:5%">Acciones</td>
+                                        <td>Cambiar Estado</td>
+
+                                    </tr>
+                                </h3>
+
+                            </thead>
+                            <tbody>
+                                {% for baseDatos in bddAdmin %}
+                                {% csrf_token %}
+                                <tr>
+                                    <td>{{baseDatos.id}}</td>
+                                    <td>
+                                        <div id="con{{baseDatos.id}}">
+                                            {% if baseDatos.estado == 1 %}
+                                            <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                            {% elif baseDatos.estado == 2 %}
+                                            <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                            {% else %}
+                                            <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td><span id="nombreBDD{{baseDatos.id}}"> {{baseDatos.BaseDatos|truncatechars:25}}</span></td>
+                                    <td><span id="tipoBaseid{{baseDatos.id}}">{{baseDatos.tipoBaseDatos}}</span></td>
+                                    <td><a id="UrlBDD{{baseDatos.id}}" href="{{baseDatos.Url}}" target="_blank">Enlace</a></td>
+
+                                    <td>
+
+                                        <a href="" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal{{baseDatos.id}}">Editar
+                                        </a>
+
+                                    </td>
+                                    <td>
+                                        <div id="estado{{baseDatos.id}}">
+                                            {% if baseDatos.estado == 1 %}
+                                            <div class="container1">
+                                                <div class="radio-wrapper">
+                                                    <a title="Aprobar Base de Datos" class="correct" name="Aceptada"
+                                                        onclick="aceptarBDD('{{baseDatos.id}}',this)">
+                                                        <i title="Aprobar Base de Datos" class="fa fa-check"></i>
+                                                    </a>
+                                                    <a class="neutral-icon"><span id="circulo" class="fa fa-circle"></span></a>
+                                                    <a title="Rechazar Base de Datos" class="wrong" name="Rechazada"
+                                                        onclick="aceptarBDD('{{baseDatos.id}}',this)">
+                                                        <i title="Rechazar Base de Datos" class="fa fa-times-circle"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            {% elif baseDatos.estado == 2 %}
+                                            <span>Aceptada</span>
+                                            {% elif baseDatos.estado == 3 %}
+                                            <span>Rechazada</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <div class="modal fade" id="exampleModal{{baseDatos.id}}" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Editar Base de Datos</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form id="formDB1">
+                                                {% csrf_token %}
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Tipo Base de Datos {{baseDatos.tipoBaseDatos}} <span
+                                                                    style="color:red">*</span></label>
+                                                            <select type="text" class="form-control" name="tipoBD" id="tipoBD{{baseDatos.id}}"
+                                                                required>
+                                                                {% if baseDatos.tipoBaseDatos.id == 1%}
+                                                                <option value="1">Regional</option>
+                                                                <option value="2">Alto impacto</option>
+                                                                {% else %}
+                                                                <option value="2">Alto impacto</option>
+                                                                <option value="1">Regional</option>
+                                                                {% endif %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <label>Nombre de la Base de Datos <span style="color:red">*</span></label>
+                                                            <input id="nombrebd{{baseDatos.id}}" value="{{baseDatos.BaseDatos}}"
+                                                                type="text" class="form-control" name="nameBD" id="nameBD"
+                                                                required>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <label>URL de la Base de Datos <span style="color:red">*</span></label>
+                                                            <input id="urlbd{{baseDatos.id}}" value="{{baseDatos.Url}}"
+                                                                type="url" required class="form-control" name="Url de la base de datos"
+                                                                id="Url">
+                                                        </div>
+                                                        <input type="text" class="form-control" style="display:none"
+                                                            name="user" id="user" value="{{user.id}}">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                    <button onclick="editbd('{{baseDatos.id}}')" type="button" class="btn btn-primary">Guardar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <h4>No hay registros de revistas</h4>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+    //Para listar documentos rechazados      Fecha:04/07/2019-->
+<div id="tbody2" class="col-md-12" style="display:none">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                        <a href="{% url 'baseDatos:ReporteBDD' %}" class="btn btn-excel btn-md  pull-right"><i class=""></i> 
+                            <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                        </a>
+                    <div class="table-responsive">
+                        {% if bddAdmin %}
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover" style="width: 100%">
+                            <thead>
+                                <h3 style="color:black;font-size:100%">
+                                    <tr>
+                                        <td>Id</td>
+                                        <td>Estado</td>
+                                        <td>Nombre</td>
+                                        <td>Tipo de Base de Datos</td>
+                                        <td>Url</td>
+
+                                        <td style="width:5%">Acciones</td>
+                                        <td>Cambiar Estado</td>
+
+                                    </tr>
+                                </h3>
+
+                            </thead>
+                            <tbody>
+                                {% for baseDatos in bddAdminRec %}
+                                {% csrf_token %}
+                                <tr>
+                                    <td>{{baseDatos.id}}</td>
+                                    <td>
+                                        <div id="con{{baseDatos.id}}">
+                                            {% if baseDatos.estado == 1 %}
+                                            <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                            {% elif baseDatos.estado == 2 %}
+                                            <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                            {% else %}
+                                            <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td><span id="nombreBDD{{baseDatos.id}}"> {{baseDatos.BaseDatos|truncatechars:25}}</span></td>
+                                    <td><span id="tipoBaseid{{baseDatos.id}}">{{baseDatos.tipoBaseDatos}}</span></td>
+                                    <td><a id="UrlBDD{{baseDatos.id}}" href="{{baseDatos.Url}}" target="_blank">Enlace</a></td>
+
+                                    <td>
+
+                                        <a href="" class="btn btn-primary btn-sm" data-toggle="modal" data-target="#exampleModal{{baseDatos.id}}">Editar
+                                        </a>
+
+                                    </td>
+                                    <td>
+                                        <div id="estado{{baseDatos.id}}">
+                                            {% if baseDatos.estado == 1 %}
+                                            <div class="container1">
+                                                <div class="radio-wrapper">
+                                                    <a title="Aprobar Base de Datos" class="correct" name="Aceptada"
+                                                        onclick="aceptarBDD('{{baseDatos.id}}',this)">
+                                                        <i title="Aprobar Base de Datos" class="fa fa-check"></i>
+                                                    </a>
+                                                    <a class="neutral-icon"><span id="circulo" class="fa fa-circle"></span></a>
+                                                    <a title="Rechazar Base de Datos" class="wrong" name="Rechazada"
+                                                        onclick="aceptarBDD('{{baseDatos.id}}',this)">
+                                                        <i title="Rechazar Base de Datos" class="fa fa-times-circle"></i>
+                                                    </a>
+                                                </div>
+                                            </div>
+                                            {% elif baseDatos.estado == 2 %}
+                                            <span>Aceptada</span>
+                                            {% elif baseDatos.estado == 3 %}
+                                            <span>Rechazada</span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+
+                                </tr>
+                                <div class="modal fade" id="exampleModal{{baseDatos.id}}" tabindex="-1" role="dialog"
+                                    aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">Editar Base de Datos</h5>
+                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">&times;</span>
+                                                </button>
+                                            </div>
+                                            <form id="formDB1">
+                                                {% csrf_token %}
+                                                <div class="modal-body">
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <label>Tipo Base de Datos {{baseDatos.tipoBaseDatos}} <span
+                                                                    style="color:red">*</span></label>
+                                                            <select type="text" class="form-control" name="tipoBD" id="tipoBD{{baseDatos.id}}"
+                                                                required>
+                                                                {% if baseDatos.tipoBaseDatos.id == 1%}
+                                                                <option value="1">Regional</option>
+                                                                <option value="2">Alto impacto</option>
+                                                                {% else %}
+                                                                <option value="2">Alto impacto</option>
+                                                                <option value="1">Regional</option>
+                                                                {% endif %}
+                                                            </select>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <label>Nombre de la Base de Datos <span style="color:red">*</span></label>
+                                                            <input id="nombrebd{{baseDatos.id}}" value="{{baseDatos.BaseDatos}}"
+                                                                type="text" class="form-control" name="nameBD" id="nameBD"
+                                                                required>
+                                                        </div>
+                                                        <div class="col-md-12">
+                                                            <label>URL de la Base de Datos <span style="color:red">*</span></label>
+                                                            <input id="urlbd{{baseDatos.id}}" value="{{baseDatos.Url}}"
+                                                                type="url" required class="form-control" name="Url de la base de datos"
+                                                                id="Url">
+                                                        </div>
+                                                        <input type="text" class="form-control" style="display:none"
+                                                            name="user" id="user" value="{{user.id}}">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                                                    <button onclick="editbd('{{baseDatos.id}}')" type="button" class="btn btn-primary">Guardar</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <h4>No hay registros de revistas</h4>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                    <div class="table-responsive">
+
+                        <h4>No hay registros de Base de Datos</h4>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+
+
+
+
+
+
+
+{% endblock%}
+
+{% block scripts %}
+
+<script>
+    function editbd(id_baseDatos){
+        var nm = $('#nombrebd' + id_baseDatos).val();
+        var ur = $('#urlbd' + id_baseDatos).val();
+        var tbd = $('#tipoBD' + id_baseDatos).val();
+        
+        $.ajax({
+                type: 'POST',
+                url: '/BDD/update_Bdd/',
+                data: {
+                    id: id_baseDatos,
+                    BaseDatos:nm,
+                    Url:ur,
+                    tipoBaseDatos:tbd,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    $.each(data, function (index, item) {
+                        if (item.estado == 1) {
+                            
+                            var nerOp = "<span id='tipoBaseid"+id_baseDatos+"'>Regional</span>"
+                            $("#tipoBaseid" + id_baseDatos).replaceWith(nerOp);
+                        } else {
+
+                            var nerOp = "<span id='tipoBaseid"+id_baseDatos+"'>Alto Impacto</span>"
+                            $("#tipoBaseid" + id_baseDatos).replaceWith(nerOp);
+                        }                      
+                        var newnombre = "<span id='nombreBDD"+id_baseDatos+"'> "+item.BaseDatos+"</span>"
+                        var newurl = "<a id='UrlBDD"+id_baseDatos+"' href='"+item.Url+"' target='_blank'>Enlace</a>"
+                        $("#UrlBDD" + id_baseDatos).replaceWith(newurl);
+                        $("#nombreBDD" + id_baseDatos).replaceWith(newnombre);
+                        
+                       
+                    });
+                    $('#exampleModal' + id_baseDatos).modal('hide');
+                    toastr.info("Exito", "Se actualizo el estado de la Base de Datos");
+                    console.log("Estoy aqui");
+                },
+                error: function () {
+
+                    console.log('Opss');
+                }
+            })
+        
+
+        
+    }
+
+    function aceptarBDD(BDD_id, estB) {
+        var xd = estB.name;
+        var estadoR;
+        if (xd == "Aceptada") {
+            estadoBdd = 2;
+        } else if (xd == "Rechazada") {
+            estadoBdd = 3;
+        }
+        if (confirm("¿Esta seguro que desea camiar el estado?")) {
+            $.ajax({
+                type: 'POST',
+                url: '/BDD/estado_Bdd/',
+                data: {
+                    id: BDD_id,
+                    estado: estadoBdd,
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success: function (data) {
+                    $.each(data, function (index, item) {
+
+                        if (item.estado == 2) {
+                            var nerOp = "<span class='fa fa-2x fa-lock' style='color: green '></span>"
+                            var estadoB = "<span> Aceptada</span>"
+                            $("#con" + BDD_id).replaceWith(nerOp);
+                            $("#estado" + BDD_id).replaceWith(estadoB);
+
+                        } else {
+
+                            var nerOp = "<span class='fa fa-2x fa-lock' style='color: red '></span>"
+                            var estadoB = "<span> Rechazada</span>"
+                            $("#con" + BDD_id).replaceWith(nerOp);
+                            $("#estado" + BDD_id).replaceWith(estadoB);
+                        }
+                    });
+                    toastr.info("Exito", "Se actualizo el estado de la Base de Datos");
+                    console.log("Estoy aqui");
+                },
+                error: function () {
+
+                    console.log('Opss');
+                }
+            })
+        } else {
+            console.log("cancelado");
+        }
+
+    }
+</script>
+
+<script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+
+<link rel="stylesheet" href="{% static 'assets/css/Botones/botones.css' %}">
+<!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+{% endblock %}

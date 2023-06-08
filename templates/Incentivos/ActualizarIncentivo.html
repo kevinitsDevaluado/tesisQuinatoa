@@ -1,0 +1,276 @@
+{% extends 'base1/inicio.html' %}
+{% load staticfiles %}
+{% block css %}
+    <!-- Tags Input -->
+    <link rel="stylesheet" href="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/multiselect.css' %}">
+    <style>
+            #lista1 ul { 
+                width: 100%;
+                z-index: 20;
+                float: up;
+                max-height: 200px;
+                overflow: auto;
+                font-size: 12px;
+                position: relative;
+                z-index:2;
+            }
+            #lista1 ul li { 
+                display:block; 
+                height:28px; 
+    
+                padding-left:20px;
+                padding-bottom: 25px;
+                text-decoration:none; 
+            }
+        
+        </style>
+<!-- CSS - OPTIONAL - END -->
+{% endblock %}
+{% block title %}
+    Actualizar información de evento
+{% endblock%}
+{% block subtitle %} 
+        {% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block incentivos %}
+    <li class="nav-item active">
+        <a class="nav-link active" href="{% url 'incentivo:Listar_Evento' %}">
+            <i class="batch-icon batch-icon-star"></i>
+            Incentivos
+        </a>
+    </li>
+{% endblock %}
+
+{% block content %}
+	<div class="col-md-12">
+        <form method="post" onsubmit="return ValidarDate();">
+        {% csrf_token %}
+        <input type="hidden" name="IdContador" id="IdContador" value="{{Niveles.count}}">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+						<div class="panel panel-headline">
+						    <div class="panel-body">
+                                    <div class="card-header">
+                                        ACTUALIZAR INFORMACIÓN de: {{ form.nombre.value }}
+                                    </div>
+                                    <div class="card-body">
+                                    
+                                            <div class="row">
+                                    <div class="col-md-12">
+                                        <b>{{ form.nombre.label }} <span style="color: red">*</span></b>
+                                        {{ form.nombre }}
+                                        {{ form.nombre.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.fechaInicio.label }} <span style="color: red">*</span></b>
+                                        {{ form.fechaInicio }}
+                                        {{ form.fechaInicio.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                            <b>{{ form.fechaFinal.label }} <span style="color: red">*</span></b>
+                                        {{ form.fechaFinal }}
+                                        {{ form.fechaFinal.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                            <b>{{ form.numeroPublicaciones.label }} <span style="color: red">*</span></b>
+                                        {{ form.numeroPublicaciones }}
+                                        {{ form.numeroPublicaciones.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                            <b>{{ form.estado.label }} <span style="color: red">*</span></b>
+                                        {{ form.estado }}
+                                        {{ form.estado.errors }}
+                                    </div>
+                                </div>
+                                        
+                                        <div class="row">
+                                            {% if form.errors %}
+                                                {% for error in form.errors %} 
+                                                <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                                                    <strong>Error!!</strong> {{ error }}
+                                                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                {% endfor %}
+                                            {% endif %} 
+                                        </div>
+
+                                    </div>
+
+
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+        <br>
+        <div class="card" >
+            <div class="card-header">
+                Incentivos<br>
+                <button id="btRemove" class="btn btn-danger btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-minus"></i> incentivo</button>
+                 <button id="btAdd" class="btn btn-primary btn-sm pull-right" type="button" aria-disabled="true" style="margin-right: 5px;"><i class="fa fa-plus"></i> incentivo</button>
+            </div>
+            <div class="card-body" id="lista1">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="row">
+                                <div id="dbId">
+                                </div>
+                                <script>
+                                    var a = -1, b = -1;
+                                    $("#dbId").append('{%for i in Niveles %}<input type="hidden" name="id'+(a += 1)+'" id="id'+(b += 1)+'" value="{{i.id}}">{%endfor%}');
+                                </script>
+                                <div class="col-md-2">
+                                    <div id="dbNivel">
+                                    </div>
+                                    <script>
+                                        var a = -1, b = -1;
+                                        $("#dbNivel").append('<label>Nivel</label>{%for i in Niveles %}<input  type=text class="form-control" name="nivel'+(a += 1)+'" id="nivel'+(b += 1)+'" value="{{i.nivel }}" readonly/>{%endfor%}');
+                                    </script>
+                                </div>
+                                <div class="col-md-2">
+                                    <div id="dbCupo">
+                                    </div>
+                                    <script>
+                                        var a = -1, b = -1;
+                                        $("#dbCupo").append('<label>Cupo</label>{%for i in Niveles %}<input  type=text class="form-control" name="cupo'+(a += 1)+'" id="cupo'+(b += 1)+'" value="{{i.numeroCupos }}" />{%endfor%}');
+                                    </script>
+                                </div>
+                                <div class="col-md-8">
+                                    <div id="dbDes">
+                                    </div>
+                                    <script>
+                                        var a = -1, b = -1;
+                                        $("#dbDes").append('<label> Descripcion </label>{%for i in Niveles %}<input  type=text class="form-control" name="des'+(a += 1)+'" id="des'+(b += 1)+'" value="{{i.descripcion }}" />{%endfor%}');
+                                    </script>
+                                </div>
+                        </div>
+                        <div class="row">
+                            <div id="formId">
+
+                            </div>
+                            <div class="col-md-2">
+                                <div id="formNivel">
+
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div id="formCupo">
+
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div id="formDes">
+
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <button id="guardar" class="btn btn-primary btn-block" type="submit">Actualizar incentivo</button>
+                    </div>
+                    <div class="col-md-6">
+
+                            <a class="btn btn-danger btn-block" href="{% url 'incentivo:Listar_Evento' %}">
+                               Cancelar
+                           </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+	</div>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+    <script type="text/javascript">
+        function ValidarDate(){
+            var inicio=$('#id_fechaInicio').val();
+            var final=$('#id_fechaFinal').val();
+            if(Date.parse(final) < Date.parse(inicio)){
+                Command: toastr["error"]("La fecha final debe ser mayor que la inicial.", "Error")
+                        toastr.options = {
+                          "closeButton": true,
+                          "debug": false,
+                          "positionClass": "toast-bottom-full-width",
+                          "onclick": null,
+                          "showDuration": "300",
+                          "hideDuration": "1000",
+                          "timeOut": "5000",
+                          "extendedTimeOut": "1000",
+                          "showEasing": "swing",
+                          "hideEasing": "linear",
+                          "showMethod": "fadeIn",
+                          "hideMethod": "fadeOut"
+                }
+                return false;
+            }else{
+                return true;
+            }
+        }
+    </script>
+{% endblock %}
+{% block scripts %}
+    <script>
+        var iCnt = '{{Niveles.count}}';
+        $('#btAdd').click(function() {
+            var a = $('#IdContador').val();
+            $('#IdContador').val(parseInt(a)+parseInt(1));
+            $(formId).append('<input  type="hidden" name=id'+ iCnt +' id=id'+ iCnt +' value="0"/>');
+            $(formNivel).append('<select class="form-control" name="nivel'+iCnt+'" id="nivel'+iCnt+'" required><option value="Alto">Alto</option><option value="Medio">Medio</option><option value="Bajo">Bajo</option></select>');
+            $(formCupo).append('<input  type="number" min="0" step="1" max="100" class="form-control" name=cupo' + iCnt + ' id=cupo' + iCnt + ' ' + ' value="" placeholder="Cupo" />');
+            $(formDes).append('<input  type=text class="form-control" name=des' + iCnt + ' id=des' + iCnt + ' ' + ' value="" placeholder="Descripción" />');
+            iCnt = parseInt(iCnt)+1;
+        });
+
+        $('#btRemove').click(function() {
+                if (iCnt > 3) {
+                    var b = $('#IdContador').val();
+                    $('#IdContador').val(parseInt(b)-parseInt(1));
+                    $('#id' + (iCnt-1)).remove();
+                    $('#nivel' + (iCnt-1)).remove();
+                    $('#cupo' + (iCnt-1)).remove();
+                    $('#des' + (iCnt-1)).remove();
+                    iCnt = iCnt - 1;
+                }
+        });
+    </script>
+    <!-- Tags Input -->
+	<script type="text/javascript" src="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.js' %}"></script>
+    <!-- Tags Input -->
+	<script type="text/javascript" src="{% static 'assets/js/typeahead.bundle.js' %}"></script>
+    <!-- SCRIPTS - OPTIONAL START -->
+	<!-- Image Placeholder -->
+	<script type="text/javascript" src="{% static 'assets/js/misc/holder.min.js' %}"></script>
+	<!-- Form Wizard -->
+	<script type="text/javascript" src="{% static 'assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js' %}"></script>
+
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/form-validator/jquery.form-validator.min.js' %}"></script>
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/typeahead/typeahead.bundle.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/js/multiselect.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/general/js/scriptsna.js' %}"></script>
+{% endblock %}

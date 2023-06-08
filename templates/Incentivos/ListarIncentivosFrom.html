@@ -1,0 +1,301 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block title %}
+    Eventos
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+{% block content %}
+{% if user.is_superuser %}
+    <div class="col-md-12">
+            <a href="{% url 'incentivo:CrearIncentivos_' %}" class="btn btn-primary">
+                    Crear nuevo evento
+            </a>
+        <div class="card" style="height: auto;">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 style="float: left;margin-top: 10px;">Filtros</h3>
+                        <a href="#" id="btnDescargar" style="float: right;">
+                            <img src="{% static 'images/excel.jpg' %}" width="40" alt="Ecuciencia">
+                        </a>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Estado:</label>
+                        <select  class="form-control" id="SearchEstado" onchange="javascript:ViewEstado();">
+                             <option value="1">Activo</option>
+                             <option value="0">Inactivo</option>
+                        </select>   
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            {% csrf_token %}
+                            <div class="col-md-6">
+                                <label>Desde:</label>
+                                <input type="date" name="" class="form-control" id="SearchFechaI" onchange="javascript:ViewFecha();"> 
+                            </div>
+                            <div class="col-md-6">
+                                <label>Hasta:</label>
+                                <input type="date" name="" class="form-control" id="SearchFechaF" onchange="javascript:ViewFecha();">   
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        <div class="table-responsive">
+                            {% if evento %}
+                            <table id="table_data_1" class="table table-striped table-hover">
+                                 <thead>
+                                    <tr>
+                                        <td>Id</td>
+                                        <td style="width:10%" align="center">Evento</td>
+                                        <td>Fecha inicio</td>
+                                        <td>Fecha finalización</td>                                        
+                                        <td>N° publicaciones</td>
+                                        <td>Estado</td>
+                                        <td>Incentivos</td>
+                                        <td>Editar</td>
+                                        <td>Eliminar</td>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="TablaEvento">
+                                    {% for pd in evento %}
+                                    <tr>
+                                       <td>{{pd.id}}</td>
+                                       <td align="center">{{pd.nombre|truncatechars:50}}</td>
+                                       <td>{{pd.fechaInicio}}</td>
+                                       <td>{{pd.fechaFinal}}</td>
+                                       <td>{{pd.numeroPublicaciones}}</td>
+                                       <td align="center">
+                                            {% if pd.estado == "1" %}
+                                            <span class="fa fa-2x fa-check" style="color: green;">Activo</span>
+                                            {% else %}
+                                            <span class="fa fa-2x fa-lock" style="color: red;">Inactivo</span>
+                                            {% endif %}
+                                       </td>
+                                       <td>
+                                            <a class="btn btn-info btn-sm" href="#" onclick="javascript:ViewIncentivos('{{pd.id}}');" data-toggle="modal" data-target="#ModalIncentivos">
+                                                    <span class="fa fa-eye"> incentivos</samp>
+                                            </a>
+                                        </td>
+                                       <td>
+                                            <a class="btn btn-primary btn-sm" href="{% url 'incentivo:Modificar_Incentivo' pd.id %}">
+                                                    <span class="fa fa-pencil"> editar</samp>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <button class="btn btn-danger btn-sm" onclick="return abrir_modal('{% url 'incentivo:Eliminar_Incentivo' pd.pk %}')" style="margin-top: -1px;">
+                                                    <span class="fa fa-bitbucket"> eliminar</samp>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+
+                                 </tbody>
+                            </table>
+                            {% else %}
+                                <h4>No existen eventos</h4>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+    <!-- Modal 1-->
+    <div id="ModalIncentivos" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header" style="background-color: #01568F;text-align: center;">
+                    <h4 class="modal-title" style="text-align: center;text-transform: uppercase;color: white;">Incentivos</h4>
+                    <button type="button" class="close" data-dismiss="modal" style="color: white;">&times;</button>
+                </div>
+                <div class="modal-body" style="height: auto;">
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped table-hover" style="width: 100%;">
+                            <thead>
+                                <tr>
+                                    <td>Id</td>
+                                    <td>Nivel</td>
+                                    <td>Nº Cupos</td>
+                                    <td>Descripción</td>    
+                                </tr>
+                            </thead>
+                            <tbody id="ListIncentivo">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="popup" class="modal fade" role="dialog">
+
+    </div>
+        <script>
+        function abrir_modal(url)
+            {
+                var ul="/incentivo/EliminarIncentivo/"+url+"/";
+                $('#popup').load(ul, function()
+                {
+                        $(this).modal('show');
+                });
+                return false;
+            }
+            
+        function cerrar_modal()
+            {
+                $('#popup').modal('hide');
+                return false;
+            }
+        function ViewIncentivos(id)
+            {
+                var result='';
+                var cont=1;
+                {% if incentivo %}
+                    {% for i in incentivo %}
+                        var evento='{{i.evento.id}}';
+                        if(evento==id){
+                            result+='<tr><td>'+cont+'</td><td>{{i.nivel}}</td><td>{{i.numeroCupos}}</td><td>{{i.descripcion}}</td></tr>';
+                            cont=cont+1;
+                        }
+                    {% endfor %}
+                {% endif %}
+                $('#ListIncentivo').html(result);
+            }     
+        </script>
+        <script type="text/javascript">
+            function ViewEstado(){
+                var table=$('#table_data_1').DataTable();
+                table.destroy();
+                var o = $('#SearchEstado').val();
+                $('#TablaEvento').html('');
+                var result='';
+                if(o=='1'){
+                    {% for pd in evento %}
+                        {% if pd.estado == "1" %}
+                        result+="<tr><td>{{pd.id}}</td><td align='center'>{{pd.nombre|truncatechars:50}}</td><td>{{pd.fechaInicio}}</td><td>{{pd.fechaFinal}}</td><td>{{pd.numeroPublicaciones}}</td><td align='center'><span class='fa fa-2x fa-check' style='color: green;''>Activo</span></td><td><a class='btn btn-info btn-sm' href='#' onclick='javascript:ViewIncentivos({{pd.id}});' data-toggle='modal' data-target='#ModalIncentivos'><span class='fa fa-eye'> incentivos</samp></a></td><td><a class='btn btn-primary btn-sm' href='{% url 'incentivo:Modificar_Incentivo' pd.id %}'> <span class='fa fa-pencil'> editar</samp></a></td><td><button class='btn btn-danger btn-sm' onclick='javascript:abrir_modal({{pd.id}})' style='margin-top: -1px;' disabled='false'> <span class='fa fa-bitbucket'> eliminar</samp></button></td></tr>";
+                        {% endif %}
+                    {% endfor %}
+                    $('#TablaEvento').append(result);
+                    $('#table_data_1').DataTable();
+                }
+                if(o=='0'){
+                    {% for pd in evento %}
+                        {% if pd.estado == "0" %}
+                        result+="<tr><td>{{pd.id}}</td><td align='center'>{{pd.nombre|truncatechars:50}}</td><td>{{pd.fechaInicio}}</td><td>{{pd.fechaFinal}}</td><td>{{pd.numeroPublicaciones}}</td><td align='center'><span class='fa fa-2x fa-lock' style='color: red;'>Inactivo</span></td><td><a class='btn btn-info btn-sm' href='#' onclick='javascript:ViewIncentivos({{pd.id}});' data-toggle='modal' data-target='#ModalIncentivos'><span class='fa fa-eye'> incentivos</samp></a></td><td><a class='btn btn-primary btn-sm' href='{% url 'incentivo:Modificar_Incentivo' pd.id %}'> <span class='fa fa-pencil'> editar</samp></a></td><td><button class='btn btn-danger btn-sm' onclick='javascript:abrir_modal({{pd.id}})' style='margin-top: -1px;'> <span class='fa fa-bitbucket'> eliminar</samp></button></td></tr>";
+                        {% endif %}
+                    {% endfor %}
+                    $('#TablaEvento').append(result);
+                    $('#table_data_1').DataTable();   
+                }
+            }
+        </script>
+        <script type="text/javascript">
+            $('#btnDescargar').on('click',requestDescargar);
+              function requestDescargar(){
+                tableToExcel('table_data_1','Hoja 1');
+              }
+            var tableToExcel = (function() {
+              var uri = 'data:application/vnd.ms-excel;base64,'
+              ,template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--> <meta charset = "utf-8"></head><body><table>{table}</table></body></html>'
+              ,base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+              ,format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+              return function(table, name) {
+              if (!table.nodeType) table = document.getElementById(table)
+                var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+              window.location.href = uri + base64(format(template, ctx))
+              }
+            })()
+        </script>
+        <script type="text/javascript">
+            function ViewFecha(){
+                if(ValidarDate()== true){
+                    var ini = $('#SearchFechaI').val();
+                    var fin = $('#SearchFechaF').val();
+                    $.ajax({
+                        type:'POST',
+                        url:'/evento/BuscarFecha/',
+                        data:{
+                            inicio:ini,
+                            final:fin,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        success:function(data){
+                            var table=$('#table_data_1').DataTable();
+                            table.destroy();
+                            $('#TablaEvento').html('');
+                            var result='';
+                            $.each(data, function(index, item) {
+                                result += "<tr><td>"+item.id+"</td><td align='center'>"+item.nombre+"</td><td>"+item.fechaInicio+"</td><td>"+item.fechaFinal+"</td><td>"+item.numeroPublicaciones+"</td>";
+                                if(item.estado=='0'){
+                                    result += "<td align='center'><span class='fa fa-2x fa-lock' style='color: red;'>Inactivo</span></td>";
+                                }
+                                if(item.estado=='1'){
+                                    result += "<td align='center'><span class='fa fa-2x fa-check' style='color: green;'>Activo</span></td>";
+                                }
+
+                                result += "<td><a class='btn btn-info btn-sm' href='#' onclick='javascript:ViewIncentivos("+item.id+");' data-toggle='modal' data-target='#ModalIncentivos'><span class='fa fa-eye'> incentivos</samp></a></td><td><a class='btn btn-primary btn-sm' href='/incentivo/ModificarIncentivo/"+item.id+"/'> <span class='fa fa-pencil'> editar</samp></a></td>";
+                                if(item.estado=='0'){
+                                    result += "<td><button class='btn btn-danger btn-sm' onclick='javascript:abrir_modal("+item.id+")' style='margin-top: -1px;'  disabled='false'> <span class='fa fa-bitbucket'> eliminar</samp></button></td></tr>";
+                                }
+                                if(item.estado=='1'){
+                                    result += "<td><button class='btn btn-danger btn-sm' onclick='javascript:abrir_modal("+item.id+")' style='margin-top: -1px;'> <span class='fa fa-bitbucket'> eliminar</samp></button></td></tr>";
+                                }
+                                
+                            });
+                            $('#TablaEvento').append(result);
+                            $('#table_data_1').DataTable();
+                        }
+                    })
+                }
+            }
+
+            function ValidarDate(){
+                var inicio=$('#SearchFechaI').val();
+                var final=$('#SearchFechaF').val();
+                if(Date.parse(final) < Date.parse(inicio)){
+                    Command: toastr["error"]("La fecha final debe ser mayor que la inicial.", "Error")
+                            toastr.options = {
+                              "closeButton": true,
+                              "debug": false,
+                              "positionClass": "toast-bottom-full-width",
+                              "onclick": null,
+                              "showDuration": "300",
+                              "hideDuration": "1000",
+                              "timeOut": "5000",
+                              "extendedTimeOut": "1000",
+                              "showEasing": "swing",
+                              "hideEasing": "linear",
+                              "showMethod": "fadeIn",
+                              "hideMethod": "fadeOut"
+                    }
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        </script>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+    <!-- Datatables -->
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+{% endblock %}

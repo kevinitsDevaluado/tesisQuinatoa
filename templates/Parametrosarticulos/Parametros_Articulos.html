@@ -1,0 +1,103 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block title %}
+    Parámetros de Evaluación Artículos
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+{% block content %}
+    {% if user.is_superuser %}
+    <div class="col-md-12">
+            <a onclick="return abrir_modal('{% url 'parametrosArticulos:CrearParametro' %}')" class="btn btn-primary">
+                    Crear Nuevo Parámetro de Evaluación para Artículo
+            </a>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        <div class="table-responsive">
+                            {% if parametrosArticulo %}
+                            <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                                 <thead>
+                                    <tr>
+                                        <td>Id</td>
+                                        <td style="width:10%" align="center">Descripción</td>
+                                        <td>Valor</td>
+                                        <td align="center">Estado</td>
+                                        <td>Tipo</td>
+                                        <td>Acciones</td>
+                                    </tr>
+                                 </thead>
+                                 <tbody>
+
+                                    {% for parametro in parametrosArticulo %}
+                                    <tr>
+                                       <td>{{parametro.id}}</td>
+                                       <td align="center">{{parametro.descripcion|truncatechars:50}}</td>
+                                       <td>{{parametro.valor}}</td>
+                                       <td align="center">
+                                            {% if parametro.estado == "Activo" %}
+                                            <span class="fa fa-2x fa-check" style="color: green "></span>
+                                            {% else %}
+                                            <span class="fa fa-2x fa-lock" style="color: red "></span>
+                                            {% endif %}
+                                           </td>
+                                       <td>{{parametro.tipoIntReg}}</td>
+                                       <td>
+                                            <a class="btn btn-primary btn-sm" onclick="return abrir_modal('{% url 'parametrosArticulos:ModificarParametro' parametro.pk %}')" class="btn">
+                                                    <span class="fa fa-pencil"> Editar
+                                            </a>
+                                            <a class="btn btn-danger btn-sm" onclick="return abrir_modal('{% url 'parametrosArticulos:ModificarParametro' parametro.pk %}')" class="btn">
+                                                    <span class="fa fa-bitbucket"> Eliminar
+                                            </a>
+                                       </td>
+                                        
+                                    </tr>
+                                    {% endfor %}
+                                 </tbody>
+                            </table>
+                            {% else %}
+                                <h4>No hay parámetros de evaluación ingresados</h4>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+    {% endif%}
+    <div id="popup" class="modal fade" role="dialog">
+
+        </div>
+        <script>
+            function abrir_modal(url)
+            {
+                $('#popup').load(url, function()
+                {
+                        $(this).modal('show');
+                });
+                return false;
+            }
+        
+        function cerrar_modal()
+            {
+                $('#popup').modal('hide');
+                return false;
+            }
+        </script>
+{% endblock%}
+
+{% block scripts %}
+    <!-- Datatables -->
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+{% endblock %}

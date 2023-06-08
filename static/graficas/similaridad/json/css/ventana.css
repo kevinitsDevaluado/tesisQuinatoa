@@ -1,0 +1,103 @@
+.ventana{
+width: 100%;
+height: 100%;
+color: #FFF;
+position: fixed;
+background-color:rgba(0,0,0,.3);
+top: 0;
+left: 0;
+display:none;
+z-index: 40;
+}
+.form{
+width: 700px;
+height: 430px;
+background-color:#FFF;
+color: #666;
+top: 40%;
+left:50%;
+position: absolute;
+margin-left: -350px;
+margin-top: -150px;
+}
+.cerrar{
+	color:red;
+	font-weight: 900;
+	text-align: right;
+	margin-top: 10px;
+	margin-right: 10px;
+}
+.lista{
+    list-style: none;
+    width: 100%;
+    height: 40px;
+    margin-top: 2px;
+  }
+.list-ing{
+    float: left;
+    margin-left: 8px;
+    font-size: 9px;
+    align-self: center;
+}
+.lista:hover{
+    color: white;
+    background: #58ACFA;
+    cursor:context-menu;
+    width: 100%;
+    height: 40px;
+  }
+#response{
+    float: left;
+    width: 286px;
+    overflow-y:auto;
+    background-color: white; 
+    z-index: 35;
+    position: absolute;
+  }
+div.data-inf{
+    width: 100%;
+    height: 30px; 
+    position: absolute; 
+    top: 205px;
+    z-index: 15;
+} 
+div.button-inf{
+    float:left;
+    width: 50px;
+    height: 50px;
+    background-color: white;
+    color: white;
+    border: 5px;
+    display: none;
+}
+div#dato1{
+    width: 350px;
+    height: 30px; 
+    font-size: 10px;
+    color: white;
+    float: left;
+    margin-left: 75px;
+}  
+div#bubble-chart{
+    height: 800px;
+    overflow: visible;
+    background-color: white;
+}
+
+.in-foto{
+    width: 20px;
+    height: 20px;
+    border-radius:10px;
+    float: left;
+    margin-left: 10px;
+    margin-top: 7px;
+}
+.btn-primary:hover{
+    background-color: rgb(101, 211, 227); 
+}
+.boton-style{
+    background-color: rgb(101, 211, 227);
+    border-radius: 16px;
+    color: white;
+}
+

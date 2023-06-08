@@ -1,0 +1,293 @@
+{% extends 'base1/inicio.html' %}
+{% load staticfiles %}
+{% block title %}
+    Revisar documentos
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block certificacion %}
+{% if user.is_superuser == True %}
+<li class="nav-item">
+   <a class="nav-link active" href="{% url 'certificacionadmin:certificacionadminListar' %}">
+        <i class="batch-icon batch-icon-newspaper-alt"></i>
+        Certificaciones admin
+    </a>
+</li>
+{% else %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'certificacion:certificacion_listar' %}">
+        <i class="batch-icon batch-icon-newspaper-alt"></i>
+        Certificaciones
+    </a>
+</li>
+{% endif %}
+{% endblock %}
+
+{% block direccion %}
+    <ul class="navbar-nav navbar-language-translation mr-auto">
+        <a href="{% url 'inicio:logeo' %}">{{user.first_name}} {{user.last_name}}</a>&nbsp;/&nbsp;<a href="{% url 'certificacion:certificacion_listar' %}">certificación</a>&nbsp;/&nbsp;<a href="">generar certificado</a>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class="wow fadeInUp animated" style="background: #122f3b;  padding: 0.3cm 0cm 0cm 0cm; margin: 0cm 0.4cm 0.4cm 0.4cm; width:100%; border-radius: 12px;" >
+    {% if capa %}
+    {% for certificado in capa %}
+     <h2 align="center" style="color:white"><span class="glyphicon glyphicon-th-list"></span>Generar certificado de: <span style="color:#F5B041;">{{certificado.user.first_name}}  {{certificado.user.last_name}}</span> </h2>
+</div>
+<div>
+</div>
+<div>
+    <p style="color:black;">Tenga en cuenta una previa revisión antes de generar el documento en formato PDF. Este certificado contará con la siguiente información:</p>
+    <p style="color:black;">&nbsp;&nbsp;&nbsp;&nbsp;- Datos personales.</p>
+    <p style="color:black;">&nbsp;&nbsp;&nbsp;&nbsp;- Breve descripción de los documentos certificados: Artículos <label id="idnar">nar</label>, Libros <label id="idlibs">nlibs</label> y Ponencias <label id="idpon">npon</label>.</p>
+    <p style="color:black;">&nbsp;&nbsp;&nbsp;&nbsp;- Detalles de los documentos certificados.</p>
+    <p style="color:black;">&nbsp;&nbsp;&nbsp;&nbsp;- Firma de autoridades.</p>
+    <p style="color:black;">&nbsp;&nbsp;&nbsp;&nbsp;- La descarga del certificado solamente se habilita en finales de ciclo (Febrero y Agosto)</p>
+
+</div>
+<!--<div id="certificado" class="col-md-12" style="display:none">-->
+<div class="col-md-12" style="display:none">
+    <div><img src="{% static 'images/encabezado.png' %}" width="100px"></div>                   
+    <div><img src="{% static 'images/marcaagua.png' %}" width="100px"></div>
+    <div><img src="{% static 'images/pie.png' %}" width="100px"></div>
+<!--capa del docente-->
+    {% endfor %}
+    {% endif %}
+</div>
+<div class="col-md-12">
+<center><a class="btn btn-outline-primary btn-lg" onclick="generarcertificadoPDF();" id="descargar"><img src="{% static 'images/certificado2.png' %}" width="100px"> Dercargar PDF</a></center>
+</div>
+
+<script type="text/javascript">
+var descargar = document.getElementById("descargar");
+var obhora = new Date();
+var mes = obhora.getMonth();
+if (mes!=6 && mes!=7) {
+alert("No es posible descargar el certificado, MOTIVO: La descarga del certificado solamente se habilita en finales de ciclo (Febrero y Agosto).");
+descargar.className = "btn btn-outline-light btn-sm disabled"; // desabilitar
+}
+</script>
+
+<script type="text/javascript">
+var lbnar = document.getElementById("idnar");
+var lblibs = document.getElementById("idlibs");
+var lbpon = document.getElementById("idpon");
+    {% if docar %}
+    var nar = 0;
+    {% for ar in docar %}
+    nar+=1;
+    {% endfor %}
+    {% else %}
+    nar = 0;
+    {% endif %}
+
+    {% if doclib %}
+    var nlibs = 0;
+    {% for libs in doclib %}
+    nlibs+=1;
+    {% endfor %}
+    {% else %}
+    nlibs = 0;
+    {% endif %}
+
+    {% if docpon %}
+    var npon = 0;
+    {% for pon in docpon %}
+    npon+=1;
+    {% endfor %}
+    {% else %}
+    npon = 0;
+    {% endif %}
+lbnar.innerHTML=nar;
+lblibs.innerHTML=nlibs;
+lbpon.innerHTML=npon;
+</script>
+<script>
+function generarcertificadoPDF(){
+
+    {% if docar %}
+    var nar = 0;
+    {% for ar in docar %}
+    nar+=1;
+    {% endfor %}
+    {% else %}
+    nar = 0;
+    {% endif %}
+
+    {% if doclib %}
+    var nlibs = 0;
+    {% for libs in doclib %}
+    nlibs+=1;
+    {% endfor %}
+    {% else %}
+    nlibs = 0;
+    {% endif %}
+
+    {% if docpon %}
+    var npon = 0;
+    {% for pon in docpon %}
+    npon+=1;
+    {% endfor %}
+    {% else %}
+    npon = 0;
+    {% endif %}
+
+    var obfecha = new Date();
+    var meses = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
+    var dia = obhora.getDate();
+    var mes = meses[obhora.getMonth()];
+    var anio = obhora.getFullYear();
+    var anio = obhora.getFullYear();
+
+    var doc = new jsPDF();
+
+    var cabecera = new Image();
+    cabecera.src = '{% static 'images/encabezado.png' %}';
+    doc.addImage(cabecera, 10, 0, 200.78, 30); //x,y,xi,yi
+    var marcaagua = new Image();
+    marcaagua.src = '{% static 'images/marcaagua.png' %}';
+    doc.addImage(marcaagua, 30, 90, 150, 100); //x,y,xi,yi
+    /*var pie = new Image();
+    pie.src = '{% static 'images/pie.png' %}';
+    doc.addImage(pie, 20, 285, 170.78, 10); //x,y,xi,yi*/
+    
+    doc.setFontSize(12);
+    doc.setFont("times");
+    
+    {% if capa %}
+    {% for certificado in capa %}
+    doc.text("Latacunga, "+dia+" de "+mes+" del "+anio,200,30,'right');
+    doc.text("DI-I-C-{{certificado.id}}-"+anio,200,35,'right');
+    doc.text("PhD. Ing. Matrs.",10,40);
+    doc.text("{{certificado.user.first_name}}  {{certificado.user.last_name}}",10,45);
+    doc.setFontType("bold");//normal,italic,bold,bolditalic
+    doc.text("DOCENTE INVESTIGADOR",10,50);
+    doc.setFontType("normal");
+    doc.text("Universidad Técnica de Cotopaxi",10,55);
+    doc.text("Presente",10,60);
+    {% endfor %}
+    {% endif %}
+
+    doc.text("De mi consideración.",10,68);
+
+    doc.text("Reciba  un cordial y atento saludo.  Por  medio de  la presente me permito informar que una vez revisada nuestra",10,76);
+    doc.text("base de datos  referente a publicaciones  indexadas,  producción científica y ponencias realizadas,  hemos podido",10,81);
+    doc.text("constatar que a esta Dirección han sido reportados para su validación y registro: Articulos "+nar+", Libros "+nlibs+" y Ponencias",10,86);
+    doc.text(npon+", las cuales se detallan:",10,91);
+
+    var columns = ["ARTÍCULOS"];
+    var data = [
+    ["Artículos"],
+    ];
+    doc.autoTable(columns,data,
+    {
+        startY: doc.autoTableEndPosY() + 95,
+        theme: 'plain'
+    }
+    );
+
+    var columns = ["FECHA", "DB", "N. PUBLICACIÓN", "ISSN", "N. REVISTA", "# REVISTA", "FILIACIÓN"];
+    var data = [
+    {% if docar %}
+    {% for ar in docar %}
+    ["{{ar.fechaPublicacion}}", "UTC", "{{ar.titulo}}", "{{ar.iSSN}}", "{{ar.revista}}", {{ar.numero}}, "{{ar.filialUtc}}"],
+    {% endfor %}
+    {% else %}
+    ["No hay registros de artículos."],
+    {% endif %}
+    ];
+    doc.autoTable(columns,data,
+    {
+        startY: doc.autoTableEndPosY() -8,
+        styles: { overflow: 'linebreak'},
+        columnStyles: { 0: {columnWidth: 'wrap'}, 1: {columnWidth: 'wrap'}, 3: {columnWidth: 'wrap'}, 5: {columnWidth: 'wrap'}, 6: {columnWidth: 'wrap'}}
+    }
+    );
+
+    var columns = ["LIBROS"];
+    var data = [
+    ["Libros"],
+    ];
+    doc.autoTable(columns,data,
+    {
+        startY: doc.autoTableEndPosY() + 5,
+        theme: 'plain'
+    }
+    );
+    var columns = ["FECHA", "ISSN", "TÍTULO", "ESTADO"];
+    var data = [
+    {% if doclib %}
+    {% for libs in doclib %} 
+    ["{{libs.fechaPublicacion}}", "{{libs.ISBN}}", "{{libs.Titulo}}", "{{libs.estado}}"],
+    {% endfor %}
+    {% else %}
+    ["No hay registros de libros."],
+    {% endif %}
+    ];
+    doc.autoTable(columns,data,
+    { 
+        startY: doc.autoTableEndPosY() -8,
+        styles: { overflow: 'linebreak'},
+        columnStyles: { 3: {columnWidth: 'wrap'}}
+    }
+    );
+
+    var columns = ["PONENCIAS"];
+    var data = [
+    ["Ponencias"],
+    ];
+    doc.autoTable(columns,data,
+    {
+        startY: doc.autoTableEndPosY() + 5,
+        theme: 'plain'
+    }
+    );
+
+    var columns = ["EVENTO", "LUGAR", "FECHA", "TÍTULO", "PUBLICACIÓN"];
+    var data = [
+    {% if docpon %}
+    {% for pon in docpon %}
+    ["{{pon.nombrePonencia}}", "{{pon.lugarPonencia}}","{{pon.fechaPonencia}}", "{{pon.tituloPonencia}}", "{{pon.isbn}}"],
+    {% endfor %}
+    {% else %}
+    ["No hay registros de ponencias"],
+    {% endif %}
+    ];
+    doc.autoTable(columns,data,
+    {
+        startY: doc.autoTableEndPosY() - 8,
+        styles: { overflow: 'linebreak'},
+        columnStyles: { 1: {columnWidth: 'wrap'}, 2: {columnWidth: 'wrap'}, 4: {columnWidth: 'wrap'}}
+    }
+    );
+
+    doc.setFont("times");
+    doc.setFontType("normal");
+    doc.text("Particular que remito para los fines consiguientes.",10,doc.autoTableEndPosY() + 40);
+    doc.text("Atentamente",10,doc.autoTableEndPosY() +45);
+
+    doc.setFontSize(10);
+    doc.text("PhD. Carlos Torres",90,doc.autoTableEndPosY() +70);
+    doc.text("Director de Investigación UTC.",82,doc.autoTableEndPosY() +75);
+    doc.text("CT/Jessy Lema Cruz",89,doc.autoTableEndPosY() +80);
+
+    
+    /*y = 500 // verificar la posicion del contenido
+    if (y >= pageHeight)
+    {
+        doc.addPage();
+        y = 0 // inicializamos el nuevo espacio
+    }*/
+
+    doc.save('Certificado.pdf');
+}
+</script>
+{% endblock%}

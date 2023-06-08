@@ -1,0 +1,279 @@
+{% extends 'Home/index.html'%}
+{% load staticfiles %}
+
+{% block contenido %}
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+<script type="text/javascript">
+        $(document).ready(function(){
+        $.ajax({
+          url:'/grafica/filtros/',
+            type:'POST',
+          data:{
+            datos:'Hello',
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+          success: function(json){
+            Command: toastr["success"]("Información Actualizada", "Mensaje")
+            toastr.options = {
+              "closeButton": true,
+              "debug": false,
+              "newestOnTop": false,
+              "progressBar": false,
+              "positionClass": "toast-bottom-full-width",
+              "preventDuplicates": false,
+              "onclick": null,
+              "showDuration": "300",
+              "hideDuration": "1000",
+              "timeOut": "5000",
+              "extendedTimeOut": "1000",
+              "showEasing": "swing",
+              "hideEasing": "linear",
+              "showMethod": "fadeIn",
+              "hideMethod": "fadeOut"
+            }
+          }
+        })            
+      });
+</script>
+<style type="text/css">
+  .pagination > li > a:hover, .pagination > li > a:hover, .pagination > li > a:focus, .pagination > li > a:focus {
+    color: #FFFFFF;
+    border: 2px solid #01568f;
+    background: #01568f;
+  }
+</style>
+<link href="{% static 'graficas/produccion/css/c3.min.css' %}" rel="stylesheet" type="text/css">
+<link href="https://cdn.datatables.net/1.10.19/css/dataTables.bootstrap.min.css" rel="stylesheet" type="text/css">
+ <div class="row" style="background: #7b8a97">
+ <!--FILTROS PRINCIPALES-->
+        <div class="col-12 col-sm-12 col-md-3 col-lg-3 col-x1-3">
+
+                <div class="row " style="padding-left: 15px;"> 
+                      <div class="card">
+
+                          <div class="card-header" style="  background-color: rgb(240, 240, 240); height:50px;">
+                               <h3 style="text-align: center;">Filtros </h3>
+                          </div>
+
+                      <div class="card-body">
+
+                      <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-x1-12 " style="background-color: white;">
+                          {% csrf_token %}
+                           <div class="row">
+                               <div class="col-md-12">
+                                   <div class="form-group">
+                                       <label>Zona</label>
+                                       <select class="form-control" id="zona" >
+                                           <option value="0">---------------Todo---------------</option>
+                                           {% for z in  zona%}
+                                           <option value="{{ z.pk }}">{{z.Nombre}}</option>
+                                           {% endfor %}
+                                       </select>
+                                   </div>
+                               </div>
+                           </div>
+    
+                           <div class="row">
+                               <div class="col-md-12">
+                                   <div class="form-group">
+                                       <label>Universidad</label>
+                                       <select class="form-control " id="universidad"  >
+                                           <option value="0" >--Seleccione--</option>
+        
+                                       </select>
+                                   </div>
+                               </div>
+                           </div> 
+            
+                           <div class="row">
+                               <div class="col-md-12">
+                                   <div class="form-group">
+                                       <label>Campus</label>
+                                       <select class="form-control campus" id="campus" >
+                                           <option value="0">--Seleccione--</option>
+        
+                                       </select>
+                                   </div>
+                               </div>
+                           </div>
+
+                           <div class="row">
+                               <div class="col-md-12">
+                                   <div class="form-group">
+                                       <label>Facultad</label>
+                                       <select class="form-control facultad" id="facultad" >
+                                           <option value="0">--Seleccione--</option>
+    
+                                       </select>
+                                   </div>
+                               </div>
+                           </div>
+
+                           <div class="row">
+                               <div class="col-md-12">
+                                   <div class="form-group">
+                                       <label>Carrera</label>
+                                       <select class="form-control" id="carrera" >
+                                           <option value="0">--Seleccione--</option>
+                                       </select>
+                                   </div>
+                                   <br>
+                               </div>
+                           </div>
+                           <br><br>
+                      </div>
+                      </div>
+                      </div>
+                </div>
+        </div> 
+ <!--FIN DE FILTROS-->
+        <div class="col-12 col-sm-12 col-md-9 col-lg-9 col-x1-9 ">
+        <div class="row">
+        <div class="col-12 col-sm-12 col-md-12 col-lg-12 col-xl-12">
+                <div class="card">
+                  <div class="card-header" style="background-color: rgb(240, 240, 240);height:50px;">
+                       <h3 style="text-align: center">Gráficas </h3>
+                  </div>
+                   <div class="card-body" style="background-color: white;">
+                     <div class="row" style="padding: 5px;">
+                         <div class="col-10 col-sm-10 col-md-4 col-lg-4 col-x1-4">
+                             <div class="row" >
+                                 <div class="col-md-12">
+                                     <div class="form-group">
+                                         <select class="form-control" id="filtro_y">
+                                             <option value="0">EJE Y</option>
+                                             <option value="1">Artículos Científicos</option>
+                                             <optgroup label="Libros-Capìtulos">
+                                               <option value="2">Libros</option>
+                                               <option value="3">Capítulos</option>
+                                             </optgroup>
+                                             <option value="4">Ponencias</option>
+                                             <!--<option value="5">Proyectos</option>-->
+                                         </select>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+
+                         <div class="col-10 col-sm-10 col-md-4 col-lg-4 col-x1-4">
+                             <div class="row">
+                                 <div class="col-md-12">
+                                     <div class="form-group">
+                                         <select class="form-control" id="filtro_x" >
+                                             <option value="0">EJE X</option>
+                                             <option value="1">Año</option>
+                                         </select>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+
+                         <div class="col-10 col-sm-10 col-md-4 col-lg-4 col-x1-4">
+                             <div class="row">
+                                 <div class="col-md-12">
+                                     <div class="form-group">
+                                         <select class="form-control" id="filtro_z" >
+                                             <option value="0">TIPO DE GRÁFICA</option>
+                                             <option value="1">Barras</option>
+                                             <option value="2" id="pastel">Pastel</option>
+                                             <option value="3" id="dona">Dona</option>
+                                             <option value="4" id="area">Area</option>
+                                         </select>
+                                     </div>
+                                 </div>
+                             </div>
+                         </div>
+                     </div>
+                   </div>
+
+                   <div class="card-body" style="background-color: white;margin-top: 5px;">
+                        <div class="row">
+                            <div class="col-10 col-sm-10 col-md-4 col-lg-2 col-x1-4"  style="margin-top: 10px;margin-left: 5px;">
+                                 <div class="row" >
+                                     <div class="col-md-12">
+                                         <div class="form-group" style="text-align: center;">
+                                            <a class="btn btn-primary fa fa-bar-chart" id="buscar_filtros" style="font-size: 18px;background-color: #01568f;border-radius: 0px;"> Graficar</a>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+
+                             <div class="col-10 col-sm-10 col-md-4 col-lg-3 col-x1-4" style="margin-top: 10px;margin-left: 10px;">
+                                 <div class="row" >
+                                     <div class="col-md-18">
+                                         <div class="form-group" style="text-align: center;">
+                                          <a class="btn btn-primary fa fa-eye" data-toggle="modal" data-target="#myModal" style="font-size: 18px;background-color: #01568f;border-radius: 0px;" disabled="true" id="ver_int"></a>
+                                          <button type="button" class="btn btn-success fa fa-file-excel-o" id="btnDescargar" style="font-size: 18px;border-radius: 0px;" disabled="true"></button>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+
+                             <div class="col-10 col-sm-10 col-md-4 col-lg-6 col-x1-4" style="margin-top: 13px;margin-left: -25px;">   
+                                 <div class="row" >
+                                     <div class="col-md-10">
+                                         <div class="form-group">
+                                          <div id="infor-total" style="height: 100%;width: 100%;display: none;text-align: center;text-transform: uppercase;">
+                                              <h4 id="num-infor"></h4>
+                                          </div>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </div>
+
+                             <!-- Modal -->
+                              <div id="myModal" class="modal fade" role="dialog">
+                                <div class="modal-dialog modal-lg">
+
+                                  <!-- Modal content-->
+                                  <div class="modal-content">
+                                    <div class="modal-header">
+                                      <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                      <h4 class="modal-title" style="text-align: center;text-transform: uppercase;"></h4>
+                                    </div>
+                                    <div class="modal-body" id="modal-inf" style="overflow: auto;">
+                                      
+                                    </div>
+                                  </div>
+
+                                </div>
+                              </div>
+
+                        </div>
+
+                   </div>
+             
+                   <div class="card-body" style="background-color: white;margin-top: 5px;height: 424px;">
+                        <div id="myfirstchart" style="height: 424px;"></div>
+                   </div>
+
+               </div>
+        </div>
+        </div>
+
+        </div>
+  </div>
+  <!-- Load d3.js and c3.js -->
+  <script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+  <script src="{% static 'graficas/produccion/js/d3.min.js' %}"></script>
+  <script src="{% static 'graficas/produccion/js/c3.min.js' %}"></script>
+  <script type="text/javascript" src="{% static 'graficas/similaridad/json/js/grafica.js' %}"></script>
+  <script type="text/javascript">
+    $('#btnDescargar').on('click',requestDescargar);
+      function requestDescargar(){
+        tableToExcel('table-float','Hoja 1');
+      }
+    var tableToExcel = (function() {
+      var uri = 'data:application/vnd.ms-excel;base64,'
+      ,template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--> <meta charset = "utf-8"></head><body><table>{table}</table></body></html>'
+      ,base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+      ,format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+      return function(table, name) {
+      if (!table.nodeType) table = document.getElementById(table)
+        var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+      window.location.href = uri + base64(format(template, ctx))
+      }
+    })()
+  </script>
+{% endblock %}

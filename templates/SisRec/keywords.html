@@ -1,0 +1,92 @@
+{% extends 'SisRec/base.html'%} {% load staticfiles %} {% block titulo%} Keywords {% endblock %} {% block contenido%}
+<!--Token-->
+{% csrf_token %}
+<div class="row">
+    <div class=" d-none d-sm-none d-md-block d-lg-block d-xl-block col-0 col-sm-0 col-md-2 col-lg-2 col-xl-2 ">
+    </div>
+    <div class="  col-12 col-sm-12 col-md-8 col-lg-8 col-xl-8 ">
+        <div class="card">
+            <div class="card-header keywordsHead" style="font-size: 24px;font-weight:bold; ">
+                Elija 5 temas de su interes.
+            </div>
+            <div class="card-body KeywordsBody">
+                <label for="tipo"> <b>Nota:</b> Recuerde que usted puede cambiar el tema de interes en cualquier momento, entrando a su perfil de usuario.</label>
+                <label for="tipo"> Usted puede pedir que se agregue un tema de interes escribiendo a los siguientes contactos:</label>
+
+                    <b><br><b>
+                            <i class="fa fa-envelope-o"></i> ecu.ciencia@utc.edu.ec</b><br><b>
+                            <i class="fa fa-phone-square"></i> 0987071107</b>
+                    </b>
+
+                <br>
+                <br>
+                <div class="form-group ">
+                    <label for="tipo">Tema de interes 1:</label>
+                    <select name="op1PClave" rel="" id="op1PClave" class="form-control" required>
+                        <option value="0">-----Selecciona-----</option>
+                        {% for Keywords in keywords %}
+                        <option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tema de interes 2:</label>
+                    <select name="op2PClave" rel="" id="op2PClave" class="form-control" required>
+                        <option value="0">-----Selecciona-----</option>
+                        {% for Keywords in keywords %}
+                        <option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tema de interes 3:</label>
+                    <select name="op3PClave" rel="" id="op3PClave" class="form-control" required>
+                        <option value="0">-----Selecciona-----</option>
+                        {% for Keywords in keywords %}
+                        <option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tema de interes 4:</label>
+                    <select name="op4PClave" rel="" id="op4PClave" class="form-control" required>
+                        <option value="0">-----Selecciona-----</option>
+                        {% for Keywords in keywords %}
+                        <option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="tipo">Tema de interes 5:</label>
+                    <select name="op5PClave" rel="" id="op5PClave" class="form-control" required>
+                        <option value="0">-----Selecciona-----</option>
+                        {% for Keywords in keywords %}
+                        <option value="{{Keywords.id}}">{{ Keywords.termino}}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="card-footer keywordsFooter">
+                    <button id="btnAreasConocimiento" type="submit" class="btn btn-primary">Guardar</button>
+                </div>
+
+            </div>
+
+
+        </div>
+        <div class=" d-none d-sm-none d-md-block d-lg-block d-xl-block col-0 col-sm-0 col-md-2 col-lg-2 col-xl-2 ">
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+
+
+
+    {% endblock %}

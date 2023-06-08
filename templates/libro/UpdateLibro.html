@@ -1,0 +1,1503 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block css %}
+    <!-- Tags Input -->
+    <link rel="stylesheet" href="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.css' %}">
+
+    <link rel="stylesheet" href="{% static 'css/multiselect.css' %}">
+    <!-- LLamada de librerias para la validación-->
+    <link rel="stylesheet" href="{% static 'alerta/alertify/css/alertify.css' %}">
+    <link rel="stylesheet" href="{% static 'alerta/alertify/css/themes/default.css' %}">
+    <link rel="stylesheet" href="{% static 'alerta/fontello/css/fontello.css' %}">
+
+    <script src="{% static 'alerta/js/alertify.js' %}"></script>
+    <!-- fin de llamada-->
+    <style>
+            #lista1 ul { 
+                width: 100%;
+                z-index: 20;
+                float: up;
+                max-height: 200px;
+                overflow: auto;
+                font-size: 12px;
+                position: relative;
+                z-index:2;
+            }
+            #lista1 ul li { 
+                display:block; 
+                height:28px; 
+    
+                padding-left:20px;
+                padding-bottom: 25px;
+                text-decoration:none; 
+            }
+        
+        </style>
+<!-- CSS - OPTIONAL - END -->
+
+<!-- validar campo ISBN no letras no copiar letras y 
+que cumpla con los 10 o 13 digitos Autor: Bryan Sandoval fecha: 23/07/2019-->
+<script>
+    function soloNum(e) {
+        key = e.keyCode || e.which;
+        tecla = String.fromCharCode(key).toLowerCase();
+        numeros = "1234567890-";
+        especiales = [8, 37, 39, 46];
+
+        tecla_especial = false
+        for(var i in especiales) {
+            if(key == especiales[i]) {
+                tecla_especial = true;
+                break;
+            }
+        }
+
+        if(numeros.indexOf(tecla) == -1 && !tecla_especial){
+            return false;
+            }
+
+    }
+
+    function limpia() {
+        var miDiv = document.getElementById("miDiv");
+        var val = document.getElementById("miInput").value;
+        var tam = val.length;
+        var miVar =0;
+        for(i = 0; i < tam; i++) {
+            if(!isNaN(val[i]))
+                    miVar= miVar+1;
+        }
+
+        if(miVar ==10 || miVar==13 ){
+                miDiv.innerHTML = "";
+                return true;
+                }
+
+            else{
+                miDiv.innerHTML = "";
+                html = " *EL ISBN debe ser de 10 o de 13 dígitos";
+                miDiv.innerHTML = html;
+                return false;
+                }
+    }
+
+    function limpiarNumero(obj) {
+        obj.value = obj.value.replace(/(?!-)[^0-9.]/g, "");
+    }
+
+    function malEnvio() {
+        var ErrIsbn = document.getElementById('ErrIsbn');
+        ErrIsbn.style.display = 'none';
+        var val = document.getElementById("miInput").value;
+        var tam = val.length;
+        var miVar =0;
+        console.clear();
+
+        for(i = 0; i < tam; i++) {
+            if(!isNaN(val[i]))
+                    miVar= miVar+1;
+        }
+
+        if(miVar ==10 || miVar==13 ){
+            miDiv.innerHTML = "";
+            ErrIsbn.style.display = 'none';
+            return true;
+        }
+        else{
+            miDiv.innerHTML = "";
+            html = " *EL ISBN debe ser de 10 o de 13 dígitos";
+            miDiv.innerHTML = html;
+            console.log("Elementos Incorrectos");
+            ErrIsbn.style.display = 'block';
+            return false;
+        }
+    }
+    
+</script>
+
+{% endblock %}
+{% block title %}
+    Actualizar información
+{% endblock%}
+{% block subtitle  %}
+
+{% endblock%}
+
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block itemLibro %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'Libro:libro_lis' %}">
+        <i class="batch-icon batch-icon-book"></i>
+        Libros
+    </a>
+</li>
+{% endblock %}
+{% block content %}
+
+{% if not user.is_superuser%}
+    <div class="col-md-12">
+        <form method="post" id="LibroEditDisabled" enctype="multipart/form-data">
+        {% if form.editableTrueFalse.value == 0  %}
+            <div class="card-body" style="border:solid #07A7E3 3px; background-color: #FFFFFF">
+                <label style="text-align:justify; font-size: 14px">Estimado usuario después de un análisis de su documento científico hemos determinado que su libro cuenta con las características necesarias para los registros de la DIRECCIÓN DE INVESTIGACIÓN. Por lo cual desde este momento usted ya no podrá realizar ningún tipo de modificación en el mismo. Por cualquier duda comuníquese con el administrador de la plataforma.
+                </label>
+            </div>
+       <br>
+       {% endif %}
+       {% if form.editableTrueFalse.value == 1  %}
+            <div class="card-body" style="border:solid #f43a59 3px; background-color: #FFFFFF">
+                   <h5 style="text-transform: capitalize; color: red; text-align: center;"><b>OBSERVACIÓN DEL ADMINISTRADOR</b>   </h5>
+                   <textarea style="height: 75px" disabled>{{ form.comentarioSecretaria.value}}</textarea>
+            </div>
+       <br>
+        {% endif %}
+        {% if form.editableTrueFalse.value == 2  %}
+            <div class="card-body" style="border:solid #07A7E3 3px; background-color: #FFFFFF">
+                   <h5 style="text-transform: capitalize; color: #07A7E3; text-align: center;"><B>USTED HA REALIZADO CAMBIOS, POR LO TANTO EL DOCUMENTO CIENTÍFICO ESTÁ SIENDO REVISADO POR EL ADMINISTRADOR, ASEGÚRESE QUE LAS OBSERVACIONES LISTADAS ESTÉN CORREGIDAS: </B></h5>
+                   <textarea style="height: 75px" disabled>{{ form.comentarioSecretaria.value}}</textarea>
+            </div>
+       <br>
+        {% endif %}
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+
+                            {% csrf_token %}
+                            <!-- Autores: Borja, Guaigua, Pionce, Roldan, Tapia-->
+                            <!-- Para que no se imprima en pantalla el nombre del autor colocamos hidden en el type, Fecha: 13-08-2019-->
+                            <input type="hidden" name="xyzUs" id="xyzUs" value="{{user.last_name}} {{user.first_name}}">
+                            
+                            <div class="card-header">
+                                Actualizar información de: {{ form.Titulo.value }}
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <b>{{ form.Titulo.label }} <span style="color: red">*</span></b>
+                                        {{ form.Titulo }}
+                                        {{ form.Titulo.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                {% if grad.capituloSel == False %}
+                                    <div class="col-md-12">
+                                        <label><b>Título del capítulo</b> (Llene este campo en caso de haber escrito un capítulo del libro)</label>
+                                        <input type="text" class="form-control" id="Capitulo" name="Capitulo" value="{{ grad.capituloTitulo }}">
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label><b>Número del capitulo</b> (Llene este campo en caso de haber escrito un capítulo del libro)</label>
+                                        <input type="number" class="form-control" id="NumeroCap" name="NumeroCap" value="{{ grad.capituloNumero }}">
+                                    </div>
+                                {% endif %}
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.Editorial.label }} <span style="color: red">*</span></b>
+                                        {{ form.Editorial }}
+                                        {{ form.Editorial.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                         <!--validar ISBN Autor Bryan sandoval 23/07/2019 -->
+                                        <b>{{ form.ISBN.label }} <span style="color: red">*</span></b>
+                                        <var style="color: red" id="miDiv"> </var>
+                                                <input type="text" id="miInput" name="ISBN"  value="{{form.ISBN.value}}" maxlength="17" class="form-control"
+                                                onkeypress="return soloNum(event)"
+                                                onkeyup="limpiarNumero(this)"
+                                                onchange="limpiarNumero(this)"
+                                                onblur="limpia()">
+                                        {{ form.ISBN.errors }}
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.Url.label }}</b>
+                                        {{ form.Url }}
+                                        {{ form.Url.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.Doi.label }}</b>
+                                        {{ form.Doi }}
+                                        {{ form.Doi.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.UbicacionFisica.label }}</b>
+                                        {{ form.UbicacionFisica }}
+                                        {{ form.UbicacionFisica.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.fechaPublicacion.label }} <span style="color: red">*</span></b>
+                                        {{ form.fechaPublicacion }}
+                                        {{ form.fechaPublicacion.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label> <b>Campo Amplio <span style="color: red">*</span></b></label>
+                                        <select id="amplio" name="amplio"  class="form-control" onchange="campoAm()">
+                                            <option>----------</option>
+                                            {% for i in amplio%}
+                                                <option value="{{i.id}}" > {{i.Nombre}}</option>
+                                            {% endfor%}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-6">
+                                        <label> <b>Campo Específico <span style="color: red">*</span></b></label>
+                                        <select id="especifico" name="especifico"  class="form-control" onchange="campoEs()">
+                                            <option>---- Seleccione el campo Amplio----</option>
+                                            {% for i in especifico %}
+                                                <option value="{{i.id}}" > {{i.Nombre}}</option>
+                                            {% endfor%}
+                                        </select>
+                                    </div>
+                                    <script>
+                                        $('#amplio').val('{{amId}}')
+                                        $('#especifico').val('{{esId}}')
+                                    </script>
+                                    <div class="col-md-6">
+                                        <b>{{ form.detallado.label }} <span style="color: red">*</span></b>
+                                        {{ form.detallado }}
+                                        {{ form.detallado.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.tipoEditorial.label }} <span style="color: red">*</span></b>
+                                        {{ form.tipoEditorial }}
+                                        {{ form.tipoEditorial.errors }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label> <b>Palabras clave <span style="color: red">*</span></b> (Escribe una palabra y presiona enter)</label><br>
+                                        <select multiple data-role="tagsinput" id="palabras" name="palabras"  class="form-control">
+                                            {% for i in palabra%}
+                                                <option value="{{ i.Termino }}"> {{ i.Termino }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                            <b>{{ form.Resumen.label }} <span style="color: red">*</span></b> (Información del contexto del libro)
+                                        {{ form.Resumen }}
+                                        {{ form.Resumen.errors }}
+                                    </div>
+                                    <!--SCRIPT DE VALIDACIÒN DE ARCHIVOS
+                                Integrantes: Borja, Guaigua, Pionce, Roldan, Tapia. Fecha: 14-08-2019-->
+                                <script language=JavaScript type="text/javascript">
+
+                                    function check_file(current_form){
+
+                                    // si esta vacio permitimos enviar el formulario
+                                    if(current_form.value.search(/\S/g) == -1){return true}
+                                    var msg = ""
+                                    // extraemos el nombre del archivo y la extension
+                                    var id_Documento = current_form.value.match(/[^\/\\]+\.(?:pdf|pdf|doc|docx)$/i)
+
+                                    // la extension de archivo son validas
+                                    if(id_Documento != null){
+                                    // Extraemos solo el nombre del archivo
+                                    id_Documento = id_Documento.toString().replace(/\.pdf$|\.pdf$|\.doc$|\.docx$/i,"")
+                                    /////////////////////////
+                                    if(id_Documento.length > 50)
+                                    {
+                                        if(!alertify.errorAlert){
+                                            //<!--define a new errorAlert base on alert-->
+                                            alertify.dialog('errorAlert',function factory(){
+                                        return{
+                                        build:function(){
+                                        var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                        + '</h1> ¡ALERTA!';
+                                        this.setHeader(errorHeader);
+                                        }
+                                        };
+                                        },true,'alert');
+                                        }
+                                        //<!--launch it.-->
+                                        //<!--since this was transient, we can launch another instance at the same time.-->
+                                        alertify
+                                            .errorAlert("El nombre del archivo adjunto no debe superar los 50 caracteres. <br/><br/><br/>");
+                                        document.getElementById("id_Documento").value = '';
+                                        document.getElementById("doc").innerHTML = "Sin documento";
+                                    }
+                                    var cont = 0;
+                                    var aux = 0;
+                                    var str = id_Documento.toString();
+                                    var abe = "abcdefghijklmnopqrstuvwxyz1234567890_-";
+                                    var cadena = str.toLowerCase();
+                                    var longitud = cadena.length;
+                                    var comparador = abe.length;
+                                    for(var i = 0; i<longitud ; i++){
+                                        var res = cadena.substr(i, 1);
+                                        for(var j = 0; j<comparador ; j++){
+                                            var com = abe.substr(j, 1);
+                                                if(res!=com){
+                                                    cont++;
+                                                }
+                                            }
+                                        if(cont==comparador){
+                                            aux++;
+                                        }
+                                        cont=0;
+                                    }
+                                    if(aux>0){
+                                        if(!alertify.errorAlert){
+                                            //<!--define a new errorAlert base on alert-->
+                                            alertify.dialog('errorAlert',function factory(){
+                                        return{
+                                        build:function(){
+                                        var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                        + '</h1> ¡ALERTA!';
+                                        this.setHeader(errorHeader);
+                                        }
+                                        };
+                                        },true,'alert');
+                                        }
+                                        //<!--launch it.-->
+                                        //<!--since this was transient, we can launch another instance at the same time.-->
+                                        alertify
+                                            .errorAlert("El nombre del archivo adjunto no debe poseer caracteres especiales ni espacios. <br/><br/><br/>");
+                                            document.getElementById("id_Documento").value = '';
+                                            document.getElementById("doc").innerHTML = "Sin documento";
+
+                                    }
+
+                                    /////////////////////////
+                                    if((/["']|\-{4,}|\.{1,}|\s/i).test(id_Documento)){
+                                    document.getElementById("id_Documento").value = '';
+                                    document.getElementById("doc").innerHTML = "";
+
+                                    }
+
+
+                                    }
+                                    else{
+                                    msg+="¡ALERTA! Solo son válidos los archivos con la extensión pdf, doc y docx.\t\n"
+                                    document.getElementById("id_Documento").value = '';
+                                    }
+                                    //Si el mensaje no esta vacío
+                                    if(msg!=""){
+                                    msg+="Ejemplo de un archivo válido:\n\n"+
+                                    "nng-asdf.pdf ó nng-asdf.doc"
+                                    if(!alertify.errorAlert){
+                                            //<!--define a new errorAlert base on alert-->
+                                            alertify.dialog('errorAlert',function factory(){
+                                        return{
+                                        build:function(){
+                                        var errorHeader = '<h1 class="icon-attention" style="font-size: 100;"'
+                                        + '</h1> ¡ALERTA!';
+                                        this.setHeader(errorHeader);
+                                        }
+                                        };
+                                        },true,'alert');
+                                        }
+                                        //<!--launch it.-->
+                                        //<!--since this was transient, we can launch another instance at the same time.-->
+                                        alertify
+                                            .errorAlert(msg);
+
+
+                                    return id_Documento.value = '';
+                                    }
+
+                                    else{
+                                    // Esta todo bien
+                                    return true
+                                    document.getElementById("doc").innerHTML = "";
+                                    }
+
+                                    }
+                                    function send_form(current_form){
+                                    for(var ctr = 0; ctr < current_form.length; ctr++){
+
+                                    if(current_form[ctr].name == "id_Documento"){
+                                    if(!check_file(current_form[ctr])){
+                                    // no enviamos el formulario
+                                    document.getElementById("id_Documento").value = '';
+                                    return false
+
+                                    }
+
+                                    } 
+
+                                    }
+
+                                    }
+                                    //-->
+                                </script>
+                                <!--Fin del script-->
+                                    <div class="col-md-12">
+                                        <span>
+                                        {% if not form.Documento.value == '' %}
+                                            <h4><a href="http://ecuciencia.utc.edu.ec/media/{{form.Documento.value}}" target="_blank">Click aquí para ver el documento actual</a></h4>
+                                        {% else%}
+                                            Sin Documento
+                                        {% endif %}
+                                        </span>
+                                        <b>{{ form.Documento.label }}</b>
+                                        {{ form.Documento }}
+                                        {{ form.Documento.errors }}
+                                        
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.filialUtc.label }}<span style="color:red">*</span></b>
+                                        {{ form.filialUtc }}
+                                        {{ form.filialUtc.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    {% if form.errors %}
+                                        {% for error in form.errors %} 
+                                        <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                                            <strong>Error!!</strong> {{ error }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %} 
+                                </div>
+                                
+                            </div>
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div><br>
+        <div class="card">
+            <div class="card-header">
+                Autores<br>
+                <button id="btRemove" class="btn btn-danger btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-minus"></i> Autor</button>
+                <button id="btAdd" class="btn btn-primary btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-plus"></i> Autor</button>
+                <a href="#" class="btn btn-primary btn-sm pull-left" data-toggle="modal" data-target="#autorNew"><i class="fa fa-user"></i> Añadir nuevo Autor</a>
+            </div>
+            <div class="card-body" id="lista1">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="row">
+                                <div class="col-md-5">
+                                    <div id="dbGrado">
+                                    </div>
+                                    <script>
+                                        var a = -1, b = -1;
+                                        $("#dbGrado").append('<label>Grado de autoria</label>{%for i in Autores%}<input readonly type=text class="form-control" name=grado' + (a += 1) + ' id=grado' + (b += 1) + ' ' + 'value="{{i.gradoAutoria }}" />{%endfor%}');
+                                    </script>
+                                </div>
+                                <div class="col-md-5   ">
+                                    <div id="dbAutores">
+
+                                    </div>
+                                </div>
+                                <script>
+                                    var b = -1, a = -1;
+                                        $("#dbAutores").append(' <label> Autores </label> {%for i in Autores%} {% for j in users %} {% if i.user_id == j.id%} <input type="text" name=' + (a += 1) + ' id=' + (b += 1) + ' placeholder="Buscar autor..." class="form-control" onkeyup="autors(this)" autocomplete="off" onchange="f()" value="{{j.last_name}} {{j.first_name}}"/> <ul class="list-group" id=res' + (b) + '></ul> {% endif %}{%endfor%} {%endfor%}');
+                                </script>
+                                <div class="col-md-2">
+
+                                    <label>Acción</label>
+                                    {% for i in Autores %}
+                                        <a style="padding: 10px;" class="btn btn-danger btn-sm btn-block" href="{% url 'autor:eliminarBook' i.id id %}" onclick="return confirm('¿Estas seguro?');">Eliminar <b>{{ i.gradoAutoria }}</b></a>
+                                    <br><br>
+                                    {% endfor %}
+
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="formGrado">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="formUSer">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                            <strong>Compruebe los autores ingresados!!</strong> Se han repetido los autores o no ha seleccionado algun autor.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="alert alert-warning col-md-12" id="AutIn" role="alert">
+                                <strong>Alerta!!</strong> Recuerde registrarse como autor.
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <div hidden="true">
+                <br>
+                <b>{{ form.comentarioSecretaria.label }}</b>
+                <br>
+                {{ form.comentarioSecretaria }}
+                {{ form.comentarioSecretaria.errors }}
+                Nota: Este comentario se mostrara en la pantalla del autor
+        </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                        <div class="col-md-6">
+                                {% if form.editableTrueFalse.value == 0  %}
+                                <button class="btn btn-primary btn-block disabled" type="submit">Guardar información</button>
+                                {% else %}
+                                 <!--validar ISBN Autor Bryan sandoval 23/07/2019 -->
+                                 <button class="btn btn-primary btn-block" onclick="editado(this); return malEnvio(); " value="2" type="submit">Guardar información</button>
+                                 <div class="row">
+                                     <div class="alert alert-danger col-md-12" id="ErrIsbn" role="alert" style="display: none;">
+                                             <strong>Compruebe los campos ingresados!!</strong> Se ha registrado un error en el ISBN.
+                                     </div>
+                                 </div>
+                                <input type="hidden" name="editableTrueFalse" id="editableTrueFalse" value="{{form.editableTrueFalse.value}}">
+                                {% endif %}
+                                </div>
+                                <script>
+                                                function editado(vaa){
+                                                        $("#editableTrueFalse").val(vaa.value);
+                                                }
+                                </script>
+                            <div class="col-md-6">
+                                    <a class="btn btn-danger btn-block" href="{% url 'Libro:libro_lis' %}">
+                                       Cancelar
+                                   </a>
+                            </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+
+    <!--  *********************************************** Modal autor ********************************************** -->
+    <div  class="modal fade bd-example-modal-sizes" id="autorNew" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >Registrando un nuevo autor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formAut" method="POST">
+                {% csrf_token %}
+                <div class="modal-body" style="padding-right: 15px !important;">
+                    <label>Nombres <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="name" name="name" required="required" onkeyup="javascript:this.value=this.value.toUpperCase();">
+                    <label>Apellidos <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="lastname" name="lastname" required="required" onkeyup= "javascript:this.value=this.value.toUpperCase();">
+                    <label>Correo electronico <span style="color:red">*</span></label>
+                    <input class="form-control" type="email" id="email" name="email" required="required">
+                    <label>Paìs</label>
+                    <select class="form-control" name="paisAut" id="paisAut" onchange="cargarU()">
+                        <option value="">----- Seleccione un pais -----</option>
+                        {% for i in p %}
+                        <option value="{{i.id}}">{{i.Nombre}}</option>
+                        {% endfor %}
+                    </select>
+                    <label>Universidad <span style="color:red">*</span></label>
+                    <select name="uni" id="uni" class="form-control">
+                        <option value="">--------------------</option>
+                    </select>
+                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!--                                       Modal DB                                                  -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Nueva base de datos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formDB" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Tipo Base de Datos <span style="color:red">*</span></label>
+                                <select type="text" class="form-control" name="tipoBD" id="tipoBD" required>
+                                    <option>--------</option>
+                                    <option value="1">Regional</option>
+                                    <option value="2">Alto impacto</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Nombre de la base de datos <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="nameBD" id="nameBD" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>URL <span style="color:red">*</span></label>
+                                <input type="url" required class="form-control" name="Url de la base de datos" id="Url">
+                            </div>
+                            <div class="col-md-12">
+                                    <input type="text" class="form-control" style="display:none" name="user" id="user" value="{{user.id}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% else %}
+{% if user.is_superuser%}
+<div class="col-md-12">
+        <form method="post" enctype="multipart/form-data">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+
+                            {% csrf_token %}
+                            <input type="hidden" name="xyzUs" id="xyzUs" value="{{user.last_name}} {{user.first_name}}">
+                            <div class="card-header">
+                                Actualizar información de: {{ form.Titulo.value }}
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <b>{{ form.Titulo.label }} <span style="color: red">*</span></b>
+                                        {{ form.Titulo }}
+                                        {{ form.Titulo.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                {% if grad.capituloSel == False %}
+                                    <div class="col-md-12">
+                                        <label><b>Título del capítulo</b> (Llene este campo en caso de haber escrito un capítulo del libro)</label>
+                                        <input type="text" class="form-control" id="Capitulo" name="Capitulo" value="{{ grad.capituloTitulo }}">
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <label><b>Número del capitulo</b> (Llene este campo en caso de haber escrito un capítulo del libro)</label>
+                                        <input type="number" class="form-control" id="NumeroCap" name="NumeroCap" value="{{ grad.capituloNumero }}">
+                                    </div>
+                                {% endif %}
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.Editorial.label }} <span style="color: red">*</span></b>
+                                        {{ form.Editorial }}
+                                        {{ form.Editorial.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                         <!--validar ISBN Autor Bryan sandoval 23/07/2019 -->
+                                        <b>{{ form.ISBN.label }} <span style="color: red">*</span></b>
+                                        <var style="color: red" id="miDiv"> </var>
+                                                 <input type="text" id="miInput" name="ISBN"  value="{{form.ISBN.value}}" maxlength="17" class="form-control"
+                                                 onkeypress="return soloNum(event)"
+                                                 onkeyup="limpiarNumero(this)"
+                                                 onchange="limpiarNumero(this)"
+                                                 onblur="limpia()">
+                                        {{ form.ISBN.errors }}
+                                    </div>
+
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.Url.label }}</b>
+                                        {{ form.Url }}
+                                        {{ form.Url.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.Doi.label }}</b>
+                                        {{ form.Doi }}
+                                        {{ form.Doi.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.UbicacionFisica.label }}</b>
+                                        {{ form.UbicacionFisica }}
+                                        {{ form.UbicacionFisica.errors }}
+                                    </div>
+                                    <div class="col-md-6">
+                                        <b>{{ form.fechaPublicacion.label }} <span style="color: red">*</span></b>
+                                        {{ form.fechaPublicacion }}
+                                        {{ form.fechaPublicacion.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <label> <b>Campo Amplio <span style="color: red">*</span></b></label>
+                                        <select id="amplio" name="amplio"  class="form-control" onchange="campoAm()">
+                                            <option>----------</option>
+                                            {% for i in amplio%}
+                                                <option value="{{i.id}}" > {{i.Nombre}}</option>
+                                            {% endfor%}
+                                        </select>
+                                    </div>
+                                     <div class="col-md-6">
+                                        <label> <b>Campo Específico <span style="color: red">*</span></b></label>
+                                        <select id="especifico" name="especifico"  class="form-control" onchange="campoEs()">
+                                            <option>---- Seleccione el campo Amplio----</option>
+                                            {% for i in especifico %}
+                                                <option value="{{i.id}}" > {{i.Nombre}}</option>
+                                            {% endfor%}
+                                        </select>
+                                    </div>
+                                    <script>
+                                        $('#amplio').val('{{amId}}')
+                                        $('#especifico').val('{{esId}}')
+                                    </script>
+                                    <div class="col-md-12">
+                                        <b>{{ form.detallado.label }} <span style="color: red">*</span></b>
+                                        {{ form.detallado }}
+                                        {{ form.detallado.errors }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <label> <b>Palabras clave <span style="color: red">*</span></b> (Escribe una palabra y presiona enter)</label><br>
+                                        <select multiple data-role="tagsinput" id="palabras" name="palabras"  class="form-control">
+                                            {% for i in palabra%}
+                                                <option value="{{ i.Termino }}"> {{ i.Termino }}</option>
+                                            {% endfor %}
+
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                            <b>{{ form.Resumen.label }} <span style="color: red">*</span></b> (Información del contexto del libro)
+                                        {{ form.Resumen }}
+                                        {{ form.Resumen.errors }}
+                                    </div>
+                                    <div class="col-md-12">
+                                        <span>
+                                        {% if not form.Documento.value == '' %}
+                                            <h4><a href="http://ecuciencia.utc.edu.ec/media/{{form.Documento.value}}" target="_blank">Click aquí para ver el documento actual</a></h4>
+                                        {% else%}
+                                            Sin Documento
+                                        {% endif %}
+                                        </span>
+                                        <b>{{ form.Documento.label }}</b>
+                                        {{ form.Documento }}
+                                        {{ form.Documento.errors }}
+                                        
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <b>{{ form.filialUtc.label }}<span style="color:red">*</span></b>
+                                        {{ form.filialUtc }}
+                                        {{ form.filialUtc.errors }}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    {% if form.errors %}
+                                        {% for error in form.errors %} 
+                                        <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                                            <strong>Error!!</strong> {{ error }}
+                                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                                <span aria-hidden="true">&times;</span>
+                                            </button>
+                                        </div>
+                                        {% endfor %}
+                                    {% endif %} 
+                                </div>
+                                
+                            </div>
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+        </div><br>
+        <div class="card">
+            <div class="card-header">
+                Autores<br>
+                <button id="btRemove" class="btn btn-danger btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-minus"></i> Autor</button>
+                <button id="btAdd" class="btn btn-primary btn-sm pull-right" type="button" aria-disabled="true"><i class="fa fa-plus"></i> Autor</button>
+                <a href="#" class="btn btn-primary btn-sm pull-left" data-toggle="modal" data-target="#autorNew"><i class="fa fa-user"></i> Añadir nuevo Autor</a>
+            </div>
+            <div class="card-body" id="lista1">
+                <div class="row">
+                    <div class="col-md-12">
+
+                        <div class="row">
+                                <div class="col-md-5">
+                                    <div id="dbGrado">
+                                    </div>
+                                    <script>
+                                        var a = -1, b = -1;
+                                        $("#dbGrado").append('<label>Grado de autoria</label>{%for i in Autores%}<input readonly type=text class="form-control" name=grado' + (a += 1) + ' id=grado' + (b += 1) + ' ' + 'value="{{i.gradoAutoria }}" />{%endfor%}');
+                                    </script>
+                                </div>
+                                <div class="col-md-5   ">
+                                    <div id="dbAutores">
+
+                                    </div>
+                                </div>
+                                <script>
+                                    var b = -1, a = -1;
+                                        $("#dbAutores").append(' <label> Autores </label> {%for i in Autores%} {% for j in users %} {% if i.user_id == j.id%} <input type="text" name=' + (a += 1) + ' id=' + (b += 1) + ' placeholder="Buscar autor..." class="form-control" onkeyup="autors(this)" autocomplete="off" onchange="f()" value="{{j.last_name}} {{j.first_name}}"/> <ul class="list-group" id=res' + (b) + '></ul> {% endif %}{%endfor%} {%endfor%}');
+                                </script>
+                                <div class="col-md-2">
+
+                                    <label>Acción</label>
+                                    {% for i in Autores %}
+                                        <a style="padding: 10px;" class="btn btn-danger btn-sm btn-block" href="{% url 'autor:eliminarBook' i.id id %}" onclick="return confirm('¿Estas seguro?');">Eliminar <b>{{ i.gradoAutoria }}</b></a>
+                                    <br><br>
+                                    {% endfor %}
+
+                                </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div id="formGrado">
+
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div id="formUSer">
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="alert alert-danger col-md-12" id="AutRep" role="alert">
+                            <strong>Compruebe los autores ingresados!!</strong> Se han repetido los autores o no ha seleccionado algun autor.
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        {% if not user.is_superuser %}
+                        <div class="alert alert-warning col-md-12" id="AutIn" role="alert">
+                                <strong>Alerta!!</strong> Recuerde registrarse como autor.
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                        </div>
+                        {% endif %} <!--Validación Superusuario en agregar autores
+                                Autores:Arauz,Mora,Tapia,Zambrano
+                            fecha: 17/07/2019-->
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+        <br>
+        <div class="card" style="border:solid #07A7E3  3px " align="center">
+                <div class="col-md-12">
+                 <br>
+                                             <label><b><h5>Estado del libro</h5></b></label>
+                                             <div class="col-md-12">
+                                                 <br>
+     
+                                                 <div class="form-check form-check-inline">
+                                                     {% if form.editableTrueFalse.value == 0 %}
+                                                     <input class="form-check-input" type="radio" name="ed" id="lock" value="0"  onclick="edit(this)" required checked>
+                                                     {% else %}
+                                                     <input class="form-check-input" type="radio" name="ed" id="lock" value="0"  onclick="edit(this)" required>
+                                                     {% endif %}
+                                                     <label class="form-check-label" for="lock">Aprobado</label>
+                                                 </div>
+                                         
+                                                 <div class="form-check form-check-inline">
+                                                     {% if form.editableTrueFalse.value == 1 %}
+                                                     <input class="form-check-input" type="radio" name="ed" id="unlock" value="1" onclick="edit(this)" required checked > 
+                                                     {% else %}
+                                                     <input class="form-check-input" type="radio" name="ed" id="unlock" value="1" onclick="edit(this)" required> 
+                                                     {% endif %}
+                                                     <label class="form-check-label" for="unlock">NO Aprobado</label>
+                                                 </div>
+                                                 <input type="hidden" name="editableTrueFalse" id="editableTrueFalse" value="{{form.editableTrueFalse.value}}">
+                                                 <div id="coment">
+                                                         <br>
+                                                         <b>{{ form.comentarioSecretaria.label }}</b>
+                                                         <br>
+                                                         {{ form.comentarioSecretaria }}
+                                                         {{ form.comentarioSecretaria.errors }}
+                                                         Nota: Este comentario se mostrara en la pantalla del autor
+                                                         </div>
+                                                     </div>
+                                                     <br>
+                         </div>
+                                                 <script>
+                                                     function edit(y){
+                                                         if(y.value == '0'){
+                                                             console.log(y.value);
+                                                             $("#editableTrueFalse").val(y.value);
+                                                             $("#coment").hide();
+                                                         }
+                                                         if(y.value == '1'){
+                                                             $("#editableTrueFalse").val(y.value);
+                                                             $("#coment").show();
+                                                         }
+                                                     }
+                                                 </script>
+                                                 <script>
+                                                     function comentario(){
+                                                         if({{form.editableTrueFalse.value}}==0){
+                                                             $("#coment").hide();}
+                                                         if({{form.editableTrueFalse.value}}==1){
+                                                             $("#coment").show();}
+                                                         if({{form.editableTrueFalse.value}}==2){
+                                                             $("#coment").show();}
+                                                         if({{form.editableTrueFalse.value}}==null){
+                                                             $("#coment").hide();}
+                                                         }
+                                                 </script>
+             </div>
+        <br>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                            <div class="col-md-6">
+                                    <!--validar ISBN Autor Bryan sandoval 23/07/2019 -->
+                                <button class="btn btn-primary btn-block" type="submit" onclick="return malEnvio();">Guardar información</button>
+                                <div class="row">
+                                    <div class="alert alert-danger col-md-12" id="ErrIsbn" role="alert" style="display: none;">
+                                            <strong>Compruebe los campos ingresados!!</strong> Se ha registrado un error en el ISBN.
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+        
+                                    <a class="btn btn-danger btn-block" href="{% url 'Libro:libro_lis' %}">
+                                        Cancelar
+                                    </a>
+                            </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </form>
+    </div>
+
+    <!--  *********************************************** Modal autor ********************************************** -->
+    <div  class="modal fade bd-example-modal-sizes" id="autorNew" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" >Registrando un nuevo autor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formAut" method="POST">
+                {% csrf_token %}
+                <div class="modal-body" style="padding-right: 15px !important;">
+                    <label>Nombres <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="name" name="name" required="required" onkeyup="javascript:this.value=this.value.toUpperCase();">
+                    <label>Apellidos <span style="color:red">*</span></label>
+                    <input class="form-control" type="text" id="lastname" name="lastname" required="required" onkeyup= "javascript:this.value=this.value.toUpperCase();">
+                    <label>Correo electronico <span style="color:red">*</span></label>
+                    <input class="form-control" type="email" id="email" name="email" required="required">
+                    <label>Paìs</label>
+                    <select class="form-control" name="paisAut" id="paisAut" onchange="cargarU()">
+                        <option value="">----- Seleccione un pais -----</option>
+                        {% for i in p %}
+                        <option value="{{i.id}}">{{i.Nombre}}</option>
+                        {% endfor %}
+                    </select>
+                    <label>Universidad <span style="color:red">*</span></label>
+                    <select name="uni" id="uni" class="form-control">
+                        <option value="">--------------------</option>
+                    </select>
+                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                        <button type="submit" class="btn btn-primary">Guardar</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+     <!--                                       Modal DB                                                  -->
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Nueva base de datos</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form id="formDB" method="POST">
+                    {% csrf_token %}
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <label>Tipo Base de Datos <span style="color:red">*</span></label>
+                                <select type="text" class="form-control" name="tipoBD" id="tipoBD" required>
+                                    <option>--------</option>
+                                    <option value="1">Regional</option>
+                                    <option value="2">Alto impacto</option>
+                                </select>
+                            </div>
+                            <div class="col-md-12">
+                                <label>Nombre de la base de datos <span style="color:red">*</span></label>
+                                <input type="text" class="form-control" name="nameBD" id="nameBD" required>
+                            </div>
+                            <div class="col-md-12">
+                                <label>URL <span style="color:red">*</span></label>
+                                <input type="url" required class="form-control" name="Url de la base de datos" id="Url">
+                            </div>
+                            <div class="col-md-12">
+                                    <input type="text" class="form-control" style="display:none" name="user" id="user" value="{{user.id}}">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                        <button type="submit" class="btn btn-primary">Guardar cambios</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+{% endif %}
+{% endif %}
+
+{% endblock %}
+{% block scripts %}
+<script>
+
+        function cargarRegional(){
+
+            var data;
+            $.ajax({
+                url: '/db/index/',
+                type: 'GET',
+                data: data,
+                success: function(data) {
+                    $("#baseDatos option").remove();
+                    $.each(data, function(index, item) {
+                        console.log(item.text );
+                        var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                        $("#baseDatos").append(newOption).multiselect('rebuild');
+                    });
+                    console.log('correcto');
+                },
+                error : function(){
+                    console.log('error');
+                }
+            });
+        }
+        function cargarImpacto(){
+
+            var data;
+            $.ajax({
+                url: '/db/cargarImpacto/',
+                type: 'GET',
+                data: data,
+                success: function(data) {
+                    $("#baseDatos option").remove();
+                    $.each(data, function(index, item) {
+                        console.log(item.text );
+                        var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                        $("#baseDatos").append(newOption).multiselect('rebuild');
+                    });
+                    console.log('correcto');
+                },
+                error : function(){
+                    console.log('error');
+                }
+            });
+        }
+        $('#base1').click(function() {
+            cargarRegional();
+        });
+        $('#base2').click(function() {
+            cargarImpacto();
+        });
+    </script>
+<script>
+    function campoAm(){
+    var values = $('#amplio').val();
+    $.ajax({
+        type:'POST',
+        url:'/amplio/sel/',
+        data:{
+            datos: values,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success:function(data){
+            console.log("Estoy aqui");
+            $("#especifico").empty();
+            $.each(data, function(index, item) {
+                //alert("<option value='" + item.value + "'>" + item.text + "</option>");
+                var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                $("#especifico").append(newOption);
+            });
+            values.length = 0;
+        },
+        error : function(){
+            values.length = 0;
+            console.log('Opss');
+        }
+    })
+}
+
+function campoEs(){
+    var values = $('#especifico').val();
+    $.ajax({
+        type:'POST',
+        url:'/amplio/selEspe/',
+        data:{
+            datos: values,
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+        },
+        success:function(data){
+            console.log("Estoy aqui");
+            $("#detallado").empty();
+            $.each(data, function(index, item) {
+                //alert("<option value='" + item.value + "'>" + item.text + "</option>");
+                var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                $("#detallado").append(newOption);
+            });
+            values.length = 0;
+        },
+        error : function(){
+            values.length = 0;
+            console.log('Opss');
+        }
+    })
+}
+</script>
+<script type="text/javascript">
+
+        $('#tipo').ready(function() {
+            var a = document.getElementById("tipo").value;
+            if (a == "capitulo") {
+                // Añadir caja de texto.
+                $(capitulo).append('{{ form.capitulo.label }} {{ form.capitulo }} {{ form.capitulo.errors }}');
+                $(autoresLibro).append('{{ form.autoresLibro.label }} {{ form.autoresLibro }} {{ form.autoresLibro.errors }}');
+            }
+            else if (a == "libro" || a == ""){
+                $(capitulo).empty();
+                $(autoresLibro).empty();
+            }
+        });
+        $(document).on('submit', '#formRev', function(e){
+            e.preventDefault();
+            $.ajax({
+                type:'POST',
+                url:'/revista/new/',
+                data:{
+                    Nombre: $('#Nombre').val(),
+                    ISSN: $('#ISSN1').val(),
+                    baseData: $('#baseData').val(),
+                    Cuartil_Pertenece: $('#Cuartil_Pertenece').val(),
+                    Factor_Impacto: $('#Factor_Impacto').val(),
+                    Url: $('#Url1').val(),
+                    user: $('#user1').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success:function(data){
+                    $('#exampleModal1').modal('hide');
+                     $.each(data, function(index, item) {
+                        var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                        $("#revista").append(newOption).multiselect('rebuild');
+                    });
+                    $('#Nombre').val('');
+                    $('#ISSN1').val('');
+                    $('#baseData').multiselect('rebuild');
+                    $('#Cuartil_Pertenece').val('');
+                    $('#Factor_Impacto').val('');
+                    $('#Url1').val('');
+                    //alert("Revista creada.");
+                },
+                error : function(){
+                    $('#Nombre').val('');
+                    $('#ISSN1').val('');
+                    $('#baseData').multiselect('rebuild');
+                    $('#Cuartil_Pertenece').val('');
+                    $('#Factor_Impacto').val('');
+                    $('#Url1').val('');
+                    $('#exampleModal1').modal('hide');
+                    //alert("Error, la revisa ya se encuentra registrada.");
+                }
+            });
+        });
+    </script>
+    <script type="text/javascript">
+
+        $(document).on('submit', '#formDB', function(e){
+            e.preventDefault();
+
+            $.ajax({
+                type:'POST',
+                url:'/db/create/',
+                data:{
+                    tipoBD: $('#tipoBD').val(),
+                    BaseDatos: $('#nameBD').val(),
+                    Url: $('#Url').val(),
+                    user: $('#user').val(),
+                    csrfmiddlewaretoken: '{{ csrf_token }}'
+                },
+                success:function(data){
+                    $.each(data, function(index, item) {
+                    var newOption = "<option value='" + item.value + "'>" + item.text + "</option>";
+                    $("#baseDatos").append(newOption).multiselect('rebuild');
+                    $("#baseData").append(newOption).multiselect('rebuild');
+                    });
+                    $('#Url').val('');
+                    $('#nameBD').val('');
+                    $('#exampleModal').modal('hide');
+                    //alert("Base de datos creada");
+                },
+                error : function(){
+                     $('#Url').val('');
+                     $('#nameBD').val('');
+                     $('#exampleModal').modal('hide');
+                     //alert('Ya existe la base de datos');
+                }
+            });
+
+        });
+    </script>
+<script>
+    var list = new Array();
+    var AutRep = document.getElementById('AutRep');
+    AutRep.style.display = 'none';
+    function f(){
+        console.clear();
+        $('button[type="submit"]').attr('disabled','disabled');
+        $('#dbAutores > select').each(function( index ) {
+            console.log($( this ).val());
+            list.push($( this ).val());
+        });
+        $('#formUSer > select').each(function( index ) {
+            console.log($( this ).val());
+            list.push($( this ).val());
+        });
+        if(d(list).length != list.length){
+            console.log("Elementos repetidos");
+            AutRep.style.display = 'block';
+        }else{
+            $('button[type="submit"]').removeAttr('disabled');
+            AutRep.style.display = 'none';
+        }
+        list.length = 0;
+    }
+    function d(arra1) {
+        var i, len=arra1.length, result = [], obj = {};
+        for (i=0; i<len; i++){
+        obj[arra1[i]]=0;
+        }
+        for (i in obj) {
+        result.push(i);
+        }
+        return result;
+    }
+</script>
+
+<script>
+    $(document).ready(function() {
+
+        $('#baseDatos').multiselect({
+            //nonSelectedText: '- - -Select Project- - -',
+            buttonWidth: '100%',
+            buttonClass: 'btn small btn-light',
+        });
+        $('#revista').multiselect({
+            //nonSelectedText: '',
+            buttonWidth: '100%',
+            buttonClass: 'btn small btn-light',
+
+        });
+        var iCnt = 0;
+        $('#linea').on('change', function() {
+            var selected = $(this).val();
+            $("#subLinea option").each(function(item){
+                console.log(selected) ;
+                var element =  $(this) ;
+                console.log(element.data("tag")) ;
+                if (element.data("tag") != selected){
+                    element.hide() ;
+                }else{
+                    element.show();
+                }
+            }) ;
+            $("#subLinea").val($("#subLinea option:visible:first").val());
+
+        });
+
+        $('#palabras').tagsinput({
+            tagClass: 'label label-primary'
+        });
+
+        var iCnt = {{ Autores.count }};
+        var t = 7 ;
+        $('#btAdd').click(function() {
+            console.log(iCnt, t);
+            if(iCnt == 0){
+                iCnt += 1;
+            }
+            if (iCnt != t) {
+                if(iCnt == 1){
+                   $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Segundo" />');
+                }
+                if(iCnt == 2){
+                    $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Tercero" />');
+                }
+                if(iCnt == 3){
+                    $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Cuarto" />');
+                }
+                if(iCnt == 4){
+                    $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Quinto" />');
+                }
+                if(iCnt == 5){
+                    $(formGrado).append('<input readonly type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Sexto" />');
+                }
+                if(iCnt == 6){
+                    $(formGrado).append('<select class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + '><option value="Séptimo">Séptimo</option><option value="Octavo">Octavo</option><option value="Noveno">Noveno</option><option value="Décimo">Décimo</option><option value="Undécimo">Undécimo</option><option value="Duodécimo">Duodécimo</option><option value="Decimotercero">Decimotercero</option><option value="Decimocuarto">Decimocuarto</option><option value="Decimoquinto">Decimoquinto</option></select>');
+                }
+                if(iCnt == 7){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Octavo" />');
+                }
+                if(iCnt == 8){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Noveno" />');
+                }
+                if(iCnt == 9){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Décimo" />');
+                }
+                if(iCnt == 10){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Undécimo" />');
+                }
+                if(iCnt == 11){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Duodécimo" />');
+                }
+                if(iCnt == 12){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Decimotercero" />');
+                }
+                if(iCnt == 13){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Decimocuarto" />');
+                }
+                if(iCnt == 14){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Decimoquinto" />');
+                }
+                if(iCnt == 15){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Decimosexto" />');
+                }
+                if(iCnt == 16){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Decimoséptimo" />');
+                }
+                if(iCnt == 17){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Decimoctavo" />');
+                }
+                if(iCnt == 18){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Decimonoveno" />');
+                }
+                if(iCnt == 19){
+                    $(formGrado).append('<input  type=text class="form-control" name=grado' + iCnt + ' id=grado' + iCnt + ' ' + 'value="Vigésimo " />');
+                }
+                $(formUSer).append('<input type="text" name=' + iCnt + ' id=' + iCnt + ' placeholder="Buscar autor..." autocomplete="off" class="form-control" onkeyup="autors(this)"/><ul class="list-group" id=res' + iCnt + '></ul>');
+
+
+                iCnt = iCnt + 1;
+            }
+            else {
+                $(formGrado).append('<label>Limite Alcanzado</label>');
+                $('button[id="btAdd"]').attr('disabled','disabled');
+            }
+        });
+        $('#btRemove').click(function() {
+            console.log(iCnt);
+            if (iCnt != {{ Autores.count }}) {
+                iCnt = iCnt - 1;
+                if(iCnt != 0 ){
+                    $('#grado' + iCnt).remove();
+                    $('#res' + iCnt).remove();
+                    $('#' + iCnt).remove();
+                }
+            }
+            if (iCnt == 0) {
+                $(formGrado).empty();
+                $(formUSer).empty();
+                $('#btAdd').removeAttr('disabled');
+                iCnt = 1;
+            }
+            if (iCnt + 1 == t) {
+                $("#btAdd").removeAttr("disabled");
+            }
+        });
+        $('#btRemoveAll').click(function() {    // Elimina todos los elementos del contenedor
+            $(formGrado).empty();
+            $(formUser).empty();
+            $('#btAdd').removeAttr('disabled');
+        });
+    });
+    </script>
+    <!-- Tags Input -->
+	<script type="text/javascript" src="{% static 'assets/plugins/tagsinput/bootstrap-tagsinput.min.js' %}"></script>
+    <!-- Tags Input -->
+	<script type="text/javascript" src="{% static 'assets/js/typeahead.bundle.js' %}"></script>
+    <!-- SCRIPTS - OPTIONAL START -->
+	<script type="text/javascript" src="{% static 'assets/js/misc/holder.min.js' %}"></script>
+	<!-- Form Wizard -->
+	<script type="text/javascript" src="{% static 'assets/plugins/bootstrap-wizard/jquery.bootstrap.wizard.min.js' %}"></script>
+
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/form-validator/jquery.form-validator.min.js' %}"></script>
+    <!-- Form Validation -->
+	<script type="text/javascript" src="{% static 'assets/plugins/typeahead/typeahead.bundle.min.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/js/multiselect.js' %}"></script>
+
+    <script type="text/javascript" src="{% static 'assets/general/js/scriptsna.js' %}"></script>
+    
+    <script type="text/javascript">
+        window.onload=comentario();
+    </script>
+{% endblock %}

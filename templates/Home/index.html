@@ -1,0 +1,598 @@
+{% load staticfiles %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+	<head>
+	    <meta charset="utf-8">
+	    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+	    <meta name="viewport" content="width=device-width, initial-scale=1">
+	    <meta name="description" content="">
+	    <meta name="author" content="">
+
+		{% block metas %}
+
+		{% endblock %}
+
+		
+
+	    <title>EcuCiencia</title>
+	    <link rel="icon" href="{% static 'assets/img/favicon2.png' %}">
+		<!-- Web Fonts -->
+        <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900,200italic,300italic,400italic,600italic,700italic,900italic' rel='stylesheet' type='text/css'>
+        <!-- Bootstrap Core CSS -->
+	    <link href="{% static 'home/css/bootstrap.min.css' %}" rel="stylesheet">
+	    <!-- Flaticon CSS -->
+	    <link href="{% static 'home/fonts/flaticon/flaticon.css' %}" rel="stylesheet">
+	    <!-- font-awesome CSS -->
+	    <link href="{% static 'home/css/font-awesome.min.css' %}" rel="stylesheet">
+	    <!-- Offcanvas CSS -->
+	    <link href="{% static 'home/css/hippo-off-canvas.css' %}" rel="stylesheet">
+	    <!-- animate CSS -->
+	    <link href="{% static 'home/css/animate.css' %}" rel="stylesheet">
+	    <!-- language CSS -->
+	    <link href="{% static 'home/css/language-select.css' %}" rel="stylesheet">
+	    <!-- owl.carousel CSS -->
+	    <link href="{% static 'home/owl.carousel/assets/owl.carousel.css' %}" rel="stylesheet">
+		<!-- magnific-popup -->
+    	<link href="{% static 'home/css/magnific-popup.css' %}" rel="stylesheet">
+    	<!-- Main menu -->
+    	<link href="{% static 'home/css/menu.css' %}" rel="stylesheet">
+    	<!-- Template Common Styles -->
+    	<link href="{% static 'home/css/template.css' %}" rel="stylesheet">
+	    <!-- Custom CSS -->
+	    <link href="{% static 'home/css/style.css' %}" rel="stylesheet">
+	    <!-- Responsive CSS -->
+	    <link href="{% static 'home/css/responsive.css' %}" rel="stylesheet">
+
+		<script src="{% static 'home/js/vendor/modernizr-2.8.1.min.js' %}"></script>
+		{% block css %}
+
+		{% endblock %}		
+	    <!-- HTML5 Shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+	    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+	    <!--[if lt IE 9]>
+		    <script src="{% static 'home/js/vendor/html5shim.js' %}"></script>
+		    <script src="{% static 'home/js/vendor/respond.min.js' %}"></script>
+		<![endif]-->
+		<script type="text/javascript" src="{% static 'graficas/produccion/js/jquery-3.2.1.min.js'%}"></script>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+		 <link rel="stylesheet" href="{% static 'graficas/produccion/css/c3.min.css'%}">
+		 <!-- Busqueda -->
+		<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+		<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
+		<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+		<style>
+			.ui-autocomplete {
+				max-height: 400px;
+				overflow-y: auto;
+				overflow-x: hidden;
+			}
+			* html .ui-autocomplete {
+				height: 100px;
+			}
+
+		   .fixed-height {
+					   padding: 1px;
+					   max-height: 200px;
+					   overflow: auto;
+				   }
+		   .ui-widget {
+			 font-size: 10px;
+		   }
+		   .ui-menu {
+				   list-style:none;
+				   margin: 0;
+				   display:block;
+				   width:350px;
+				   border-radius:10px;
+		   }
+		   .ui-menu .ui-menu {
+				   margin-top: -3px;
+		   }
+		   .ui-menu .ui-menu-item {
+				   margin:0;
+				   padding: 0;
+				   width: 450px;
+		   }
+		   .ui-menu .ui-menu-item a {
+				   text-decoration:none;
+				   display:block;
+				   padding:.2embac .4em;
+				   line-height:1.5;
+				   zoom:1;
+		   }
+		   .ui-menu .ui-menu-item a.ui-state-hover,
+		   .ui-menu .ui-menu-item a.ui-state-active {
+				   margin: -1px;
+		   }
+	   </style>
+<script>
+ var $$;
+
+ // If 1.7.1 is loaded, put it into noConflict mode
+ if(window.jQuery().jquery = '1.7.1') {
+   $$ = $.noConflict(true);
+ } else {
+   // If it is not loaded, load the local version
+   document.write("<script src='/js/jquery-1.7.1.js'>\x3C/script>");
+
+   // Keep checking until it is loaded
+   var intervalID = window.setInterval(function() {
+	 // If it is loaded, put it into noConflict mode and clear the interval
+	 if(window.jQuery().jquery == '1.7.1') {
+	   $$ = $.noConflict(true);
+	   window.clearInterval(intervalID);
+	 } else {
+	   // keep trying
+	 }
+   }, 1000);
+ }
+</script>
+   <script type="text/javascript">
+	   $$(function(){
+		   function equalHeight(group) {
+			   var tallest = 0;
+			   group.each(function() {
+				   var thisHeight = $$(this).height();
+				   if(thisHeight > tallest) {
+					   tallest = thisHeight;
+				   }
+			   });
+			   group.height(tallest);
+		   }
+		   equalHeight($$(".box-1 .inner"));
+		   $$("#tags5").autocomplete({
+			   minLength:3,
+			   source: function(req, add){
+				   var search=$$("#tags5").val();
+				   $$.ajax({
+					   url:'/con_ajax_objeto/',
+					   async:true,
+					   dataType:'json',
+					   type:'GET',
+					   data:{ 'start': search,},
+					   success: function(data){
+						   var suggestions=[];
+
+						   $$.each(data, function(index, objeto){
+							   suggestions.push(objeto);
+						   });
+
+						   add(suggestions);
+					   },
+					   error:function(err){
+						   alert("error");
+					   }
+				   });
+			   }
+		   });
+	   });
+   </script>
+	   <style>
+		* {
+			box-sizing: border-box;
+		}
+		form.example input[type=text] {
+			padding: 5px;
+			font-size: 17px;
+			box-sizing: border-box;
+			margin-top: -5px;
+			border: 1px solid grey;
+			float: left;
+			width: 40%;
+			background-color: white;
+			-webkit-transition: width 0.4s ease-in-out;
+		 transition: width 0.4s ease-in-out;
+		}
+		form.example button {
+			float: left;
+			width: 5%;
+			padding: 5px;
+			margin-top: -5px;
+			background:  #01568F;
+			color: white;
+			font-size: 17px;
+			border: 1px solid #01568F;
+			cursor: pointer;
+		}
+		form.example button:hover {
+			background: #01568F;
+		}
+		form.example input:hover {
+			border: 2px solid #01568F;
+		}
+		.navbar-default .navbar-nav>li>a:hover, 
+.navbar-default .navbar-nav>.active>a, 
+.navbar-default .navbar-nav>.active>a:hover, 
+.navbar-default .navbar-nav>.active>a:focus {
+  color: #fff;
+  background-color: #01568F;
+}
+
+.navbar-default .navbar-nav>.open>a, 
+.navbar-default .navbar-nav>.open>a:hover, 
+.navbar-default .navbar-nav>.open>a:focus {
+  color: #fff;
+  background-color: #01568F;
+}
+
+.navbar-default .navbar-nav>li:focus {
+  outline: none;
+}
+		</style>
+		
+	</head>
+
+
+	<body id="page-top">
+		<div id="st-container" class="st-container">
+		    <div class="st-pusher">
+	        	<div class="st-content">
+
+				  	<header class="header">
+
+						<nav class="navbar navbar-default" role="navigation">
+
+							<div class="container mainnav">
+
+								<div class="navbar-header">
+									<h1 class="logo"><a class="navbar-brand" href="/"><img src="{% static 'images/logo4151.png' %}" width="170" height="70" style="position: relative; top: -25px" alt=""></a></h1>
+									<!--logo obscuro-->
+									<!-- offcanvas-trigger -->
+			                        <button type="button" class="navbar-toggle collapsed pull-right hidden-lg hidden-md visible-xs visible-sm" style="right:-30px">
+			                          <span class="sr-only">Toggle navigation</span>
+			                          <i class="fa fa-bars"></i>
+			                        </button>
+
+								</div>
+
+								<!-- Collect the nav links, forms, and other content for toggling -->
+								<div class="collapse navbar-collapse navbar-collapse">
+
+									<ul class="nav navbar-nav navbar-center">
+										<li>
+											<form class="example" action="/Home/buscar/?buscalo{{buscar}}" method="GET">
+												<input type="text" name="buscalo" id="tags5" placeholder="Buscar..." style="width:450px">
+												<button type="submit" style="width:50px"><i class="fa fa-search"></i></button>
+											</form>
+										</li>
+									</ul>
+									
+									<ul class="nav navbar-nav navbar-right">
+										<!-- Home -->
+                                        <li class="active"><a href="/">Inicio</a>
+
+										</li>
+										<li><a href="http://ecuciencia.utc.edu.ec/ecuciencia/">Proyecto</a>
+
+										</li>
+										
+										<!-- /Home -->
+										<li class="dropdown"><a href="#">Cienciometría <span class="fa fa-angle-down"></span></a>
+                                            <!-- submenu-wrapper -->
+                                            <div class="submenu-wrapper">
+                                                <div class="submenu-inner">
+                                                    <ul class="dropdown-menu">
+
+                                                    	<li  ><a href="/Home/clasificacion">Clasificación SVM</a></li>
+                                                    	<li  ><a href="/Home/graficas">Estadísticas</a></li>
+														<li><a href="{% url 'grafica:firstview' %}">Similaridad</a></li>		
+														<li><a href="{% url 'grafica:firstview2' %}">Red Social</a></li>
+														
+														
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                            <!-- /submenu-wrapper -->
+                                        </li>
+
+                                        {% if user.id %}
+										<li><a href="/index/">{{user.first_name|slice:"0:7"}} {{user.last_name|slice:"0:7"}}</a></li>
+										{% else %}
+										<li><a href="/index/">Iniciar Sesión</a></li>
+										{% endif %}
+									</ul>
+								</div><!-- /.navbar-collapse -->
+
+							</div><!-- /.container -->
+
+
+						</nav>
+
+					</header>
+
+					{% block contenido%}
+					<div class="row row-content text-center">
+						<div class="col-md-12">
+							<div id="testimonial-carousel" class="carousel slide" data-ride="carousel">
+							  <!-- Indicators -->
+							  <ol class="carousel-indicators">
+							    <li data-target="#testimonial-carousel" data-slide-to="0" class="active"></li>
+							    <li data-target="#testimonial-carousel" data-slide-to="1"></li>
+							  </ol>
+
+							  <!-- Wrapper for slides -->
+							  <div class="carousel-inner" role="listbox">
+							    <div class="item active">
+								        <section class="counter-section" data-stellar-background-ratio="0.5" style="background: url() no-repeat center top fixed; padding: 10px 0; background-size: cover;">
+											<h1 style="color: #01568f;">Vamos por más!!</h1>
+											<img src="/static/home/img/logo-utc.png" width="555" alt="">
+											<br>
+								        	<div class="container">
+												<div class="row">
+											        <div class="col-sm-4 col-xs-12">
+											          <div class="counter-block">
+											          	<span class="count-description flaticon-boat" style="color: #01568f;"><strong class="timer" style="color: #01568f;">{{a}}</strong>Artículos Científicos</span>
+											          </div>
+											        </div>
+											       <div class="col-sm-4 col-xs-12">
+											          <div class="counter-block">
+											          	<span class="count-description flaticon-international" style="color: #01568f;"><strong class="timer" style="color: #01568f;">{{b}}</strong>Libros</span>
+											          </div>
+											        </div>
+											       <div class="col-sm-4 col-xs-12">
+											          <div class="counter-block">
+											          	<span class="count-description flaticon-compass" style="color: #01568f;"><strong class="timer" style="color: #01568f;">{{c}}</strong>Ponencias</span>
+											          </div>
+											        </div>
+										      	</div> <!-- /.row -->
+								        	</div><!-- /.container -->
+								        	<br><br>
+								        </section><!-- /.counter-section -->
+							    		
+							    </div>
+							    <div class="item">
+							    	
+							        <section class="counter-section" data-stellar-background-ratio="0.5" style="background: url() no-repeat center top fixed; padding: 10px 0; background-size: cover;">
+							        	
+										<h1 style="color: #01568f;" >Próximamente</h1>
+										<img src="/static/home/img/logo-uniandes.png" alt="">
+							        	<br>
+							        	<div class="container">
+											<div class="row">
+												<div class="col-sm-4 col-xs-12">
+												<div class="counter-block">
+													<span class="count-description flaticon-boat" style="color: #01568f"><strong class="timer" style="color: #01568f">0</strong >Artículos Científicos</span>
+												</div>
+												</div>
+												<div class="col-sm-4 col-xs-12">
+												<div class="counter-block" style="color: #01568f">
+													<span class="count-description flaticon-international" style="color: #01568f"><strong class="timer" style="color: #01568f">0</strong>Libros</span>
+												</div>
+												</div>
+												<div class="col-sm-4 col-xs-12">
+												<div class="counter-block">
+													<span class="count-description flaticon-compass" style="color: #01568f"><strong class="timer" style="color: #01568f">0</strong>Ponencias</span>
+												</div>
+												</div>
+									      	</div> <!-- /.row -->
+							        	</div><!-- /.container -->
+							        	<br><br>
+							        </section><!-- /.counter-section -->
+							    </div>
+							    
+							  </div>
+							</div><!-- /.carousel -->
+		              	</div><!-- /.col-md-12 -->
+		            </div>	
+                    
+
+			        <!-- services start -->
+					<section class="service-home section-padding">
+			            <div class="container text-center">
+			              <div class="row">
+			                <div class="col-xs-12">
+			                  <h2 class="section-title">INVESTIGACIÓN COLABORATIVA</h2>
+
+
+			                  <span class="section-sub">Con la finalidad de unir investigadores de acuerdo a sus <br> Áreas de interés científica.</span>
+			                </div>
+			              </div> <!-- /.row -->
+
+			              <div class="row content-row">
+			              	<div class="col-sm-12">
+								<h1>Nuestras líneas de investigación</h1>
+								<div class="accordion" id="accordion">
+									{% for i in line %}
+										{% if i.id == 2 %}
+											<div class="accordion-group">
+												<div class="accordion-heading" style="background-color: #01568f;">
+												<a class="accordion-toggle" style="color:#fff;" data-toggle="collapse" data-parent="#accordion" href="#collapse{{i.id}}">
+													{{i.Nombre}}
+												</a>
+												</div>
+												<div id="collapse{{i.id}}" class="accordion-body collapse in">
+													<div class="accordion-inner">
+														{% for j in sub %}
+															{% if j.linea_investigacion_id == i.id %}
+																<a data-flip="false" aria-haspopup="true" aria-expanded="false">{{j.Nombre}}</a><br>
+															{% endif %}	
+														{% endfor %}
+													</div>
+												</div><!-- /.accordion-group-->
+											</div><!-- /.accordion-group-->
+										{% else %}
+											<div class="accordion-group">
+												<div class="accordion-heading" style="background-color: #01568f;">
+												<a class="accordion-toggle" style="color:#fff;" data-toggle="collapse" data-parent="#accordion" href="#collapse{{i.id}}">
+													{{i.Nombre}}
+												</a>
+												</div>
+												<div id="collapse{{i.id}}" class="accordion-body collapse">
+													<div class="accordion-inner">
+														{% for j in sub %}
+															{% if j.linea_investigacion_id == i.id %}
+																<a data-flip="false" aria-haspopup="true" aria-expanded="false">{{j.Nombre}}</a><br>
+															{% endif %}	
+														{% endfor %}
+														
+													</div>
+												</div><!-- /.accordion-group-->
+											</div><!-- /.accordion-group-->
+											{% endif %}
+									{% endfor %}
+									
+								</div>
+			              	</div><!-- /.col-sm-4 -->
+
+			              </div> <!-- /.row -->
+			            </div><!-- /.container -->
+			        </section>
+					{% endblock %}
+			        
+
+			        <!-- copyright-section start -->
+			        <footer class="copyright-section">
+			        	<div class="container text-center">
+			        		<div class="footer-menu">
+			        			<ul>
+			        				<li><a href="#">Privacy &amp; Cookies</a></li>
+			        				<li><a href="#">Terms &amp; Conditions</a></li>
+			        				<li><a href="#">Accessibility</a></li>
+			        			</ul>
+			        		</div>
+
+			        		<div class="copyright-info">
+			        			<span>Copyright © 2018 ECU-CIENCIA. All Rights Reserved. Diseñado por <a href="https://uicookies.com">uiCookies</a><br> Contactos <a data-flip="false" aria-haspopup="true" aria-expanded="false">ecu.ciencia@utc.edu.ec</a> o <a data-flip="false" aria-haspopup="true" aria-expanded="false">0987071107</a> </span>
+			        		</div>
+			        	</div><!-- /.container -->
+					</footer>
+					
+			        <!-- copyright-section end -->
+	    		</div> <!-- .st-content -->
+		    </div> <!-- .st-pusher -->
+
+			<!-- OFF CANVAS MENU -->
+	    	<div class="offcanvas-menu offcanvas-effect">
+	    		<div class="offcanvas-wrap">
+			        <div class="off-canvas-header">
+			        	<button type="button" class="close" aria-hidden="true" data-toggle="offcanvas" id="off-canvas-close-btn">&times;</button>
+					</div>
+					
+			        <ul id ="offcanvasMenu" class="list-unstyled hidden-lg hidden-md">
+			            <li class="active"><a href="/">Home<span class="sr-only">(current)</span></a></li>
+			            <li>
+			            	<a href="#">Pages</a>
+			            	<ul>
+								<li><a href="/">About</a></li>
+							    <li><a href="/">Service</a></li>
+							    <li><a href="/">Our people</a></li>
+							    <li><a href="/">Career</a></li>
+							    <li><a href="/">FAQ Page</a></li>
+							    <li><a href="/">Typography</a></li>
+							</ul>
+
+			            </li>
+			            <li>
+			            	<a href="#">Services</a>
+			            	<ul>
+								<li><a href="/">Air transportation</a></li>
+								<li><a href="/">Marine transportation</a></li>
+								<li><a href="/">Moving &amp; storage</a></li>
+								<li><a href="/">Shipping &amp; operations</a></li>
+								<li><a href="/">Transportation logistics</a></li>
+								<li><a href="/">Trucking</a></li>
+							</ul>
+
+			            </li>
+			            <li>
+			            	<a href="#">Blog</a>
+							<ul>
+			            		<li>
+			            			<a href="/">Standard blog</a>
+			            		</li>
+			            		<li>
+			            			<a href="/">Single blog</a>
+			            		</li>
+			            	</ul>
+			            </li>
+			            <li><a href="/">Contact</a></li>
+						<span class="search-button pull-center"><a href="#search"><i class="fa fa-search"></i></a></span>
+			            <li><a href="/">Typography</a></li>
+			        </ul>
+			        <div class="offcanvas-widgets hidden-lg hidden-md">
+				        <div id="twitterWidget">
+							<h2>Tweeter feed</h2>
+							<div class="twitter-widget"></div>
+						</div>
+						<div class="newsletter-widget">
+							<h2>Stay in Touch</h2>
+							<p>Enter your email address to receive news &amp; offers from us</p>
+
+							<form class="newsletter-form">
+								<div class="form-group">
+									<label class="sr-only" for="InputEmail1">Email address</label>
+									<input type="email" class="form-control" id="InputEmail2" placeholder="Your email address">
+									<button type="submit" class="btn">Send &nbsp;<i class="fa fa-angle-right"></i></button>
+								</div>
+							</form>
+
+						</div><!-- newsletter-widget -->
+					</div>
+				</div>
+	      	</div><!-- .offcanvas-menu -->
+		</div><!-- /st-container -->
+
+
+	    <!-- jQuery -->
+	    <script src="{% static 'home/js/jquery.js' %}"></script>
+	    <!-- Bootstrap Core JavaScript -->
+	    <script src="{% static 'home/js/bootstrap.min.js' %}"></script>
+	    <!-- owl.carousel -->
+	    <script src="{% static 'home/owl.carousel/owl.carousel.min.js' %}"></script>
+	    <!-- Magnific-popup -->
+		<script src="{% static 'home/js/jquery.magnific-popup.min.js' %}"></script>
+		<!-- Offcanvas Menu -->
+		<script src="{% static 'home/js/hippo-offcanvas.js' %}"></script>
+		<!-- inview -->
+		<script src="{% static 'home/js/jquery.inview.min.js' %}"></script>
+		<!-- stellar -->
+		<script src="{% static 'home/js/jquery.stellar.js' %}"></script>
+		<!-- countTo -->
+		<script src="{% static 'home/js/jquery.countTo.js' %}"></script>
+		<!-- classie -->
+		<script src="{% static 'home/js/classie.js' %}"></script>
+		<!-- selectFx -->
+		<script src="{% static 'home/js/selectFx.js' %}"></script>
+		<!-- sticky kit -->
+		<script src="{% static 'home/js/jquery.sticky-kit.min.js' %}"></script>
+	    <!-- GOGLE MAP -->
+	    <script src="https://maps.googleapis.com/maps/api/js"></script>
+	    <!--TWITTER FETCHER-->
+	    <script src="{% static 'home/js/twitterFetcher_min.js' %}"></script>
+	    <!-- Custom Script -->
+		<script src="{% static 'home/js/scripts.js' %}"></script>
+		<!-- Datatables Cambio para las graficas de estadisticas -->
+	    <script type="text/javascript" src="{% static 'graficas/similaridad/datatables/js/jquery.dataTables.min.js' %}"></script>
+	    <script type="text/javascript" src="{% static 'graficas/similaridad/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+	    <script type="text/javascript" src="{% static 'graficas/similaridad/datatables/js/dataTables.responsive.min.js' %}"></script>
+		{% block scripts %}
+
+		{% endblock %}
+	</body>
+</html>
+
+
+
+{% block extrastatic %}
+
+{% endblock %}
+
+
+
+
+{% block navbar %}
+
+{% endblock %}
+
+{% block content %}
+
+{% endblock %}
+
+{% block footer %}
+
+
+ {% endblock%}
+
+

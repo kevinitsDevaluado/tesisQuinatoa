@@ -1,0 +1,84 @@
+{
+  "nodes": [
+    {
+      "index": 0, 
+      "links": [], 
+      "score": 10.35923957824707, 
+      "title": "Inteligencia Artificial", 
+      "cover": "https://empresariados.com/wp-content/2013/09/como-construir-tu-prestigio-profesional.jpg", 
+      "label": "Inteligencia Artificial (2006)", 
+      "director": "Edward Zwick", 
+      "cast": "Leonardo DiCaprio, Djimon Hounsou, Jennifer Connelly, Arnold Vosloo, David Harewood, Jimi Mistry, Michael Sheen, Marius Weyers, Stephen Collins, Ato Essandoh", 
+      "year": 2006,  
+      "id": 1768448
+    }, 
+    {
+      "index": 1, 
+      "links": [3, 4], 
+      "score": 7.167639255523682, 
+      "title": "Cloud Computing", 
+      "cover": "https://cdne.diariocorreo.pe/thumbs/uploads/img/2018/05/24/brian-ohara-el-reto-es-formar-al-profesional-que-e-820722-jpg_604x0.jpg", 
+      "label": "Cloud Computing(2009)", 
+      "director": "Todd Robinson", 
+      "cast": "John Travolta, James Gandolfini, Salma Hayek, Jared Leto, Laura Dern, Dan Byrd, Alice Krige, Dagmara Dominczyk, Bailee Madison", 
+      "year": 2009, 
+      "id": 1758379
+    }, 
+    {
+      "index": 2, 
+      "links": [3, 4], 
+      "score": 7.554875373840332, 
+      "title": "Sistemas Operativos", 
+      "cover": "https://www.redaccionmedica.com/images/destacados/-solo-se-trata-al-1-5-de-personas-con-trastorno-por-consumo-de-alcohol--7740_620x368.jpg", 
+      "label": "Sistemas Operativos(2011)", 
+      "director": "Todd Phillips", 
+      "cast": "Bradley Cooper, Zach Galifianakis, Justin Bartha, Ed Helms, Ken Jeong, Mike Tyson, Jamie Chung, Paul Giamatti, Jeffrey Tambor, Mason Lee", 
+      "year": 2011, 
+      "id": 1750024
+    }, 
+    {
+      "index": 3, 
+      "links": [1, 2], 
+      "score": 7.812180042266846, 
+      "title": "Levels of similarity", 
+      "cover": "https://imagenesfotos.com/wp-content/2011/03/personas.jpg", 
+      "label": "Levels of similarity(1942)", 
+      "director": "Michael Curtiz", 
+      "cast": "Humphrey Bogart, Ingrid Bergman, Paul Henreid, Claude Rains, Conrad Veidt, Sydney Greenstreet, Peter Lorre, Madeleine Lebeau, Dooley Wilson, Joy Page", 
+      "year": 1942, 
+      "id": 1035
+    }, 
+    {
+      "index": 4, 
+      "links": [1, 2], 
+      "score": 7.442391872406006,  
+      "title": "Multidimensional scaling", 
+      "cover": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRE9UNrKNf_qxYPVAkHMMP23UPQfgOdA_OW5es3pLaJNdDpcvHD", 
+      "label": "Multidimensional scaling(1995)", 
+      "duration": "104 minutes", 
+      "id": 175
+    }
+  ], 
+  "links": [
+    {
+      "source": 1, 
+      "target": 3, 
+      "weight": 2.9808335304260254
+    },
+    {
+      "source": 1, 
+      "target": 4, 
+      "weight": 0.9808335304260254
+    },
+    {
+      "source": 2, 
+      "target": 3, 
+      "weight": 3.9808335304260254
+    },
+    {
+      "source": 2, 
+      "target": 4, 
+      "weight": 0.9808335304260254
+    }
+  ]
+}

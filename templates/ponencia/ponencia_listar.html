@@ -1,0 +1,245 @@
+{% extends 'base1/inicio.html' %}
+{% load staticfiles %}
+{% block title %}
+        Lista de ponencia
+{% endblock%}
+{% block subtitle %}
+        LISTA DE <span style="color:#07afea">PONENCIAs</span>
+        {% if user.id != 1105 %}
+        <a href="{% url 'Ponencia:ponencia_crear' %}" class="btn btn-primary btn-sm pull-right"><i class="fa fa-plus"></i> Nueva ponencia</a>
+        {% endif %}
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block ponencia %}
+    <li class="nav-item active">
+        <a class="nav-link active" href="{% url 'Ponencia:ponencia_listar' %}">
+            <i class="batch-icon batch-icon-star"></i>
+            <span id="ponIco">Ponencias</span>
+        </a>
+    </li>
+{% endblock %}
+
+{% block content %}
+{% if not user.is_superuser %}
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                    <div class="table-responsive">
+                        {% if Pon %}
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td style="width:10%" align="center">Estado de la Ponencia</td>
+                                    <th style="text-align:left; width:25%;">Título ponencia</th>
+                                    <th style="text-align:left; width:25%;">Lugar ponencia</th>
+                                    <th style="text-align:left; width:25%;">Fecha ponencia</th>
+                                    <th style="text-align:center; width:25%;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                {% for i in Pon %}
+                                <tr>
+                                    <td align="center">
+                                        {% if i.editableTrueFalse == 1 %}
+                                            <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                        {% elif i.editableTrueFalse == 0 %}
+                                           <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                        {% elif i.editableTrueFalse == 2 %}
+                                           <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                        {% else %}
+                                            <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{i.tituloPonencia}}</td>
+                                    <td>{{i.lugarPonencia}}</td>
+                                    <td>{{i.fechaPonencia}}</td>
+                                    <td>
+                                            {% if i.editableTrueFalse == 1 %}
+                                            <a class="btn btn-primary btn-sm" href="{% url 'Ponencia:ponencia_editar'  i.id %}" ><span class="fa fa-pencil">
+                                            {% elif i.editableTrueFalse == 0 %}
+                                            <a class="btn btn-primary btn-sm" href="{% url 'Ponencia:ponencia_editar_disabled'  i.id %}" ><span class="fa fa-pencil">
+                                            {% else %}
+                                            <a class="btn btn-primary btn-sm" href="{% url 'Ponencia:ponencia_editar'  i.id %}" ><span class="fa fa-pencil">
+                                            {% endif %}
+                                            </span> Editar</a>
+                                            
+                                            <a class="btn btn-danger btn-sm" href="{% url 'Ponencia:ponencia_eliminar'  i.id %}"><span class="fa fa-trash"></span> Eliminar</a>
+                                            
+                                       </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <h1 align="center">No hay registros de Ponencias</h1>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+<script>
+        //Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+        //Para listar documentos rechazados      Fecha:03/07/2019
+        function activarRe(){
+            var valor=document.getElementById("micheck");
+            if(valor.checked==true){
+                document.getElementById('tbody1').style.display='none';
+                document.getElementById('tbody2').style.display='block';
+            }else{
+                $('#tbody1').show();
+                $('#tbody2').hide();
+                location.reload();
+            }
+        }
+</script>
+<div class="card-body">
+    <input type="checkbox" id="micheck" name="vehicle" value="1" onclick=" activarRe()"> Activar Rechazadas<br>
+</div>
+<br>
+<div id="tbody1" class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                    <a href="{% url 'Ponencia:ReportePonencia' %}" class="btn btn-excel btn-md  pull-right"><i class=""></i>
+                        <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                    </a>
+                    <div class="table-responsive">
+                        {% if ponenciaAdmin %}
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <td style="width:10%" align="center">Estado de la ponencia</td>
+                                    <th style="text-align:left; width:25%;">Título ponencia</th>
+                                    <th style="text-align:left; width:25%;">Lugar ponencia</th>
+                                    <th style="text-align:left; width:25%;">Fecha ponencia</th>
+                                    <th style="text-align:center; width:25%;">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                {% for i in ponenciaAdmin %}
+                                <tr>
+                                    <td align="center">
+                                        {% if i.editableTrueFalse == 1 %}
+                                            <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                        {% elif i.editableTrueFalse == 0 %}
+                                           <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                        {% elif i.editableTrueFalse == 2 %}
+                                           <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                        {% else %}
+                                            <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{i.tituloPonencia}}</td>
+                                    <td>{{i.lugarPonencia}}</td>
+                                    <td>{{i.fechaPonencia}}</td>
+                                    <td>
+                                        <a class="btn btn-primary btn-sm" href="{% url 'Ponencia:ponencia_editar' i.id %}"><span
+                                                class="glyphicon glyphicon-pencil"></span> Editar</a>
+                                        {% if user.id != 1105 %}
+                                        <a class="btn btn-danger btn-sm" href="{% url 'Ponencia:ponencia_eliminar' i.id %}"><span
+                                                class="glyphicon glyphicon-trash"></span> Eliminar</a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <h1 align="center">No hay registros de Ponencias</h1>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+//Para listar documentos rechazados      Fecha:03/07/2019-->
+<div id="tbody2" class="col-lg-12" style="display: none">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        <a href="{% url 'Ponencia:ReportePonencia' %}" class="btn btn-excel btn-md  pull-right"><i class=""></i>
+                            <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                        </a>
+                        <div class="table-responsive">
+                            {% if ponenciaAdmin %}
+                            <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <td style="width:10%" align="center">Estado de la ponencia</td>
+                                        <th style="text-align:left; width:25%;">Título ponencia</th>
+                                        <th style="text-align:left; width:25%;">Lugar ponencia</th>
+                                        <th style="text-align:left; width:25%;">Fecha ponencia</th>
+                                        <th style="text-align:center; width:25%;">Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+    
+                                    {% for i in ponenciaAdminRec %}
+                                    <tr>
+                                        <td align="center">
+                                            {% if i.editableTrueFalse == 1 %}
+                                                <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                            {% elif i.editableTrueFalse == 0 %}
+                                               <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                            {% elif i.editableTrueFalse == 2 %}
+                                               <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                            {% else %}
+                                                <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{i.tituloPonencia}}</td>
+                                        <td>{{i.lugarPonencia}}</td>
+                                        <td>{{i.fechaPonencia}}</td>
+                                        <td>
+                                            <a class="btn btn-primary btn-sm" href="{% url 'Ponencia:ponencia_editar' i.id %}"><span
+                                                    class="glyphicon glyphicon-pencil"></span> Editar</a>
+                                            {% if user.id != 1105 %}
+                                            <a class="btn btn-danger btn-sm" href="{% url 'Ponencia:ponencia_eliminar' i.id %}"><span
+                                                    class="glyphicon glyphicon-trash"></span> Eliminar</a>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+    
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <h1 align="center">No hay registros de Ponencias</h1>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endif%}
+{% endblock%}
+
+{% block scripts %}
+    <!-- Datatables -->
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+{% endblock %}

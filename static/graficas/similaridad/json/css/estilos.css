@@ -1,0 +1,30 @@
+.sidebar {
+	position: absolute;
+	left: 2px;
+	width: 500px;
+	height: 350px;	
+	color: rgb(101, 211, 227);
+	z-index: 20;
+	transition: .4s;
+	border: 1px solid rgb(101, 211, 227);
+	background-color: white;
+}
+.sidebar h2 {
+	text-align: center;
+	margin: 0;
+	padding: 10px;
+	color: rgb(101, 211, 227);
+}
+.menu-bar {
+	position: absolute;
+	cursor: pointer;
+	z-index: 30;
+	left: 504px;
+	transition: .4s;
+}
+.abrir {
+	left: -504px;
+}
+.abrir1 {
+	left: 0px;
+}

@@ -1,0 +1,422 @@
+{% extends 'base1/inicio.html' %}
+{% load staticfiles %}
+{% block subtitle %} 
+    LISTADO DE <span style="color:#07afea">REVISTA</span>
+<!--
+     <a href="{% url 'Revista:create_Revista' %}" class="btn btn-primary  pull-right "><i class="glyphicon glyphicon-plus"></i> Nueva revista</a>
+     -->
+{% endblock%}
+
+{% block css %}
+<script type="text/javascript" src="{% static 'assets/js/notifi.js' %}"></script>
+	<style>
+		.notification-bubble {
+			height: 21px;
+			width: 21px;
+			background: #f43a59;
+			background-image: none\9;
+			position: absolute;
+			right: 25%;
+			color: #fff;
+			text-shadow: 1px 1px 0 rgba(0, 0, 0, .2);
+			text-align: center;
+			font-size: 13px;
+			line-height: 18px;
+			border-radius: 50%;
+			font-weight: bold;
+		}
+	</style>
+{% endblock %}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+
+{% block revista %}
+<li class="nav-item">
+  <a class="nav-link active" href="{% url 'Revista:lista_Revista' %}">
+    <i class="batch-icon batch-icon-paragraph-alt-justify"></i>
+    <span id="revIco"> Revistas</span>
+  </a>
+</li>
+{% endblock %}
+
+{% block content %}
+{% if not user.is_superuser %}
+<div class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                    <div class="table-responsive">
+                        {% if Pon %}
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                            <thead>
+                                <h3 style="color:black;font-size:100%">
+                                    <tr>
+                                        <td style="width:5%">Estado de la Revistas</td>
+                                        <td>Nombre</td>
+                                        <td>ISSN</td>
+                                        <td>Base Indexada</td>
+                                        <td>Cuartil Pertenece</td>
+                                        <td>Factor Impacto</td>
+                                        <td>URL</td>
+                                        <td style="width:5%">Acciones</td>
+                                    </tr>
+                                </h3>
+
+                            </thead>
+                            <tbody>
+
+                                {% for revista in Pon %}
+                                <tr>
+                                    <td>{% if revista.estado == 4 %}
+                                        <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                        {% elif revista.estado == 2 %}
+                                        <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                        {% elif revista.estado == 3 %}
+                                        <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                        {% elif revista.estado == 1 %}
+                                        <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{revista.Nombre|truncatechars:25}}</td>
+                                    <td>{{revista.ISSN}}</td>
+                                    <td>{{revista.base.value}}
+                                        {% if revista.base %}
+                                        {% for i in revista.base.all %}
+                                        <a href="{{i.Url}}" target="_blank">{{i.BaseDatos|truncatechars:10}}</a>
+                                        {% endfor %}
+                                        {%else%}
+                                        Sin datos
+                                        {% endif %}
+
+                                    </td>
+                                    <td>{{revista.Cuartil_Pertenece}}</td>
+                                    <td>{{revista.Factor_Impacto}}</td>
+                                    <td><a href="{{revista.Url}}" target="_blank">Enlace</a></td>
+
+                                    <td>
+                                        <a class="btn btn-primary btn-sm" href="{% url 'Revista:update_Revista' revista.id %}">Editar</a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <h4>No hay registros de revistas</h4>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% else %}
+
+<script>
+    //Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+    //Para listar documentos rechazados      Fecha:03/07/2019
+    function activarRe(){
+        var valor=document.getElementById("micheck");
+        if(valor.checked==true){
+            document.getElementById('tbody1').style.display='none';
+            document.getElementById('tbody2').style.display='block';
+        }else{
+            $('#tbody1').show();
+            $('#tbody2').hide();
+            location.reload();
+        }
+    }
+</script>
+<div class="card-body">
+    <input type="checkbox" id="micheck" name="vehicle" value="1" onclick=" activarRe()"> Activar Rechazadas<br>
+</div>
+<br>
+<div id="tbody1" class="col-md-12">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                        <a href="{% url 'Revista:ReporteRevista' %}" class="btn btn-excel btn-md  pull-right"><i class=""></i> 
+                            <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                        </a>
+                    <div class="table-responsive">
+                        {% if revistaAdmin %}
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                            <thead>
+                                <h3 style="color:black;font-size:100%">
+                                    <tr>
+                                        <td>N°</td>
+                                        <td>Estado</td>
+                                        <td>Nombre</td>
+                                        <td>Autor</td>
+                                        <td>ISSN</td>
+                                        <td>Base Indexada</td>
+                                        <td>URL</td>
+                                        
+                                        <td>Acciones</td>
+                                        <td>Cambiar</td>
+                                    </tr>
+                                </h3>
+
+                            </thead>
+                            <tbody>
+
+                                {% for revista in revistaAdmin %}
+                                {% csrf_token %}
+                                <tr>
+                                    <td>{{revista.id}} </td>
+                                    <td>
+                                        <div id="est{{revista.id}}">
+                                            {% if revista.estado == 4 %}
+                                            <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                            {% elif revista.estado == 2 %}
+                                            <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                            {% elif revista.estado == 3 %}
+                                            <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                            {% elif revista.estado == 1 %}
+                                            <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{revista.Nombre|truncatechars:25}}</td>
+                                    <td>{{revista.user.first_name}} {{revista.user.last_name}}</td>
+                                    <td id="Issn">{{revista.ISSN}}</td>
+                                    <td>{{revista.base.value}}
+                                        {% if revista.base %}
+                                        {% for i in revista.base.all %}
+                                        <a href="{{i.Url}}" target="_blank">{{i.BaseDatos|truncatechars:10}}</a>
+                                        {% endfor %}
+                                        {%else%}
+                                        Sin datos
+                                        {% endif %}
+                                    </td>
+                                    <td><a href="{{revista.Url}}" target="_blank">Enlace</a></td>
+                                    
+                                    <td>
+                                        
+                                        <a class="btn btn-primary btn-sm" href="{% url 'Revista:update_Revista' revista.id %}">Editar</a>
+                                    </td>
+                                    <td>
+                                        <div id="con{{revista.id}}">
+                                            {% if revista.estado == 4 %}
+                                            <span style="text-align: center">Rechazada</span>
+                                            {% elif revista.estado == 2 %}
+                                            <span style="text-align: center">Aceptada</span>
+                                            {% elif revista.estado == 3 or revista.estado == 1 %}
+                                                {% ifequal revista.Observacion 'None' %}
+                                                <textarea class="Observacion" id="btn{{revista.id}}" maxlength="50"></textarea>
+                                                {% else %}
+                                                <textarea class="Observacion" id="btn{{revista.id}}" maxlength="50">{{revista.Observacion}}</textarea>
+                                                {% endifequal %}
+                                                <div class="container1">
+                                                    <div class="radio-wrapper">
+                                                        <a title="Aprobar Revista" class="correct" name="Aceptada" onclick="aceptarR('{{revista.id}}',this)">
+                                                            <i title="Aprobar Revista" class="fa fa-check"></i>
+                                                        </a>
+                                                        <a class="neutral-icon"><span id="circulo" class="fa fa-circle"></span></a>
+                                                        <a title="Rechazar Revista" class="wrong" name="Rechazada"  onclick="aceptarR('{{revista.id}}',this)">
+                                                            <i title="Rechazar Revista" class="fa fa-times-circle"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <h4>No hay registros de revistas</h4>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!--Cambios realizados por: Rovayo &Santana &Sarco &Toaquiza &Sandoval &Sanchez
+//Para listar documentos rechazados      Fecha:03/07/2019-->
+<div id="tbody2" class="col-lg-12" style="display: none">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                        <a href="{% url 'Revista:ReporteRevista' %}" class="btn btn-excel btn-md  pull-right"><i class=""></i> 
+                            <img src="{% static 'images/excel.jpg' %}" width="60" alt="Ecuciencia">
+                        </a>
+                    <div class="table-responsive">
+                        {% if revistaAdmin %}
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                            <thead>
+                                <h3 style="color:black;font-size:100%">
+                                    <tr>
+                                        <td>N°</td>
+                                        <td>Estado</td>
+                                        <td>Nombre</td>
+                                        <td>Autor</td>
+                                        <td>ISSN</td>
+                                        <td>Base Indexada</td>
+                                        <td>URL</td>
+                                        
+                                        <td>Acciones</td>
+                                        <td>Cambiar</td>
+                                    </tr>
+                                </h3>
+
+                            </thead>
+                            <tbody>
+
+                                {% for revista in revistaAdminRec %}
+                                {% csrf_token %}
+                                <tr>
+                                    <td>{{revista.id}} </td>
+                                    <td>
+                                        <div id="est{{revista.id}}">
+                                            {% if revista.estado == 4 %}
+                                            <span class="fa fa-2x fa-unlock" style="color: red "></span>
+                                            {% elif revista.estado == 2 %}
+                                            <span class="fa fa-2x fa-lock" style="color: green "></span>
+                                            {% elif revista.estado == 3 %}
+                                            <span class="fa fa-2x fa-edit" style="color: #01568F "></span>
+                                            {% elif revista.estado == 1 %}
+                                            <span class="fa fa-2x fa-clock-o" style="color: #F6B309 "></span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                    <td>{{revista.Nombre|truncatechars:25}}</td>
+                                    <td>{{revista.user.first_name}} {{revista.user.last_name}}</td>
+                                    <td id="Issn">{{revista.ISSN}}</td>
+                                    <td>{{revista.base.value}}
+                                        {% if revista.base %}
+                                        {% for i in revista.base.all %}
+                                        <a href="{{i.Url}}" target="_blank">{{i.BaseDatos|truncatechars:10}}</a>
+                                        {% endfor %}
+                                        {%else%}
+                                        Sin datos
+                                        {% endif %}
+                                    </td>
+                                    <td><a href="{{revista.Url}}" target="_blank">Enlace</a></td>
+                                    
+                                    <td>
+                                        
+                                        <a class="btn btn-primary btn-sm" href="{% url 'Revista:update_Revista' revista.id %}">Editar</a>
+                                    </td>
+                                    <td>
+                                        <div id="con{{revista.id}}">
+                                            {% if revista.estado == 4 %}
+                                            <span style="text-align: center">Rechazada</span>
+                                            {% elif revista.estado == 2 %}
+                                            <span style="text-align: center">Aceptada</span>
+                                            {% elif revista.estado == 3 or revista.estado == 1 %}
+                                                {% ifequal revista.Observacion 'None' %}
+                                                <textarea class="Observacion" id="btn{{revista.id}}" maxlength="50"></textarea>
+                                                {% else %}
+                                                <textarea class="Observacion" id="btn{{revista.id}}" maxlength="50">{{revista.Observacion}}</textarea>
+                                                {% endifequal %}
+                                                <div class="container1">
+                                                    <div class="radio-wrapper">
+                                                        <a title="Aprobar Revista" class="correct" name="Aceptada" onclick="aceptarR('{{revista.id}}',this)">
+                                                            <i title="Aprobar Revista" class="fa fa-check"></i>
+                                                        </a>
+                                                        <a class="neutral-icon"><span id="circulo" class="fa fa-circle"></span></a>
+                                                        <a title="Rechazar Revista" class="wrong" name="Rechazada"  onclick="aceptarR('{{revista.id}}',this)">
+                                                            <i title="Rechazar Revista" class="fa fa-times-circle"></i>
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+                                        </div>
+
+                                    </td>
+
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% else %}
+                        <h4>No hay registros de revistas</h4>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif%}
+{% endblock%}
+
+{% block scripts %}
+    <!--ACTUALIZAR ESTADO DE LA REVISTA-->
+    <script>
+            function aceptarR(revista_id, estB) {
+                var xd = estB.name;
+                var Ob = document.getElementById("btn" + revista_id).value;
+                var bb2;
+                if (Ob == '')
+                    bb2 = "None";
+                else
+                    bb2 = Ob;
+                var estadoR;
+                if (xd == "Aceptada") {
+                    estadoR = 2;
+                } else if (xd == "Rechazada") {
+                    estadoR = 4;
+                }
+        
+                if((xd == "Rechazada" &&  Ob != '') || xd == "Aceptada" ){
+                    if (confirm("¿Esta seguro que desea camiar el estado de la revista?")) {
+                    $.ajax({
+                        type: 'POST',
+                        url: '/revista/estadoA/',
+                        data: {
+                            id: revista_id,
+                            estado: estadoR,
+                            Observacion: bb2,
+                            csrfmiddlewaretoken: '{{ csrf_token }}'
+                        },
+                        success: function (data) {
+                            $.each(data, function (index, item) {
+                                if (item.estado == 4) {
+                                    var nerOp = "<span>Rechazada</span>"
+                                    var newEs = "<span class='fa fa-2x fa-unlock' style='color: red '></span>"
+                                    $("#con" + revista_id).replaceWith(nerOp);
+                                    $("#est" + revista_id).replaceWith(newEs);
+                                } if (item.estado == 2) {
+                                    var nerOp = "<span>Aceptada</span>"
+                                    var newEs = "<span class='fa fa-2x fa-lock' style='color: green' ></span>"
+                                    $("#con" + revista_id).replaceWith(nerOp);
+                                    $("#est" + revista_id).replaceWith(newEs);
+                                }
+                            });
+                            toastr.info("Exito", "Se actualizo el estado");
+                        },
+                        error: function () {
+        
+                            console.log('Opss');
+                        }
+                    })
+                } else {
+                    console.log("cancelado");
+                }
+                }else{
+                    toastr.error("Error","Ingrese la Observación");
+                }
+            }
+        </script>
+    <!-- Datatables -->
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+    <link rel="stylesheet" href="{% static 'assets/css/Botones/botones.css' %}">
+{% endblock %}

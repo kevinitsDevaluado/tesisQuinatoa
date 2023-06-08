@@ -1,0 +1,367 @@
+<!--HTML Buscar Autor 
+Autores: Arauz;Mora;Tapia;Zambrano        Fecha:03/07/2019-->
+{% extends 'Home/index.html' %}
+{% load staticfiles %}
+    {% block banner %}
+    {% endblock %}
+{% block contenido%}
+        <div class="container">
+          <div class="panel panel-default">
+            <div class="panel-heading"></div>
+            <div class="panel-body">
+                {% block busqueda %}
+                <div class="col-md-12">
+                    <form class="form-inline" action="/Home/buscarAutor/" method="GET">
+
+                        <div class="form-group col-md-1">
+                        </div>
+                        <div class="form-group col-md-9">
+                            <input type="text" name="buscalo" value="{{ buscar|escape }}" placeholder="Ingrese el Autor a buscar" class="form-control mail-search" style="width : 100%;border:2px solid #01568F">
+                        </div>
+                        <div class="form-group col-md-2">
+                            <button class="btn btn-primary" type="submit"><i class="fa fa-search"></i></button>
+                        </div>
+                    </form>
+                </div>
+                <br>
+                <br>
+                <div class="col-md-12">
+                    <!--<div class="col-md-3"></div>-->
+                    <div class="col-md-12">
+                    <ul class="nav nav-tabs nav-justified">
+                        {% if buscar %}
+                        <li><a href="/Home/buscarArticulo/?buscalo={{ buscar }}" style="color:#01568F">Artículo</a></li>
+                        <li><a href="/Home/buscarLibro/?buscalo={{ buscar }}" style="color:#01568F">Libro</a></li>
+                        <li><a href="/Home/buscarPonencia/?buscalo={{ buscar }}" style="color:#01568F">Ponencia</a></li>
+                        <li class="active"><a href="/Home/buscarAutor/?buscalo={{ buscar }}" style="color:#01568F">Autor</a></li>
+            
+                        {% else %}
+                        <li><a href="/Home/buscarArticulo/" style="color:#01568F">Artículo</a></li>
+                        <li><a href="/Home/buscarLibro/" style="color:#01568F">Libro</a></li>
+                        <li><a href="/Home/buscarPonencia/" style="color:#01568F">Ponencia</a></li>
+                        <li class="active"><a href="/Home/buscarAutor/" style="color:#01568F">Autor</a></li>
+                        
+                        
+
+                        {% endif %}
+                    </ul>
+                    </div>
+                    <!--<div class="col-md-3"></div>-->
+                </div>
+                {% endblock %}
+
+                <br>
+                <div class="col-md-12" align="center">
+                    <ul><label>Se ha encontrado aproximadamente : {{auts.count}} autores.</label></ul>
+                </div>
+                <br>
+                <br>
+                                    <!--desde aca-->
+               <div class="col-md-12" style="border:1px solid #7b8a97">
+                   <ul class="mail_list" style="padding: 7px;" align="center">
+                    {% if buscar %}
+                    {% if auts %}
+                    {% for i in auts %}
+                        <li class="ho" style="margin-bottom: 0px;" >
+                           <div class="col-md-5">
+                                <ul>
+                                    <li type="circle"><STRONG>{{i.first_name}} {{i.last_name}}</STRONG></li>
+                                    {% for x in perfil %}
+                                        {% if i.id == x.user_id %}
+                                            <li>{{x.informacionLaboral.carrera.Nombre}}</li>
+                                            <li>{{x.informacionLaboral.facultad.Nombre}}</li>
+                                        {% endif %}
+                                    {% endfor %}
+                                    <li>Email: {{i.email}}</li>
+                                    <!--aca hiba la tabla-->
+                                    
+                                </ul>
+                            </div>
+
+                           <div class="col-md-3">
+                            <div class=img-hover-zoom>
+                                {% if i.investigador.photo != '' %}
+                                    <a href="#myModal"data-toggle="modal" data-target="#myModal{{i.id}} "
+                                    style="color: #606676">
+                                    <img id="zoom" alt="This zooms-in really well and smooth" style="border-radius:50%;"
+                                    src="http://ecuciencia.utc.edu.ec/media/{{i.investigador.photo}}"></a>
+                                {% else %}
+                                    <a href="#myModal" data-toggle="modal" data-target="#myModal{{i.id}}"
+                                    style="color: #606676">
+                                    <img id="zoom" alt="This zooms-in really well and smooth" style="border-radius:50%;" src="http://ecuciencia.utc.edu.ec/media/foto/default-user_x5fGYax.png">
+                                    <!-- <img id="zoom" alt="This zooms-in really well and smooth" style="border-radius:50%;"
+                                    src="https://virtual-strategy.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"> --></a>
+                                {% endif %}
+                            </div>   
+                           </div>
+
+                           <div class="col-md-4" style="vertical-align: middle;">
+                                <button id="button2" type="submit" onclick="mensaje()"><i>Ver Perfil</i></button>
+                                <button id="button2" type="submit" onclick="mensaje()"><i>Follow</i></button>
+                                <div align="center">
+                                        <table style="text-align: center;">
+                                            {% for a in langs %}
+                                            {% if i.id == a.0.id %}    
+                                                <tr>  
+                                                    <td class="hidden">{{ a.0.first_name }}</td>   
+                                                    <td class="hidden">{{ a.0.id }}</td>   
+                                                    <td style="padding: 7px;"><li>Articulos : {{ a.1 }}</li></td>
+                                                    <td style="padding: 7px;"><li>Libros : {{ a.2 }}</li></td>
+                                                    <td style="padding: 7px;"><li>Ponencias : {{ a.3 }}</li></td>
+                                                </tr>
+                                            {% endif %}
+                                            {% endfor %}
+                                        </table>    
+                                    </div>
+
+                           </div> 
+                        </li>
+                        <hr style="border-top: 3px solid #01568F;" width="100%"/>
+                    {% endfor %}
+                    {% else %}
+                        <h3 align="center"><strong>No se encontró ninguna coincidencia con: {{buscar}}</strong></h3>
+                    {% endif %}
+                    {% else %}
+                            <h3 align="center"><strong>Ingrese un dato a buscar</strong></h3>
+                    {% endif %}
+                   </ul>
+                </div>
+                
+                  
+                                    <!--hasta aca -->
+            </div>
+          </div>
+        </div>
+
+
+<div id="popup" class="modal fade" role="dialog"></div>
+
+<script>
+    function abrir_modal(url)
+    {
+        $('#popup').load(url, function()
+        {
+                $(this).modal('show');
+        });
+        return false;
+    }
+
+function cerrar_modal()
+    {
+        $('#popup').modal('hide');
+        return false;
+    }
+</script>
+
+
+        <!-- SCRIPTS - REQUIRED START -->
+        <!-- Placed at the end of the document so the pages load faster -->
+        <!-- Bootstrap core JavaScript -->
+        <!-- JQuery -->
+        <script type="text/javascript" src="{% static 'assets/js/jquery/jquery-3.1.1.min.js' %}"></script>
+        <!-- Popper.js - Bootstrap tooltips -->
+        <script type="text/javascript" src="{% static 'assets/js/bootstrap/popper.min.js' %}"></script>
+        <!-- Bootstrap core JavaScript -->
+        <script type="text/javascript" src="{% static 'assets/js/bootstrap/bootstrap.min.js' %}"></script>
+        <!-- MDB core JavaScript -->
+        <script type="text/javascript" src="{% static 'assets/js/bootstrap/mdb.min.js' %}"></script>
+        <!-- Velocity -->
+        <script type="text/javascript" src="{% static 'assets/plugins/velocity/velocity.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'assets/plugins/velocity/velocity.ui.min.js' %}"></script>
+        <!-- Custom Scrollbar -->
+        <script type="text/javascript" src="{% static 'assets/plugins/custom-scrollbar/jquery.mCustomScrollbar.concat.min.js' %}"></script>
+        <!-- jQuery Visible -->
+        <script type="text/javascript" src="{% static 'assets/plugins/jquery_visible/jquery.visible.min.js' %}"></script>
+        <!-- jQuery Visible -->
+        <script type="text/javascript" src="{% static 'assets/plugins/jquery_visible/jquery.visible.min.js' %}"></script>
+        <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+        <script type="text/javascript" src="{% static 'assets/js/misc/ie10-viewport-bug-workaround.js' %}"></script>
+
+        <!-- SCRIPTS - REQUIRED END -->
+
+        <!-- SCRIPTS - OPTIONAL START -->
+        <!-- ChartJS -->
+        <script type="text/javascript" src="{% static 'assets/plugins/chartjs/chart.bundle.min.js' %}"></script>
+        <!-- JVMaps -->
+        <script type="text/javascript" src="{% static 'assets/plugins/jvmaps/jquery.vmap.min.js' %}"></script>
+        <script type="text/javascript" src="{% static 'assets/plugins/jvmaps/maps/jquery.vmap.usa.js' %}"></script>
+        <!-- Image Placeholder -->
+        <script type="text/javascript" src="{% static 'assets/js/misc/holder.min.js' %}"></script>
+        <!--otros
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+-->
+
+        <script>
+        $('.openBtn').on('click',function(){
+            $('.modal-body').load('content.html',function(){
+                $('#myModal').modal({show:true});
+            });
+        });
+        </script>
+        <script>
+            $(document).ready(function(){
+                $('.zoom').hover(function() {
+                    $(this).addClass('transition');
+                }, function() {
+                    $(this).removeClass('transition');
+                });
+            });
+        </script>
+        <script>
+            function mensaje(){
+                alert("ESTE BOTON SE HABILITARA PROXIMAMENTE");
+            }
+        </script>
+
+
+        <!--modicar los requisitos de la subida de imagenes hasta un tamaño -->
+
+        <style type="text/css">
+            #zoom {
+                max-width: 50%;
+            }
+            .img-hover-zoom {
+                height: 39%px; 
+                overflow: hidden;
+            }
+            .img-hover-zoom img {
+              transition: transform .5s ease;
+            }
+
+            /* [3] Finally, transforming the image when container gets hovered */
+            .img-hover-zoom:hover img {
+              transform: scale(1.5);
+            }
+        </style>
+
+        <style>
+        #ho:hover {
+            background-color: powderblue;
+            transition: background-color .5s;
+            border-radius: 150px;
+            -webkit-border-radius: 10px;
+            -moz-border-radius: 10px;
+        }
+        button[type=submit] {
+            background: #01568F;
+        }
+
+        
+        #button2 {
+          background-color: white; 
+          color: black; 
+          /*border: 1px solid #01568F;*/
+
+          padding: 2px 32px;
+          text-align: center;
+          text-decoration: none;
+          display: inline-block;
+          font-size: 16px;
+          margin: 5px;
+          margin-top: 30px;
+          -webkit-transition-duration: 0.4s; /* Safari */
+          transition-duration: 0.4s;
+          cursor: pointer;
+          border-radius: 12px;
+        }
+
+        #button2:hover {
+          background-color: #3d588e;
+          color: white;
+        }
+
+        </style>
+
+<style type="text/css">
+    .modal-login {
+        color: #636363;
+        width: 350px;
+    }
+    .modal-login .modal-content {
+        padding: 20px;
+        border-radius: 5px;
+        border: none;
+    }
+    .modal-login .modal-header {
+        border-bottom: none;
+        position: relative;
+        justify-content: center;
+    }
+    .modal-login h4 {
+        text-align: center;
+        font-size: 18px;
+        margin: 30px 0 -15px;
+    }
+    .modal-login .form-control:focus {
+        border-color: #70c5c0;
+    }
+    .modal-login .form-control, .modal-login .btn {
+        min-height: 40px;
+        border-radius: 3px;
+    }
+    .modal-login .close {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+    }
+    .modal-login .modal-footer {
+        background: #ecf0f1;
+        border-color: #dee4e7;
+        text-align: center;
+        justify-content: center;
+        margin: 0 -20px -20px;
+        border-radius: 5px;
+        font-size: 13px;
+    }
+    .modal-login .avatar {
+        position: absolute;
+        margin: 0 auto;
+        left: 0;
+        right: 0;
+        top: -100px;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        z-index: 9;
+        background: #01568F;;
+        padding: 2px;
+        box-shadow: 0px 2px 2px rgba(0, 0, 0, 0.1);
+    }
+    .modal-login .avatar img {
+        width: 100%;
+        height: 100%;
+        border-radius:130px;
+    }
+    .modal-login.modal-dialog {
+        margin-top: 180px;
+    }
+    #zoom{
+            max-width: 50%;
+    }
+</style>
+
+<style type="text/css">
+    .form-group {
+    margin-bottom: 15px;
+    margin-top: 15px;
+}
+
+.nav {
+    padding-left: 0px;
+    margin-bottom: 7px;
+    margin-top: 15px;
+    list-style: none;
+}
+</style>
+        {% block scripts %}
+
+        {% endblock %}
+
+        <!-- SCRIPTS - OPTIONAL END -->
+
+        <!-- QuillPro Scripts -->
+        <script type="text/javascript" src="{% static 'assets/js/scripts.js' %}"></script>
+{% endblock %}

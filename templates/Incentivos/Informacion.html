@@ -1,0 +1,1010 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block title %}
+    Incentivo
+{% endblock%}
+
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block incentivo %}
+<li class="nav-item">
+   <a class="nav-link active" href="{% url 'evento:evento' %}">
+       <i class="batch-icon batch-icon-tag-alt-2"></i>
+       <span id="incent">Incentivos</span>
+   </a>
+</li>
+{% endblock %}
+
+{% block content %}
+<style type="text/css">
+        .efecto{
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: #1AD0D3;
+            position: absolute;
+            top: 105px;
+            left: 94%;
+            z-index: 100;
+            text-align: center;
+            animation: movimiento 1s infinite;
+        }
+        @keyframes movimiento{
+            from{}to{
+                box-shadow: 2px 2px 10px #666;      
+            }
+        }
+</style>
+<script src="https://d3js.org/d3.v3.min.js" language="JavaScript"></script>
+<script src="{% static 'graficas/incentivos/js/liquidFillGauge.js' %}" language="JavaScript"></script>
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/solid.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/regular.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/fontawesome.css">
+<link href="{% static 'graficas/produccion/css/c3.min.css' %}" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        const getRemainTime = deadline =>{
+            let now = new Date(),
+            remainTime = (new Date(deadline) - now +1000)/1000,
+            remainSeconds = ('0'+ Math.floor(remainTime % 60)).slice(-2),
+            remainMinutes = ('0'+ Math.floor(remainTime / 60 % 60)).slice(-2),
+            remainHours = ('0'+ Math.floor(remainTime /3600 % 24)).slice(-2),
+            remainDays = Math.floor(remainTime / (3600 * 24));
+            return{
+                remainTime,
+                remainSeconds,
+                remainMinutes,
+                remainHours,
+                remainDays
+            }
+        };
+        const countdown=(deadline, elem) => {
+            const el = document.getElementById(elem);
+            const timerUpdate = setInterval( () => {
+                let t = getRemainTime(deadline);
+                el.innerHTML = `${t.remainDays}d:${t.remainHours}h:${t.remainMinutes}m:${t.remainSeconds}s`;
+                if(t.remainTime <= 1){
+                    clearInterval(timerUpdate);
+                    document.getElementById("div_clock").style.display="none";
+                    document.getElementById("form_evento").style.display="block";
+                }
+            }, 1000)
+        };
+        {% if Perfil_Evento %}
+            {% for i in Eventos %}
+                {% if i.id == Perfil_Evento %}
+                    var fecha='{{i.fechaFinal}}';
+                    var name='{{i.nombre}}';
+                    $("#date_clock").html('');
+                    $("#date_clock").html(fecha);
+                    
+                    $("#name_evento").html('');
+                    $("#name_evento").html('EVENTO: '+name);
+                    var date=fecha.split(" de ");
+                    var meses = Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+                    countdown(meses[NumMes(date[1])]+' '+date[0]+' '+date[2]+' 11:00:00 GMT-0500', 'clock');
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+        Grafica_Bar();
+        ///Recomendaciones de Artìculos Cientìficos
+        $.ajax({
+          url:'/evento/recomendacionA/',
+            type:'POST',
+          data:{
+            datos:'Help',
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+          success: function(json){
+            $('#Lista_RecomendacionesA').html('');
+            $('#total_rearticulos').html('Se ha encontrado aproximadamente '+json.length+' Artículos.');
+            html='';
+            var similar='';
+            $.each(json, function(index, item) {
+                {% for i in Articulos %}
+                var id = '{{i.id}}';
+                var titulo = '{{i.titulo}}';
+                var url = '{{i.url}}';
+                var url_text = '{{i.url | slice:"0:120"}}';
+                var fecha='{{i.fechaPublicacion}}';
+                var documento='{{i.documento}}';
+                
+                if(id==item.ud){
+                    similar='{{i.titulo}}';
+                }
+                if(id==item.id){ 
+                
+
+                html+='<div class="media clickable" data-qp-link="task-list.html">';
+                
+                html+='<div class="media-body">';
+
+                html+='<div class="heading">';
+                html+='<a href="'+url+'" target="_blank" style="text-transform: uppercase;font-size: 10px;color:#07a7e3;">'+titulo+'</a>';
+                html+='</div>';
+                
+                html+='<div class="subtext" style="color:green;font-size: 7px;">'+fecha+'</div>';
+
+                html+='<div class="subtext" style="color:green;font-size: 7px;">'+url_text+'</div>';
+
+                html+='<div class="subtext" style="color:green;font-size: 7px;">Similar a:'+similar+'</div>';
+
+                if(documento.length>0){
+                    html+='<a href="../../media/'+documento+'" target="_blank" style="background: #01568F; font-size:15px; padding: 1px 25px;float: right;color:white;"><i class="fa fa-download" title="Descargar"></i></a>';
+                }
+                
+                
+                html+='</div>';
+
+                html+='</div>';
+                html+='<hr>';
+                }
+                {% endfor %}
+            });
+             $('#Lista_RecomendacionesA').html(html);
+            
+          }
+        })
+        ///Recomendaciones de Libros
+        $.ajax({
+          url:'/evento/recomendacionL/',
+            type:'POST',
+          data:{
+            datos:'Help',
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+          success: function(json){
+            $('#Lista_RecomendacionesL').html('');
+            $('#total_relibros').html('Se ha encontrado aproximadamente '+json.length+' Libros.');
+            html='';
+            var similar='';
+            $.each(json, function(index, item) {
+                {% for i in Libros %}
+                var id = '{{i.id}}';
+                var titulo = '{{i.Titulo}}';
+                var url = '{{i.Url}}';
+                var url_text = '{{i.Url | slice:"0:120"}}';
+                var fecha='{{i.fechaPublicacion}}';
+                var documento='{{i.Documento}}';
+
+                if(id==item.ud){
+                    similar='{{i.Titulo}}';
+                }
+
+                if(id==item.id){ 
+                
+
+                html+='<div class="media clickable" data-qp-link="task-list.html">';
+                
+                html+='<div class="media-body">';
+
+                html+='<div class="heading">';
+                html+='<a href="'+url+'" target="_blank" style="text-transform: uppercase;font-size: 10px;color:#07a7e3;">'+titulo+'</a>';
+                html+='</div>';
+                
+                html+='<div class="subtext" style="color:green;font-size: 7px;">'+fecha+'</div>';
+
+                html+='<div class="subtext" style="color:green;font-size: 7px;">'+url_text+'</div>';
+
+                html+='<div class="subtext" style="color:green;font-size: 7px;">Similar a:'+similar+'</div>';
+
+                if(documento.length>0){
+                    html+='<a href="../../media/'+documento+'" target="_blank" style="background: #01568F; font-size:15px; padding: 1px 25px;float: right;color:white;"><i class="fa fa-download" title="Descargar"></i></a>';
+                }
+                
+                html+='</div>';
+
+                html+='</div>';
+                html+='<hr>';
+                }
+                {% endfor %}
+            });
+             $('#Lista_RecomendacionesL').html(html);
+          }
+        })
+        ///Recomendaciones de Ponencias
+        $.ajax({
+          url:'/evento/recomendacionP/',
+            type:'POST',
+          data:{
+            datos:'Help',
+            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+            },
+          success: function(json){
+            $('#Lista_RecomendacionesP').html('');
+            $('#total_reponencias').html('Se ha encontrado aproximadamente '+json.length+' Ponencias.');
+            html='';
+            var similar='';
+            $.each(json, function(index, item) {
+                {% for i in Ponencias %}
+                var id = '{{i.id}}';
+                var titulo = '{{i.tituloPonencia}}';
+                var url = '{{i.urlPonencia}}';
+                var url_text = '{{i.urlPonencia | slice:"0:120"}}';
+                var fecha='{{i.fechaPonencia}}';
+                var documento='{{i.articuloCientifico.documento}}';
+
+                if(id==item.ud){
+                    similar='{{i.tituloPonencia}}';
+                }
+
+                if(id==item.id){ 
+                
+
+                html+='<div class="media clickable" data-qp-link="task-list.html">';
+                
+                html+='<div class="media-body">';
+
+                html+='<div class="heading">';
+                html+='<a href="'+url+'" target="_blank" style="text-transform: uppercase;font-size: 10px;color:#07a7e3;">'+titulo+'</a>';
+                html+='</div>';
+                
+                html+='<div class="subtext" style="color:green;font-size: 7px;">'+fecha+'</div>';
+
+                html+='<div class="subtext" style="color:green;font-size: 7px;">'+url_text+'</div>';
+
+                html+='<div class="subtext" style="color:green;font-size: 7px;">Similar a:'+similar+'</div>';
+
+                if(documento.length>0){
+                    html+='<a href="../../media/'+documento+'" target="_blank" style="background: #01568F; font-size:15px; padding: 1px 25px;float: right;color:white;"><i class="fa fa-download" title="Descargar"></i></a>';
+                }
+                
+                html+='</div>';
+
+                html+='</div>';
+                html+='<hr>';
+                }
+                {% endfor %}
+            });
+             $('#Lista_RecomendacionesP').html(html);
+          }
+        })
+        var date=new Date();
+        $("#fecha_postulacion").val(date.getFullYear()+"-"+(date.getMonth()+1)+"-"+date.getDate());
+        $("#form_postulacion").submit(function(e){
+            e.preventDefault();
+            $.ajax({
+              url:$(this).attr("action"),
+              type:$(this).attr("method"),
+              data:$(this).serialize(),
+              success: function(json){
+                if(json=='1'){
+                    Command: toastr["success"]("Su postulaciòn fue realizada exitosamente", "Mensaje")
+                        toastr.options = {
+                          "closeButton": true,
+                          "debug": false,
+                          "newestOnTop": false,
+                          "progressBar": false,
+                          "positionClass": "toast-bottom-full-width",
+                          "preventDuplicates": false,
+                          "onclick": null,
+                          "showDuration": "300",
+                          "hideDuration": "1000",
+                          "timeOut": "5000",
+                          "extendedTimeOut": "1000",
+                          "showEasing": "swing",
+                          "hideEasing": "linear",
+                          "showMethod": "fadeIn",
+                          "hideMethod": "fadeOut"
+                    }
+                    setInterval("location.reload()",2000);
+                }else{
+                    Command: toastr["error"]("El incentivo seleccionado no tienes cupos diponibles", "Error")
+                        toastr.options = {
+                          "closeButton": true,
+                          "debug": false,
+                          "newestOnTop": false,
+                          "progressBar": false,
+                          "positionClass": "toast-bottom-full-width",
+                          "preventDuplicates": false,
+                          "onclick": null,
+                          "showDuration": "300",
+                          "hideDuration": "1000",
+                          "timeOut": "5000",
+                          "extendedTimeOut": "1000",
+                          "showEasing": "swing",
+                          "hideEasing": "linear",
+                          "showMethod": "fadeIn",
+                          "hideMethod": "fadeOut"
+                    }
+                }
+              }
+            })
+        });
+    })
+    function NumMes(nom){
+        if(nom=='Enero'){
+            return 0;
+        }
+        if(nom=='Febrero'){
+            return 1;
+        }
+        if(nom=='Marzo'){
+            return 2;
+        }
+        if(nom=='Abril'){
+            return 3;
+        }
+        if(nom=='Mayo'){
+            return 4;
+        }
+        if(nom=='Junio'){
+            return 5;
+        }
+        if(nom=='Julio'){
+            return 6;
+        }
+        if(nom=='Agosto'){
+            return 7;
+        }
+        if(nom=='Septiembre'){
+            return 8;
+        }
+        if(nom=='Octubre'){
+            return 9;
+        }
+        if(nom=='Noviembre'){
+            return 10;
+        }
+        if(nom=='Diciembre'){
+            return 11;
+        }
+    }
+</script>
+<style type="text/css">
+        .tooltip img{
+           width: 450px;
+        }
+        .nav {
+           list-style-type: none;
+           margin: 0;
+           padding: 0;
+        }
+        .tooltip {
+           position : absolute;
+           visibility: hidden;
+           opacity: 0;
+           transition : opacity 1s, visibility 1s;
+        }
+        .hori {
+           display: inline-block;
+        }
+        .hori a{
+           display: block;
+           padding: 8px;
+           text-decoration: none;
+        }
+        .hori:hover .tooltip{
+           visibility: visible;
+           opacity: 1;
+        }
+</style>
+{% if not Perfil_Evento %}
+<div class="row" style="width: 100%;margin-top: -30px;">
+    <div class="col-xl-12">
+        <div class="alert alert-danger" role="alert"  style="height: 50px;">
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+            </button>
+            <p style="color: #01568f;">Participa en nuestros eventos de incentivos para los investigadores en la producción científica, para comenzar <a href="#" data-toggle="modal" data-target="#ModalEventos"> <b>Click Aqui</b></a></p>
+        </div>
+    </div>
+</div>
+{% endif %}
+<br>
+<div class="row mb-5" style="width: 100%;height: 50px;">
+    <div class="col-md-12">
+        <div class="card">
+            <ul class="nav" style="float: left;">
+                
+                <li class="hori">
+                    <a href="https://www.iorad.com/player/1636191/Incentivos--Ecuciencia-UTC-#trysteps-1" target="_blank" title="Información" style="width: 67px;height: 60px;"><img src="{% static 'graficas/incentivos/img/2.png' %}" style="width: 100%;height: 100%;"></a>
+                    <div class="tooltip" style="background-color: #07a7e3;box-shadow: 5px 5px 10px #07a7e3;">
+                        <center>
+                            <h3 style="color:white;">Manual de Usuario</h3>
+                        </center> 
+                        <img src="{% static 'graficas/incentivos/img/7.gif' %}" />
+                    </div>
+                </li>
+
+                <li class="hori">
+                    <a href="{% url 'grafica:firstview' %}" target="_blank" style="width: 67px;height: 60px;"><img src="{% static 'graficas/incentivos/img/3.png' %}" style="width: 100%;height: 100%;"></a>
+                    <div class="tooltip" style="background-color: #07a7e3;box-shadow: 5px 5px 10px #07a7e3;">
+                        <center>
+                            <h3 style="color:white;">Similaridad de Coseno</h3>
+                        </center> 
+                        <img src="{% static 'graficas/incentivos/img/6.gif' %}" />
+                    </div>
+                </li>
+
+                <li class="hori">
+                    <a href="{% url 'evento:search_autor' %}" target="_blank" style="width: 67px;height: 60px;"><img src="{% static 'graficas/incentivos/img/1.png' %}" style="width: 100%;height: 100%;"></a>
+                    <div class="tooltip" style="background-color: #07a7e3;box-shadow: 5px 5px 10px #07a7e3;">
+                        <center>
+                            <h3 style="color:white;">Colaboración Científica</h3>
+                        </center>                        
+                        <img src="{% static 'graficas/incentivos/img/5.gif' %}"/>
+                    </div>
+                </li>
+
+            </ul>
+            <h3 style="float: left;margin-left: 85%;color: #07a7e3;margin-top: -45px;">
+                INCENTIVOS
+            </h3>
+        </div>
+    </div>
+</div>
+<br>
+<div class="row" style="width: 100%;">
+    <div class="col-md-6 col-lg-6 col-xl-3 mb-5">
+            <div class="card card-tile card-xs bg-primary bg-gradient text-center">
+                <div class="card-body p-4">
+                    <div class="tile-left">
+                        <i class="batch-icon batch-icon-book-alt-lines batch-icon-xxl"></i>
+                    </div>
+                    <div class="tile-right">
+                        <div class="tile-number">{{Indicador_1}} %</div>
+                        <div class="tile-description">Publicaciones</div>
+                        <div class="tile-description">Nº {{Indicador_1_Resul}}</div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    <div class="col-md-6 col-lg-6 col-xl-3 mb-5">
+            <div class="card card-tile card-xs bg-secondary bg-gradient text-center">
+                <div class="card-body p-4">
+                    <div class="tile-left">
+                        <i class="batch-icon batch-icon-user-alt batch-icon-xxl"></i>
+                    </div>
+                    <div class="tile-right">
+                        <div class="tile-number">{{Indicador_4}} %</div>
+                        <div class="tile-description">Evaluación Científica</div>
+                        <div class="tile-description">Calificación: {{Indicador_4_Resul}}</div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="col-md-6 col-lg-6 col-xl-3 mb-5">
+            <div class="card card-tile card-xs bg-primary bg-gradient text-center">
+                <div class="card-body p-4">
+                    <div class="tile-left">
+                        <i class="batch-icon batch-icon-star batch-icon-xxl"></i>
+                    </div>
+                    <div class="tile-right">
+                        <div class="tile-number">{{Indicador_2}} %</div>
+                        <div class="tile-description">Filial UTC</div>
+                        <div class="tile-description">Nº {{Indicador_2_Resul}}</div>
+                    </div>
+                </div>
+            </div>
+    </div>
+    <div class="col-md-6 col-lg-6 col-xl-3 mb-5">
+            <div class="card card-tile card-xs bg-secondary bg-gradient text-center">
+                <div class="card-body p-4">
+                    <div class="tile-left">
+                        <i class="batch-icon batch-icon-users batch-icon-xxl"></i>
+                    </div>
+                    <div class="tile-right">
+                        <div class="tile-number">{{Indicador_3}} %</div>
+                        <div class="tile-description">Colaboración</div>
+                        <div class="tile-description">Nº {{Indicador_3_Resul}}</div>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+<br>
+<br>
+<div class="row mb-5" style="width: 100%;">
+
+    <div class="col-md-12">
+        <div id="accordion" role="tablist" aria-multiselectable="true">
+            <div class="card">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                <div class="card-header" role="tab" id="headingOne">
+                    <h5 class="mb-0"  style="margin-top: -20px;color:#07a7e3;float: left;">
+                            RECOMENDACIONES PARA FOMENTAR TU CONOCIMIENTO 
+                    </h5>
+                    <i class="batch-icon batch-icon-arrow-down" style="color:#07a7e3;float: left;margin-top: -17px;margin-left: 15px;"></i>
+                </div></a>
+                <div id="collapseOne" class="collapse" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="card-body">
+                        <div class="col-md-12">
+                            <ul class="nav nav-tabs" id="myTab" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="articulos-tab" data-toggle="tab" href="#articulos" role="tab" aria-controls="articulos" aria-selected="true" style="color: #01568F;">Artículos</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="libros-tab" data-toggle="tab" href="#libros" role="tab" aria-controls="libros" aria-selected="false" style="color: #01568F;">Libros</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="ponencias-tab" data-toggle="tab" href="#ponencias" role="tab" aria-controls="ponencias" aria-selected="false" style="color: #01568F;">Ponencias</a>
+                                </li>
+                            </ul>
+                            <div class="tab-content" id="myTabContent">
+                                <div class="tab-pane fade show active" id="articulos" role="tabpanel" aria-labelledby="articulos-tab">
+                                    {% csrf_token %}
+                                    <label id="total_rearticulos" style="margin-left: -20px;"></label>
+                                    <div class="card-media-list" style="height: 400px;width: 100%;margin-left: -20px;">
+                                        <div id="Lista_RecomendacionesA">
+                                            <center>
+                                                <img src="{% static 'graficas/incentivos/img/Search.gif' %}" width="350">
+                                            </center>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="libros" role="tabpanel" aria-labelledby="libros-tab">
+                                    {% csrf_token %}
+                                    <label id="total_relibros" style="margin-left: -20px;"></label>
+                                    <div class="card-media-list" style="height: 400px;width: 100%;margin-left: -20px;">
+                                        <div id="Lista_RecomendacionesL">
+                                            <center>
+                                                <img src="{% static 'graficas/incentivos/img/Search.gif' %}" width="350">
+                                            </center>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane fade" id="ponencias" role="tabpanel" aria-labelledby="ponencias-tab">
+                                    {% csrf_token %}
+                                    <label id="total_reponencias" style="margin-left: -20px;"></label>
+                                    <div class="card-media-list" style="height: 400px;width: 100%;margin-left: -20px;">
+                                        <div id="Lista_RecomendacionesP">
+                                            <center>
+                                                <img src="{% static 'graficas/incentivos/img/Search.gif' %}" width="350">
+                                            </center>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row" style="width: 100%;margin-top: -10px;">
+    <div class="col-md-6 col-lg-6 col-xl-4 mb-5">
+        <div class="card card-md">
+            <div class="card-header" style="text-align: center;">
+                Calificación
+            </div>
+            <div class="card-body">
+                <p class="text-center">{% if Resultado != 0 %} {{Resultado}} {% endif %}</p>
+                <center>
+                    <svg id="fillgauge4" width="60%" height="200" onclick="gauge4.update(NewValue());"></svg>
+                    <br>
+                    <a href="#" data-toggle="modal" data-target="#ModalInformacion" class="btn btn-green btn-gradient waves-effect waves-light">Postularme</a>    
+                </center>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-6 col-xl-8 mb-5">
+        <div class="card">
+            <div class="card-header">
+                <label id="titulo_graficas"></label>
+                <div class="header-btn-block">
+                    <span class="data-range dropdown">
+                        <a href="#" class="btn btn-primary dropdown-toggle"  style="background-color: #01568f;" id="navbar-dropdown-sales-overview-header-button" data-toggle="dropdown" data-flip="false" aria-haspopup="true" aria-expanded="false">
+                            <i class="batch-icon batch-icon-droplet"></i>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-dropdown-sales-overview-header-button">
+                            <a class="dropdown-item" href="javascript:Grafica_Bar();">Barras</a>
+                            <!--<a class="dropdown-item" href="{% url 'evento:search_autor' %}" target="_blank">Colaboración</a>-->
+                            <a class="dropdown-item" href="javascript:Grafica_Difusa();">Lógica Difusa</a>
+                        </div>
+                    </span>
+                </div>
+            </div>
+            <div class="card-body">
+                <div id="Incentivo_Grafica" style="height: 280px;width: 100%;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<!-- Modal 0-->
+<div id="ModalEventos" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" style="text-align: center;text-transform: uppercase;">Eventos</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" style="padding: 10px;">
+                <div class="card-media-list">
+                    {% if Eventos %}
+                        {% for i in Eventos %}
+                            {% if i.estado == '1' %}
+                                <div class="media">
+                                <div class="profile-picture bg-gradient bg-primary has-message float-right d-flex mr-3" style="margin-top: 5px;">
+                                    <img src="{% static 'graficas/incentivos/img/Medalla.png' %}" style="width: 44px;height: 44px;">
+                                </div>
+                                <div class="media-body">
+                                    <div class="heading mt-1">{{i.nombre}}</div>
+                                    <div class="subtext">{{i.fechaInicio}}</div>
+                                    <div class="subtext">Meta de Publicaciones Nº {{i.numeroPublicaciones}}</div>
+                                </div>
+                                {% if not Perfil_Evento %}
+                                <form method="POST" action="{% url 'evento:evento' %}">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="id" value="{{i.id}}">
+                                    <input type="submit" value="Iniciar" class="btn btn-green btn-gradient waves-effect waves-light">
+                                </form>
+                                {% endif %}
+                                </div>
+                                <hr>
+                            {% endif %}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal 1-->
+<div id="ModalPostulacion" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title" style="text-align: center;text-transform: uppercase;"></h4>
+            </div>
+            <div class="modal-body" id="modal-antiguedad" style="overflow: auto;">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal 2-->
+<div id="ModalInformacion" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header" style="background-color: #01568F;text-align: center;">
+                <h4 class="modal-title" style="color: white;">INFORMACIÓN</h4>
+                <button type="button" class="close" data-dismiss="modal" style="color: white;">&times;</button>
+            </div>
+            <div class="modal-body" id="modal-informacion" style="overflow: auto;">
+                <h2 id="name_evento"></h2>
+                <div class="col-md-12">
+                    <ul class="nav nav-tabs" id="myTab" role="tablist">
+                        <li class="nav-item">
+                            <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true" style="color: #01568F;">Incentivos</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false" style="color: #01568F;">Postulaciones</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="solicitud-tab" data-toggle="tab" href="#solicitud" role="tab" aria-controls="solicitud" aria-selected="false" style="color: #01568F;">Solicitud</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content" id="myTabContent">
+                        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                            <div id="form_evento" style="display: none;">
+                            {% if Incentivos %}
+                                {% for i in Incentivos %}
+                                    {% if i.evento.id == Perfil_Evento %}
+                                        {% if Resultado != 0 %}
+                                        {% if i.nivel == Resultado and i.numeroCupos != 0 %}
+                                        <div class="media">
+                                        <div class="profile-picture bg-gradient bg-primary has-message float-right d-flex mr-3" style="margin-top: 5px;">
+                                            <img src="{% static 'graficas/incentivos/img/Medalla.png' %}" style="width: 44px;height: 44px;">
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="heading mt-1">{{i.evento.nombre}}</div>
+                                            <div class="subtext"><b>Nivel:</b> {{i.nivel}}</div>
+                                            <div class="subtext"><b>Nº Cupos:</b> {{i.numeroCupos}}</div>
+                                            <div class="subtext"><b>Incentivo:</b> {{i.descripcion}}</div>
+                                        </div>
+                                        {% if Cont_Post == 1 %}
+                                            <form method="POST" action="{% url 'postulacion:Crear_Postulacion' %}" id="form_postulacion">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="investigador" value="{{perfil.id}}">
+                                                <input type="hidden" id="fecha_postulacion" name="fecha">
+                                                <input type="hidden" name="estado" value="0">
+                                                <input type="hidden" name="incentivo" value="{{i.id}}">
+                                                <input type="hidden" name="calificacion" value="{{Incentivo_Difuso}}">
+                                                <input type="submit" value="Iniciar" class="btn btn-green btn-gradient waves-effect waves-light" disabled="false">
+                                            </form>
+                                        {% else %}
+                                            <form method="POST" action="{% url 'postulacion:Crear_Postulacion' %}" id="form_postulacion">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="investigador" value="{{perfil.id}}">
+                                                <input type="hidden" id="fecha_postulacion" name="fecha">
+                                                <input type="hidden" name="estado" value="0">
+                                                <input type="hidden" name="incentivo" value="{{i.id}}">
+                                                <input type="hidden" name="calificacion" value="{{Incentivo_Difuso}}">
+                                                <input type="submit" value="Iniciar" class="btn btn-green btn-gradient waves-effect waves-light">
+                                            </form>
+                                        {% endif %}
+                                        </div>
+                                        <hr>
+                                        {% endif %}
+                                    {% endif %}
+                                    {% endif %}
+                                {% endfor %}
+                            {% endif %}
+                            </div>
+                            {% if Perfil_Evento %}
+                            <div id="div_clock">
+                                <center>
+                                    <h3>El evento termina en:</h3>
+                                    <br>
+                                    <div class="card card-tile card-xs bg-primary bg-gradient text-center" style="width: 50%;height: 150px;">
+                                        <i class="batch-icon batch-icon-clock batch-icon-xxl" style="margin-top: 2%;"></i>
+                                        <div id="date_clock" style="font-size: 15px;color: white;margin-top: 2%;"></div>
+                                        <div id="clock" style="font-size: 20px;color: white;"></div>
+                                    </div>
+                                </center>
+                            </div>
+                            {% else %}
+                                <center>
+                                    <h3>Seleccione un evento</h3>
+                                </center>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+                            {% if Postulaciones %}
+                                {% for i in Postulaciones %}
+                                        <div class="media">
+                                        <div class="profile-picture bg-gradient bg-primary has-message float-right d-flex mr-3" style="margin-top: 5px;">
+                                            <img src="{% static 'graficas/incentivos/img/Medalla.png' %}" style="width: 44px;height: 44px;">
+                                        </div>
+                                        <div class="media-body">
+                                            <div class="heading mt-1">{{i.incentivo.evento.nombre}}</div>
+                                            <div class="subtext">{{i.fecha}}</div>
+                                            <div class="subtext">Nivel {{i.incentivo.nivel}}</div>
+                                        </div>
+                                        {% if i.estado == '1' %}
+                                            <label><span class="badge badge-success" style="font-size: 20px;">Aceptado</span></label>
+                                        {% endif %}
+                                        {% if i.estado == '0' %}
+                                            <label><span class="badge badge-primary" style="font-size: 20px;">Pendiente</span></label>
+                                        {% endif %}
+                                        {% if i.estado == '2' %}
+                                            <label><span class="badge badge-danger" style="font-size: 20px;">Rechazado</span></label>
+                                        {% endif %}
+                                        </div>
+                                        <hr>
+                                {% endfor %}
+                            {% else %}
+                                <center>
+                                    <h3>No tienes postulaciones</h3>
+                                </center>
+                            {% endif %}
+                        </div>
+                        <div class="tab-pane fade" id="solicitud" role="tabpanel" aria-labelledby="solicitud-tab">
+                            <center>
+                                <h3>Solicitud para la asignación de un cupo</h3>
+                            </center>
+                            <hr>
+                            <div class="col-md-12 col-md-offset-2">
+                                <div class="form-group">
+                                    <form id="solicitud-form" method="POST" action="{% url 'postulacion:Correo_Postulacion' %}">
+                                    {% csrf_token %}
+                                        <label class="control-label">Contenido:</label>
+                                        <textarea class="form-control" id="contenido" name="contenido" required></textarea>
+                                        <div class="media-feed-control clearfix">    
+                                        <button type="submit" class="btn btn-secondary btn-sm comment-reply float-right">Enviar</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 3-->
+<div id="ModalInformacion" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title" style="text-align: center;text-transform: uppercase;">Mensaje</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body" style="height: 200px;">
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script language="JavaScript">
+    var config3 = liquidFillGaugeDefaultSettings();
+    config3.textVertPosition = 0.8;
+    config3.waveAnimateTime = 5000;
+    config3.waveHeight = 0.15;
+    config3.waveAnimate = true;
+    config3.waveOffset = 0.25;
+    config3.valueCountUp = true;
+    config3.displayPercent = true;
+    config3.maxValue = 255;
+    config3.textSize = 0.5;
+    var gauge4 = loadLiquidFillGauge("fillgauge4", {{Incentivo_Difuso}}, config3);
+    function NewValue(){
+        if(Math.random() > .5){
+            return Math.round(Math.random()*100);
+        } else {
+            return (Math.random()*100).toFixed(1);
+        }
+    }
+</script>
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.js"></script>
+<script src="{% static 'graficas/produccion/js/d3.min.js' %}"></script>
+<script src="{% static 'graficas/produccion/js/c3.min.js' %}"></script>
+<script type="text/javascript">
+    $('#solicitud-form').submit(function(event){
+        event.preventDefault();
+        var $formData = $('#solicitud-form').serialize();
+        var $thisURL = $('#solicitud-form').attr('action');
+        $.ajax({
+            method:'POST',
+            url: $thisURL,
+            data: $formData,
+            success: handleSuccess,
+        });
+        function handleSuccess(data){
+            if(data==0){
+                $('#contenido').val('');
+                toastr.options = {
+                    "closeButton": true,
+                    "debug": false,
+                    "positionClass": "toast-bottom-full-width",
+                    "onclick": null,
+                    "showDuration": "3000",
+                    "hideDuration": "1000",
+                    "timeOut": "5000",
+                    "extendedTimeOut": "1000",
+                    "showEasing": "swing",
+                    "hideEasing": "linear",
+                    "showMethod": "fadeIn",
+                    "hideMethod": "fadeOut"
+                }
+                toastr.success("Solicitud Enviada", "Mensaje");
+            }
+        }
+    });
+</script>
+<script type="text/javascript">
+    function Grafica_Bar(){
+        $('#titulo_graficas').html('Gráfica Barras');
+        $('#Incentivo_Grafica').html(' ');
+        c3.generate({
+                    bindto:"#Incentivo_Grafica",
+                    data: {
+                        x:'x',
+                        columns: [
+                                ['x','Resultado'],
+                                ['Publicaciones', {{Indicador_1}}],
+                                ['Evaluación', {{Indicador_4}}],
+                                ['Filial UTC', {{Indicador_2}}],
+                                ['Colaboración', {{Indicador_3}}]
+                        ],
+                        type: 'bar',
+                        labels: true
+                    },
+                    axis: {
+                        x: {
+                            type: 'category',
+                            tick: {
+                                multiline: false
+                            }
+                        }
+                    }
+        });
+    }
+    function Grafica_Difusa(){
+        $('#titulo_graficas').html('Gráfica de la Lógica Difusa');
+        var valor={{Incentivo_Difuso}};
+        $('#Incentivo_Grafica').html(' ');
+        c3.generate({
+            bindto:"#Incentivo_Grafica",
+            data: {
+                xs: {
+                    'FP1': 'x1',
+                    'FP2': 'x2',
+                    'FP3': 'x3',
+                    'TOTAL': 'x4',
+                },
+                columns: [
+                    ['x1', 0, 123],
+                    ['x2', 0, 255, 123],
+                    ['x3', 123, 255],
+                    ['x4', valor, valor],
+                    ['FP1', 1, 0],
+                    ['FP2', 0, 0, 1],
+                    ['FP3', 0, 1],
+                    ['TOTAL', 0, 1]
+                ],
+                types: {
+                    FP2: 'area',
+                    FP3: 'area'
+                }, 
+                colors: {
+                    FP1: '#ff0000',
+                    FP2: '#00ff00',
+                    FP3: '#0000ff',
+                    TOTAL: '#000000',
+                },
+                names: {
+                    FP1: 'BAJO',
+                    FP2: 'MEDIO',
+                    FP3: 'ALTO',
+                    TOTAL: 'VALOR'
+                }
+            },
+            grid: {
+                x: {
+                    show: false
+                },
+                y: {
+                    show: false
+                },
+                focus: {
+                    show: false
+                }
+            },
+            tooltip: {
+                show: true,
+                grouped: false,
+                format: {
+                    title: function(d){
+                        if(d==0){
+                            return 'BAJO';
+                        }
+                        if(d==123){
+                            return 'MEDIO';
+                        }
+                        if(d==255){
+                            return 'ALTO';
+                        }
+                        if(d==valor){
+                            return 'VALOR';
+                        }
+                    },
+                    value: function(value,ratio,id){
+                        if(id=='TOTAL'){
+                            return valor;
+                        }
+                        return ratio;
+                    } 
+                }
+            },
+            axis : {
+                x : {
+                    tick: {
+                        format: function (x) {
+                            if(x==valor){
+                                return ''; 
+                            }
+                            return x; 
+                        }
+                    }
+                }
+            }
+        });
+    }
+</script>
+{% endblock%}

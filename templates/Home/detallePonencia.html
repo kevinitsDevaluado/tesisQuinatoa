@@ -1,0 +1,71 @@
+<div class="modal-dialog modal-lg">
+    <div class="modal-content">
+            <div class="modal-header" style="background: #01568F; ">
+                    <button type="button" class="close" data-dismiss="modal" style="color: #ffff; ">x</button>
+                    <h3 align="center" style="color: #FFF;">DETALLE DE PONENCIA</h3>
+            </div>
+            <div class="modal-body">
+                    <div class="row">
+                            <div class="col-lg-12">
+                                    <div class="col-lg-8">
+                                            <label><strong>TÍTULO:</strong></label>
+                                            <p>{{ object.tituloPonencia|title }}</p>
+                                    </div>
+                                    <div class="col-sm-4">
+                                            <label><strong>NOMBRE:</strong></label>
+                                            <p>{{ object.nombrePonencia|title }}</p>
+                                    </div>
+                                    <!--<div class="col-sm-4">
+                                        {% if ponencia.user.investigador.photo != '' %}
+                                           <p align="center"><img class="img-arti" src="http://ecuciencia.utc.edu.ec/media/{{object.user.investigador.photo}}"></p>
+                                         {% else %}
+                                        <p align="center"><img class="img-artin"  src="https://virtual-strategy.com/wp-content/plugins/all-in-one-seo-pack/images/default-user-image.png"></p>
+                                         {% endif %}
+
+                                            <p align="center">{{object.user.first_name}} {{object.user.last_name}} </p>
+                                    </div>-->
+                                    <div class="col-lg-12">
+                                            <hr style="border-top: 3px solid #01568F;" width="100%"/>
+                                            <label><strong>RESUMEN:</strong></label>
+                                            <p align="justify">{{ object.resumen }}</p>
+                                    </div>
+                                    {% if object.tipo == '2' %}
+                                    <div class="col-lg-12">
+                                            <label><strong>ISBN:</strong></label>
+                                            <p align="justify">{{ object.isbn }}</p>
+                                    </div>
+                                    {% endif %}
+                            </div>
+                    </div>
+            </div>
+            <div class="modal-footer">
+                    <div class="col-lg-12 text-right">
+                            {% if object.tipo == '2' %}
+                            <a class="btn btn-primary " style="background: #01568F; font-size:15px; padding: 1px 25px;" href="{{object.urlPonencia}}"> <span class="fa fa-download"> |</span> Descargar</a>
+                            {% endif %}
+                    </div>
+            </div>
+    </div>
+</div>
+<style>
+    .modal-body {
+max-height: calc(100vh - 210px);
+overflow-y: auto;
+}
+</style>
+<style>
+    .img-arti {
+        width:100px;
+        height:100px;
+        border-radius: 150px;
+        -webkit-border-radius: 150px;
+        -moz-border-radius: 150px;
+    }
+    .img-artin {
+        width:100px;
+        height:100px;
+        border-radius: 150px;
+        -webkit-border-radius: 150px;
+        -moz-border-radius: 150px;
+    }
+    </style>

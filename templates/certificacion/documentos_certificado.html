@@ -1,0 +1,184 @@
+{% extends 'base1/inicio.html' %}
+{% load staticfiles %}
+{% block title %}
+    Revisar documentos
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block certificacion %}
+{% if user.is_superuser == True %}
+<li class="nav-item">
+   <a class="nav-link active" href="{% url 'certificacionadmin:certificacionadminListar' %}">
+        <i class="batch-icon batch-icon-newspaper-alt"></i>
+        Certificaciones admin
+    </a>
+</li>
+{% else %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'certificacion:certificacion_listar' %}">
+        <i class="batch-icon batch-icon-newspaper-alt"></i>
+        Certificaciones
+    </a>
+</li>
+{% endif %}
+{% endblock %}
+
+{% block direccion %}
+    <ul class="navbar-nav navbar-language-translation mr-auto">
+        <a href="{% url 'inicio:logeo' %}">{{user.first_name}} {{user.last_name}}</a>&nbsp;/&nbsp;<a href="{% url 'certificacion:certificacion_listar' %}">certificación</a>&nbsp;/&nbsp;<a href="">revisar documentos</a>
+    </ul>
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div align="center" class="col-md-2 wow fadeInUp animated" style="padding: 0.3cm 0cm 0cm 0.6cm; margin: 0cm 0cm 0.4cm 0cm; width:100%; border-radius: 12px;" >
+        <a href="{% url 'certificacion:certificacion_listar' %}" class="col-md-10 btn btn-outline-primary btn" style="border-radius: 12px;"><i class="batch-icon batch-icon-return"></i>&nbsp;&nbsp; Regresar</a>
+    </div>
+    <div class="col-md-10 wow fadeInUp animated" style="background: #122f3b;  padding: 0.3cm 0.5cm 0cm 0.5cm; margin: 0cm 0cm 0.4cm 0cm; width:100%; border-radius: 12px;" >
+    {% if capa %}
+    {% for certificado in capa %}
+        <h2 align="center" style="color:white"><span class="glyphicon glyphicon-th-list"></span>REVISIÓN DE DOCUMENTOS DE <span style="color:#F5B041;">{{certificado.user.first_name}}  {{certificado.user.last_name}}</span> </h2>
+    </div>
+    {% endfor %}
+    {% endif %}
+    </div>
+
+<div class="col-md-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                    <div class="table-responsive">
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover" style="text-align:center; ">
+    <thead>
+        {% if docar %}
+        <tr>
+            <th style="vertical-align:middle;" colspan="2">A R T Í C U L O S</th>
+        </tr>
+        <tr>
+            <th style="vertical-align:middle;">Nombre</th>
+            <th style="vertical-align:middle;">Revisar</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        {% for ar in docar %}
+        <tr>
+           <!--<td style="vertical-align:middle;">{{docs.id}}</td>-->
+            <td style="vertical-align:middle;">{{ar.titulo}}</td>
+            <td style="vertical-align:middle;">
+            {% if not ar.documento == '' %}
+            <a href="{{ar.documento.url}}" target="_blank" class="btn btn btn-sm"><span class="glyphicon glyphicon-pencil"></span><img src="{% static 'images/icon_pdf.png' %}" width="35px"></a><hr>
+            <a href="{% url 'articulosCientificos:update_disabled_articulo'  ar.id %}" target="_blank">ir a detalles</a>
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+
+        {% else %}
+        <h1 align="center">No hay registros de artículos</h1>
+        {% endif %}
+        </tbody>
+    </table>
+        </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        <div class="table-responsive">
+                             <table id="datatable-1" class="table table-datatable table-striped table-hover" style="text-align:center; ">
+    <thead>
+        {% if doclib %}
+        <tr>
+            <th style="vertical-align:middle;" colspan="2">L I B R O S</th>
+        </tr>
+        <tr>
+            <th style="vertical-align:middle;">Nombre</th>
+            <th style="vertical-align:middle;">Revisar</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for libs in doclib %}
+        <tr>
+           <!--<td style="vertical-align:middle;">{{docs.id}}</td>-->
+            <td style="vertical-align:middle;">{{libs.Titulo}}</td>
+            <td style="vertical-align:middle;">
+            {% if libs.Documento.url != null %}
+            <a href="{{libs.Documento.url}}" target="_blank" class="btn btn btn-sm"><span class="glyphicon glyphicon-pencil"></span><img src="{% static 'images/icon_pdf.png' %}" width="35px"></a><hr>
+            <a href="{% url 'Libro:libro_update_disabled'  libs.id %}" target="_blank">ir a detalles</a>
+            {% else %}
+            <h6>no tiene documento</h6>
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <h1 align="center">No hay registros de libros</h1>
+        {% endif %}
+        </tbody>
+    </table>
+        </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+
+<div class="col-md-4">
+    <div class="card">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-lg-12 pb-5">
+                    <div class="table-responsive">
+                        <table id="datatable-1" class="table table-datatable table-striped table-hover" style="text-align:center; ">
+    <thead>
+        {% if docpon %}
+       <tr>
+            <th style="vertical-align:middle;" colspan="2">P O N E N C I A S</th>
+        </tr>
+        <tr>
+            <th style="vertical-align:middle;">Nombre</th>
+            <th style="vertical-align:middle;">Revisar</th>
+        </tr>
+
+    </thead>
+    <tbody>
+        {% for pon in docpon %}
+        <tr>
+           <!--<td style="vertical-align:middle;">{{docs.id}}</td>-->
+            <td style="vertical-align:middle;">{{pon.nombrePonencia}}</td>
+            <td style="vertical-align:middle;">
+            {% if not pon.certificado == '' %}
+            <a href="{{pon.certificado.url}}" target="_blank" class="btn btn btn-sm"><span class="glyphicon glyphicon-pencil"></span><img src="{% static 'images/icon_pdf.png' %}" width="35px"></a><hr>
+            <a href="{% url 'Ponencia:ponencia_editar_disabled'  pon.id %}" target="_blank">ir a detalles</a>
+            {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+
+        {% else %}
+        <h1 align="center">No hay registros de ponencias</h1>
+        {% endif %}
+        </tbody>
+    </table>
+        </div>
+</div>
+</div>
+</div>
+</div>
+</div>
+{% endblock%}

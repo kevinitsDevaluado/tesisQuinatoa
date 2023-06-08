@@ -1,0 +1,210 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block title %} Listar Proyectos Carrera {% endblock %}
+{% block subtitle %}
+<span style="color:#07afea">Proyectos Carrera</span>
+<a href="{% url 'social:addAdminProyectosCarrera' %}" class="btn btn-primary btn-sm pull-right waves-effect waves-light"><i class="fa fa-plus"></i> Nuevo Proyecto </a>
+
+{% endblock%}
+
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+{% endblock %}
+
+{% block proyectosCarrera %}
+<li class="nav-item">
+    <a class="nav-link active" href="{% url 'social:listarAdminProyectosCarrera' %}">
+        <i class="batch-icon batch-icon-distribute-bottom-edges "></i>
+        Proyectos Carrera
+    </a>
+</li>
+{% endblock %}
+{% block content %}
+{% for message in messages %}
+{% if message.tags == "ERROR" %}
+<div class="alert alert-danger  alert-dismissible">
+    {% endif %}
+    {% if message.tags == "INFO" %}
+    <div class="alert alert-success">
+        {% endif %}
+
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>{{message.tags}}!</strong> {{ message }}
+    </div>
+    {% endfor %}
+
+
+
+    {% if user.is_superuser %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+
+
+                        <div class="table-responsive">
+                            {% if ProMacro %}
+                            <table id="datatable-1" class="table table-datatable table-striped table-hover">
+                                <thead>
+                                    <h3 style="color:black;font-size:100%">
+                                        <tr>
+                                            <td>Id</td>
+                                            <td>Nombre</td>
+                                            <td>Tipo de proyecto</td>
+                                            <td>Carrera ID</td>
+                                            <td>Carrera </td>
+                                            <td style="width:23%">Acciones</td>
+                                        </tr>
+                                    </h3>
+
+                                </thead>
+                                <tbody class="ContainerProyectosCarreraAdmin">
+                                    {% for ProMacro in ProMacro %}
+                                    {% csrf_token %}
+                                    <tr>
+                                        <td>{{ProMacro.id}}</td>
+
+                                        <td><span altid="{{ProMacro.id}}"> {{ProMacro.nombre|truncatechars:70}}</span></td>
+                                        <td><span alttipoproyecto="{{ProMacro.id}}">{{ProMacro.tipoProyecto}}</span></td>
+                                        <td><span altcarreraid="{{ProMacro.id}}">{{ProMacro.carrera_id}}</span></td>
+                                        <td><span altcarrera="{{ProMacro.id}}">{{ProMacro.nombreCarrera}}</span></td>
+                                        <td>
+
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <a href="{% url 'social:deleteAdminProyectosCarrera' pk=ProMacro.id  %}"  > <button type="button" onclick="return ConfirmarDelete()" class="btn btn-danger btn-sm pull-right waves-effect waves-light" ><i class="fa fa-trash"></i> Eliminar</button>  </a>
+                                                </div>
+                                                <div class="col-6">
+                                                    <a id="btnEditarProyectoCarrera" class="btn btn-primary btn-sm pull-right waves-effect waves-light" alt="{{ProMacro.id}}"><i class="fa fa-pencil"></i> </span>Editar
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            {% else %}
+                            <h4>No hay registros de Proyectos Carrera</h4>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="ModalProyectosCarreraAdmin" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Editar Palabra Clave</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+
+                <form id="formDB1" method="post">
+                    {% csrf_token %}
+
+                    <div class="card-body">
+                        <input type="hidden" name="idproyectoCarrera" id="idproyectoCarrera">
+                        <div class="form-group">
+                            <label for="NombreProyecto">Nombre del proyecto:</label>
+                            <input type="files" class="form-control" placeholder="Ingrese el nombre del proyecto.." id="nombreAdminproyecto" name="nombre" required >
+                        </div>
+                        <div class="form-group">
+                            <label for="Carrera">Tipo de proyecto:</label>
+                            <select name="carreraAdminProyecto" rel="" id="carreraAdminproyecto" class="form-control" required>
+                                <option value="Formativo">Formativo</option>
+                                <option value="Generativo">Generativo</option>
+                                <option value="Otro">Otro</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="Carrera">Carrera:</label>
+                            <select name="carreraAdminPro" rel="" id="carreraAdminPro" class="form-control" required>
+                                {% for carrer in carrera %}
+                                <option value="{{carrer.id}}">{{carrer.Nombre}}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="card-body d-flex justify-content-between align-items-center">
+                            <a class="btn btn-danger btn-sm  " href="{% url 'social:listarAdminKeywords' %}"><span class=" 	fa fa-calendar-times-o" style="width:20px; height:10px"></span> Cancelar</a>
+                            <button type="submit" class="btn btn-primary btn-sm  "><span class="fa fa-save" style="width:20px; height:10px"></span>Guardar</button>
+                        </div>
+                    </div>
+                </form>
+
+
+
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+    {% else %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        <div class="table-responsive">
+
+                            <h4>No tine los permisos suficiente para ingresar a esta opción</h4>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% endblock%}
+
+    {% block scripts %}
+
+    <script>
+        $(document).ready(function() {
+            $(".ContainerProyectosCarreraAdmin").on("click", "#btnEditarProyectoCarrera", function(e) {
+                var id = $(this).attr("alt")
+                var nombrepro=$('[altid="' + id + '"]').text()
+                var tipoPro = $('[alttipoproyecto="' + id + '"]').text()
+                var carreraid = $('[altcarreraid="' + id + '"]').text()
+
+                $("#nombreAdminproyecto").val(nombrepro)
+                $("#carreraAdminProyecto > option[value=" + tipoPro + "]").attr("selected", true);
+                $("#carreraAdminPro > option[value=" + carreraid + "]").attr("selected", true);
+                $("#idproyectoCarrera").val(id)
+                $("#ModalProyectosCarreraAdmin").modal("show")
+            });
+
+        });
+        
+    </script>
+
+
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+
+    <link rel="stylesheet" href="{% static 'assets/css/Botones/botones.css' %}">
+    <!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+    {% endblock %}

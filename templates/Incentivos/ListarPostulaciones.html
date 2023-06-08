@@ -1,0 +1,277 @@
+{% extends 'base1/inicio.html'%}
+{% load staticfiles %}
+{% block title %}
+    Postulaciones
+{% endblock%}
+{% block home %}
+<li class="nav-item">
+    <a class="nav-link" href="{% url 'inicio:logeo' %}">
+        <i class="batch-icon batch-icon-browser-alt"></i>
+        Inicio
+    </a>
+</li>
+
+{% endblock %}
+
+{% block content %}
+    {% if user.is_superuser %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <h3 style="float: left;margin-top: 10px;">Filtros</h3>
+                        <a href="#" id="btnDescargar" style="float: right;">
+                            <img src="{% static 'images/excel.jpg' %}" width="40" alt="Ecuciencia">
+                        </a>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label>Estado:</label>
+                        <select  class="form-control" id="SearchEstado" onchange="javascript:ViewEstado();">
+                             <option value="0">Pendiente</option>
+                             <option value="1">Aceptado</option>
+                             <option value="2">Rechazado</option>
+                             <option value="3">Todo</option>
+                        </select>   
+                    </div>
+                    <div class="col-md-8">
+                        <div class="row">
+                            {% csrf_token %}
+                            <div class="col-md-6">
+                                <label>Desde:</label>
+                                <input type="date" name="" class="form-control" id="SearchFechaI" onchange="javascript:ViewFecha();"> 
+                            </div>
+                            <div class="col-md-6">
+                                <label>Hasta:</label>
+                                <input type="date" name="" class="form-control" id="SearchFechaF" onchange="javascript:ViewFecha();">   
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-lg-12 pb-5">
+                        <div class="table-responsive">
+                            {% if postulacion %}
+                            <table id="table_data" class="table table-striped table-hover table-bordered">
+                                 <thead>
+                                    <tr>
+                                        <td>Id</td>
+                                        <td style="width:10%" align="center">Fecha postulación</td>
+                                        <td>Investigador</td>
+                                        <td>Evento</td>
+                                        <td>Nivel incentivo</td>
+                                        <td>Calificación</td>
+                                        <td align="center">Estado postulación</td>
+                                        <td>Editar</td>
+                                    </tr>
+                                 </thead>
+                                 <tbody id="TablaPostulacion">
+
+                                 </tbody>
+                            </table>
+                            {% else %}
+                                <h4>No existen postulaciones</h4>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> 
+    {% endif%}
+
+
+    <div id="popup" class="modal fade" role="dialog">
+
+    </div>
+        <script>
+            function su(idpos) {
+              // Get the checkbox
+              var checkBox = document.getElementById("s1");
+            var okis=idpos;
+              // If the checkbox is checked, display the output text
+              if (checkBox.checked == true){
+                if (confirm("¿Esta seguro que desea camiar el estado de la postulación?"))
+                {
+                    alert(idpos);
+                }
+                    
+              }
+               else {
+                if (confirm("¿Esta seguro que desea camiar el estado de la postulación?"))
+                {
+                    alert(idpos);
+                }
+              }
+            }
+        </script>
+    <div id="popup" class="modal fade" role="dialog">
+
+    </div>
+        <script>
+            function abrir_modal(url)
+            {
+                var ul="/postulacion/ModificarPostulacion/"+url+"/";
+                $('#popup').load(ul, function()
+                {
+                        $(this).modal('show');
+                });
+            }
+            
+        
+        function cerrar_modal()
+            {
+                $('#popup').modal('hide');
+                return false;
+            }
+             
+        </script>
+        <script type="text/javascript">
+            function ViewEstado(){
+                var table=$('#table_data').DataTable();
+                table.destroy();
+                var o = $('#SearchEstado').val();
+                $('#TablaPostulacion').html('');
+                var result='';
+                if(o=='0'){
+                    {% for pd in postulacion %}
+                        {% if pd.estado == "0" %}
+                        result+="<tr><td>{{pd.id}}</td><td align='center'>{{pd.fecha}}</td><td>{{pd.investigador.user.first_name}} {{pd.investigador.user.last_name}}</td><td>{{pd.incentivo.evento.nombre}}</td><td>{{pd.incentivo.nivel}}</td><td>{{pd.calificacion}}</td><td align='center'><span class='fa fa-2x fa-eye' style='color: blue'>Pendiente</span></td><td><a class='btn btn-primary btn-sm' onclick='javascript:abrir_modal({{pd.id}});'><span class='fa fa-pencil'> editar</samp></a></td></tr>";
+                        {% endif %}
+                    {% endfor %}
+                    $('#TablaPostulacion').append(result);
+                    $('#table_data').DataTable();
+                }
+                if(o=='1'){
+                    {% for pd in postulacion %}
+                        {% if pd.estado == "1" %}
+                        result+="<tr><td>{{pd.id}}</td><td align='center'>{{pd.fecha}}</td><td>{{pd.investigador.user.first_name}} {{pd.investigador.user.last_name}}</td><td>{{pd.incentivo.evento.nombre}}</td><td>{{pd.incentivo.nivel}}</td><td>{{pd.calificacion}}</td><td align='center'><span class='fa fa-2x fa-check' style='color: green;'>Aceptado</span></td><td><a class='btn btn-primary btn-sm' onclick='javascript:abrir_modal({{pd.id}});'><span class='fa fa-pencil'> editar</samp></a></td></tr>";
+                        {% endif %}
+                    {% endfor %}
+                    $('#TablaPostulacion').append(result);
+                    $('#table_data').DataTable();   
+                }
+                if(o=='2'){
+                    {% for pd in postulacion %}
+                        {% if pd.estado == "2" %}
+                        var url="";
+                        result+="<tr><td>{{pd.id}}</td><td align='center'>{{pd.fecha}}</td><td>{{pd.investigador.user.first_name}} {{pd.investigador.user.last_name}}</td><td>{{pd.incentivo.evento.nombre}}</td><td>{{pd.incentivo.nivel}}</td><td>{{pd.calificacion}}</td><td align='center'><span class='fa fa-2x fa-times' style='color: red;'>Rechazado</span></td><td><a class='btn btn-primary btn-sm' onclick='javascript:abrir_modal({{pd.id}});'><span class='fa fa-pencil'> editar</samp></a></td></tr>";
+                        {% endif %}
+                    {% endfor %}
+                    $('#TablaPostulacion').append(result);
+                    $('#table_data').DataTable();
+                }
+                if(o=='3'){
+                    {% for pd in postulacion %}
+                        
+                        var url="";
+                        result+="<tr><td>{{pd.id}}</td><td align='center'>{{pd.fecha}}</td><td>{{pd.investigador.user.first_name}} {{pd.investigador.user.last_name}}</td><td>{{pd.incentivo.evento.nombre}}</td><td>{{pd.incentivo.nivel}}</td><td>{{pd.calificacion}}</td>";
+                        {% if pd.estado == "0" %}
+                        result+="<td align='center'><span class='fa fa-2x fa-eye' style='color: blue'>Pendiente</span></td>";
+                        {% endif %}
+                        {% if pd.estado == "1" %}
+                        result+="<td align='center'><span class='fa fa-2x fa-check' style='color: green;'>Aceptado</span></td>";
+                        {% endif %}
+                        {% if pd.estado == "2" %}
+                        result+="<td align='center'><span class='fa fa-2x fa-times' style='color: red;'>Rechazado</span></td>";
+                        {% endif %}
+                        result+="<td><a class='btn btn-primary btn-sm' onclick='javascript:abrir_modal({{pd.id}});'><span class='fa fa-pencil'> editar</samp></a></td></tr>";
+                        
+                    {% endfor %}
+                    $('#TablaPostulacion').append(result);
+                    $('#table_data').DataTable();
+                }
+            }
+            function ViewFecha(){
+                if(ValidarDate()== true){
+                    var ini = $('#SearchFechaI').val();
+                    var fin = $('#SearchFechaF').val();
+                    $.ajax({
+                        type:'POST',
+                        url:'/postulacion/BuscarFecha/',
+                        data:{
+                            inicio:ini,
+                            final:fin,
+                            csrfmiddlewaretoken: $('input[name=csrfmiddlewaretoken]').val()
+                        },
+                        success:function(data){
+                            var table=$('#table_data').DataTable();
+                            table.destroy();
+                            $('#TablaPostulacion').html('');
+                            var result='';
+                            $.each(data, function(index, item) {
+                                result += "<tr><td>"+item.id+"</td><td align='center'>"+item.fecha+"</td><td>"+item.investigador+"</td><td>"+item.evento+"</td><td>"+item.nivel+"</td><td>"+item.calificacion+"</td>";
+                                if(item.estado=='0'){
+                                    result += "<td align='center'><span class='fa fa-2x fa-eye' style='color: blue'>Pendiente</span></td>";
+                                }
+                                if(item.estado=='1'){
+                                    result += "<td align='center'><span class='fa fa-2x fa-check' style='color: green;'>Aceptado</span></td>";
+                                }
+                                if(item.estado=='2'){
+                                    result += "<td align='center'><span class='fa fa-2x fa-times' style='color: red;'>Rechazado</span></td>";
+                                }
+
+                                result += "<td><a class='btn btn-primary btn-sm' onclick='javascript:abrir_modal("+item.id+");'><span class='fa fa-pencil'> editar</samp></a></td></tr>";
+                            });
+                            $('#TablaPostulacion').append(result);
+                            $('#table_data').DataTable();
+                        }
+                    })
+                }
+            }
+
+            function ValidarDate(){
+                var inicio=$('#SearchFechaI').val();
+                var final=$('#SearchFechaF').val();
+                if(Date.parse(final) < Date.parse(inicio)){
+                    Command: toastr["error"]("La fecha final debe ser mayor que la inicial.", "Error")
+                            toastr.options = {
+                              "closeButton": true,
+                              "debug": false,
+                              "positionClass": "toast-bottom-full-width",
+                              "onclick": null,
+                              "showDuration": "300",
+                              "hideDuration": "1000",
+                              "timeOut": "5000",
+                              "extendedTimeOut": "1000",
+                              "showEasing": "swing",
+                              "hideEasing": "linear",
+                              "showMethod": "fadeIn",
+                              "hideMethod": "fadeOut"
+                    }
+                    return false;
+                }else{
+                    return true;
+                }
+            }
+        </script>
+        <script type="text/javascript">
+            $('#btnDescargar').on('click',requestDescargar);
+              function requestDescargar(){
+                tableToExcel('table_data','Hoja 1');
+              }
+            var tableToExcel = (function() {
+              var uri = 'data:application/vnd.ms-excel;base64,'
+              ,template = '<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><!--[if gte mso 9]><xml><x:ExcelWorkbook><x:ExcelWorksheets><x:ExcelWorksheet><x:Name>{worksheet}</x:Name><x:WorksheetOptions><x:DisplayGridlines/></x:WorksheetOptions></x:ExcelWorksheet></x:ExcelWorksheets></x:ExcelWorkbook></xml><![endif]--> <meta charset = "utf-8"></head><body><table>{table}</table></body></html>'
+              ,base64 = function(s) { return window.btoa(unescape(encodeURIComponent(s))) }
+              ,format = function(s, c) { return s.replace(/{(\w+)}/g, function(m, p) { return c[p]; }) }
+              return function(table, name) {
+              if (!table.nodeType) table = document.getElementById(table)
+                var ctx = {worksheet: name || 'Worksheet', table: table.innerHTML}
+              window.location.href = uri + base64(format(template, ctx))
+              }
+            })()
+        </script>
+{% endblock%}
+{% block scripts %}
+    <!-- Datatables -->
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/jquery.dataTables.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.bootstrap4.min.js' %}"></script>
+    <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/dataTables.responsive.min.js' %}"></script>
+    <!-- <script type="text/javascript" src="{% static 'assets/plugins/datatables/js/responsive.bootstrap4.min.js' %}"></script> -->
+{% endblock %}
