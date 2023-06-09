@@ -132,9 +132,9 @@ DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'redec_produc',
-        'USER': 'redec1',
-        'PASSWORD': 'redec1_050',
-        'HOST': 'localhost',
+        'USER': 'postgres',
+        'PASSWORD': 'hacker94',
+        'HOST': '198.211.104.229',
         'PORT': 5432,
     }
 }
