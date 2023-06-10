@@ -2,7 +2,7 @@
 from __future__ import unicode_literals
 
 import unicodedata
-from pip._vendor.appdirs import unicode
+#from pip._vendor.appdirs import unicode
 from apps.Linea_Investigacion.models import linea_investigacion
 from apps.Sub_Lin_Investigacion.models import sub_lin_investigacion
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404

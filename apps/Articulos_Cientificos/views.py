@@ -4,7 +4,7 @@ from __future__ import unicode_literals
 import unicodedata
 from django.contrib import messages
 from django.shortcuts import render, HttpResponseRedirect, get_object_or_404
-from pip._vendor.appdirs import unicode
+#from pip._vendor.appdirs import unicode
 from django.template.loader import render_to_string
 from apps.Articulos_Cientificos.models import articulos_cientificos
 from apps.Articulos_Cientificos.form import articuloformdisabled
